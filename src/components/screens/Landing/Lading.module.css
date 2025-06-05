@@ -1,21 +1,26 @@
 .landingContainerMain {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
+  width: 100dvw;
+  background-color: #fff;
 }
-.landingImgMain img,
-.landingImgStyle {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-.landingContainerBody {
+.landingImgMain {
   display: flex;
   justify-content: center;
+  width: 100dvw;
+}
+.landingImgMain img {
+  width: 100%;
+  height: auto;
+}
+
+.landingContainerBody {
+  display: flex;
   flex-direction: column;
-  width: 65dvw;
-  background-color: #fff;
+  align-items: center;
+  width: 70dvw;
+  background-color: transparent;
 }
 .landingListShoes {
   display: grid;
@@ -23,7 +28,7 @@
   grid-template-rows: repeat(2, auto);
   gap: 4rem;
   justify-items: center;
-  background-color: #fff;
+  background-color: transparent;
   width: 100%;
   padding: 4rem 0rem;
 }
@@ -43,8 +48,13 @@
 }
 .landingContainerImgStyle {
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.landingContainerImgStyle img {
+  width: 100%;
+  height: auto;
 }
 .landingContainerButton {
   display: flex;
@@ -70,7 +80,10 @@
 .landingBuyByCategories {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  width: 100%;
   padding-bottom: 4rem;
+  background-color: transparent;
 }
 .landingBuyByCategories h1 {
   display: flex;
@@ -81,5 +94,5 @@
 .landingCateogiries {
   display: flex;
   justify-content: space-between;
-  flex-direction: row;
+  width: 100%;
 }
