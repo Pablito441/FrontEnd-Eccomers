@@ -32,6 +32,12 @@
 .NavbarLoggin {
   display: flex;
   font-size: 1rem;
+  font-weight: 600;
+  color: grey;
+  cursor: pointer;
+  transition: color 0.5s;
+}
+.NavbarLoggin:hover {
   color: red;
 }
 .NavbarLoggin span {
@@ -53,7 +59,9 @@
 
 .NavbarLogo {
   height: 4rem;
+  cursor: pointer;
 }
+
 .NavbarContainerCategories {
   display: flex;
   justify-content: flex-end;
@@ -67,6 +75,12 @@
   justify-content: center;
   align-items: center;
   font-size: 1.4rem;
+  cursor: pointer;
+  transition: 0.5s;
+  color: #000;
+}
+.NavbarMen:hover {
+  color: rgb(182, 0, 0);
 }
 .NavbarDropdownIcon {
   font-size: 3rem;

@@ -23,7 +23,7 @@ export const Navbar = () => {
           <div className={styles.NavbarContainerLogo}>
             <img
               src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2024/6/19/9753806.png"
-              alt=""
+              onClick={() => navigate("/landing")}
               className={styles.NavbarLogo}
             />
           </div>
@@ -35,7 +35,6 @@ export const Navbar = () => {
               >
                 arrow_drop_down
               </span>
-              /
             </div>
             <div className={styles.NavbarMen}>
               MUJER

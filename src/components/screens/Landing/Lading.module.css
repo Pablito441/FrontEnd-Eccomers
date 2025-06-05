@@ -66,16 +66,16 @@
 .ladingButton {
   padding: 1rem 1.5rem;
   background-color: #000;
-  border: 1px #000 solid;
+  border: none;
   width: auto;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.3s;
   color: #fff;
 }
 .ladingButton:hover {
-  background: #404040;
+  background: rgb(182, 0, 0);
 }
 .landingBuyByCategories {
   display: flex;

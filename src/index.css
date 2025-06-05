@@ -4,7 +4,8 @@ body,
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  padding: 0;
+  margin-top: 3rem;
+  padding: 0 0 0 0;
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -15,10 +16,6 @@ body,
   box-sizing: inherit;
 }
 
-body {
-  width: 100%;
-  overflow-x: hidden;
-}
 body {
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
