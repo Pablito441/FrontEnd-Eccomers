@@ -1,0 +1,95 @@
+.NavbarContainerMain {
+  display: flex;
+  background-color: #e2e2e2;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+.material-symbols-outlined {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 4rem;
+}
+.navbarContainerLoggin {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-direction: row;
+  gap: 1rem;
+  height: 2rem;
+  width: 100vw;
+  padding-right: 4rem;
+}
+.NavbarLoggin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  color: red;
+}
+.NavbarLoggin span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem;
+}
+.NavbarBody {
+  display: flex;
+  justify-content: space-between;
+
+  flex-direction: row;
+  align-items: center;
+  width: 100vw;
+  height: 4rem;
+  padding: 1rem;
+}
+.NavbarContainerLogo {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+.NavbarLogo {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  height: 3rem;
+}
+.NavbarContainerCategories {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+  gap: 1rem;
+  flex: 1 1 auto;
+  font-weight: 800;
+}
+.NavbarMen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.NavbarDropdownIcon {
+  font-size: 1.8rem;
+}
+.NavbarSearchContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.NavbarSearchInput {
+  padding-left: 2rem;
+  height: 1.65rem;
+  border-radius: 6px;
+  border: 1px solid rgb(153, 153, 153);
+}
+
+.NavbarSearchIcon {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 1.35rem;
+  pointer-events: none;
+}

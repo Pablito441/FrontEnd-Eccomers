@@ -1,0 +1,48 @@
+/* y src/components/ui/Form/RegisterForm.module.css */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+  background: none;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.row label {
+  min-width: 120px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #222;
+  text-align: right;
+}
+
+.button {
+  width: 100%;
+  padding: 0.8rem 0;
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+.button:hover {
+  background: #b71c1c;
+}

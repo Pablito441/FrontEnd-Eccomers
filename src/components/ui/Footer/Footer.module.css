@@ -1,0 +1,36 @@
+.footerContainerMain {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000000;
+  color: #ffffff;
+  width: 100%;
+}
+.footerContainerSocialMedia {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  padding: 3rem;
+  gap: 10rem;
+}
+.footerContainerSocialMedia h1 {
+  font-size: 1.4rem;
+  padding-bottom: 0.8rem;
+}
+.footerContainerSocialMedia h3 {
+  font-size: 0.7rem;
+}
+.footerLogos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 1rem;
+}
+.footerLogos img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #fff;
+}

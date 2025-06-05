@@ -1,0 +1,66 @@
+.sizesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 2.2rem);
+  gap: 0.5rem;
+  margin: 0.7rem 0;
+}
+
+.sizeBtn {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+.sizeBtn:hover,
+.selected {
+  background: #222;
+  color: #fff;
+}
+
+.priceInputs {
+  display: flex;
+  gap: 0.7rem;
+  margin: 0.7rem 0;
+}
+.priceInput {
+  width: 4rem;
+  padding: 0.3rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.colorsGrid {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.colorCheck {
+  display: flex;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+.colorBox {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  margin-right: 0.3rem;
+}
+
+.genderGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.7rem 0;
+}
+.genderCheck {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}

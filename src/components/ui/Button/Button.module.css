@@ -1,0 +1,21 @@
+.formButtonContainer {
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.formButton {
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  background-color: var(--color-button-text);
+  color: var(--color-button-primary);
+  font-size: 1.2rem;
+}
+.formButton:hover {
+  background-color: var(--color-border);
+}
+.formButton:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}

@@ -1,0 +1,85 @@
+.landingContainerMain {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.landingImgMain img,
+.landingImgStyle {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.landingContainerBody {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 65dvw;
+  background-color: #fff;
+}
+.landingListShoes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 4rem;
+  justify-items: center;
+  background-color: #fff;
+  width: 100%;
+  padding: 4rem 0rem;
+}
+
+@media (max-width: 900px) {
+  .landingListShoes {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .landingListShoes {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+}
+.landingContainerImgStyle {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.landingContainerButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0rem;
+}
+
+.ladingButton {
+  padding: 1rem 1.5rem;
+  background-color: #000;
+  border: 1px #000 solid;
+  width: auto;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #fff;
+}
+.ladingButton:hover {
+  background: #404040;
+}
+.landingBuyByCategories {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4rem;
+}
+.landingBuyByCategories h1 {
+  display: flex;
+  justify-content: center;
+  font-size: 1.4rem;
+  padding-bottom: 2rem;
+}
+.landingCateogiries {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}

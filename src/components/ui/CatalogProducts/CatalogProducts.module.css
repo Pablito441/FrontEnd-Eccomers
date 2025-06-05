@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.icons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.icons button.active,
+.icons button:hover {
+  opacity: 1;
+}
+
+.grid {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  /* grid-template-columns se setea inline desde el componente */
+}
+
+.description {
+  margin-top: 2rem;
+}
