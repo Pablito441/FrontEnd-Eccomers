@@ -4,10 +4,14 @@ import { Catalog } from "../components/screens/Catalog/Catalog";
 import { ProductDetails } from "../components/screens/ProductDetails/ProductDetails";
 import { LoginRegister } from "../components/screens/LoginRegister/LoginRegister";
 import { ShoppingCart } from "../components/screens/ShoppingCart/ShoppingCart";
+import { TermsAndConditions } from "../components/screens/TermsAndConditions/TermsAndConditions";
+import { PrivacyPolicies } from "../components/screens/PrivacyPolicies/PrivacyPolicies";
 
 export const AppRouter = () => {
   return (
     <Routes>
+      <Route path="/privacypolicies" element={<PrivacyPolicies />} />
+      <Route path="/termsandconditions" element={<TermsAndConditions />} />
       <Route path="/shoppingCart" element={<ShoppingCart />} />
       <Route path="/loginRegister" element={<LoginRegister />} />
       <Route path="/productDetail" element={<ProductDetails />} />

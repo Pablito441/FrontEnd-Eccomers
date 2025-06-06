@@ -29,8 +29,10 @@
 }
 .footerLogos img {
   display: flex;
+  height: 45px;
   justify-content: center;
   align-items: center;
+  padding: 1px;
   border-radius: 50%;
   background-color: #fff;
 }
