@@ -55,11 +55,10 @@ export const LoginForm = () => {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <h2 className={styles.title}>Iniciar Sesión</h2>
-      <div className={styles.row}>
-        <label htmlFor="email">Correo:</label>
+      <h2 className={styles.title}>Vans® | Iniciar Sesión</h2>
+      <div className={styles.inputContainer}>
         <Input
-          label=""
+          label="Correo"
           name="email"
           type="text"
           value={formData.email}
@@ -67,11 +66,8 @@ export const LoginForm = () => {
           handleChange={handleChange}
           error={errors.email}
         />
-      </div>
-      <div className={styles.row}>
-        <label htmlFor="password">Contraseña:</label>
         <Input
-          label=""
+          label="Contraseña"
           name="password"
           type="password"
           value={formData.password}
@@ -80,9 +76,12 @@ export const LoginForm = () => {
           error={errors.password}
         />
       </div>
-      <button className={styles.button} type="submit">
-        Ingresar
-      </button>
+
+      <div className={styles.buttonContainer}>
+        <button className={styles.button} type="submit">
+          Ingresar
+        </button>
+      </div>
     </form>
   );
 };

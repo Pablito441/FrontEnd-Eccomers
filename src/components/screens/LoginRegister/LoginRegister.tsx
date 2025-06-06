@@ -5,11 +5,13 @@ import s from "./LoginRegister.module.css";
 export const LoginRegister = () => {
   return (
     <div className={s.container}>
-      <div className={s.loginContainer}>
-        <LoginForm />
-      </div>
-      <div className={s.registerContainer}>
-        <RegisterForm />
+      <div className={s.content}>
+        <div className={s.loginContainer}>
+          <LoginForm />
+        </div>
+        <div className={s.registerContainer}>
+          <RegisterForm />
+        </div>
       </div>
     </div>
   );

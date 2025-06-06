@@ -1,42 +1,24 @@
 .container {
   display: flex;
   justify-content: center;
-  align-items: stretch;
-  width: 100vw;
-  min-height: 100vh;
-  background: #fafafa;
-  gap: 0;
+  align-items: center;
+  width: 100%;
+  padding: 3rem 0rem;
+  margin-bottom: 1rem;
 }
-
-.loginContainer,
-.registerContainer {
-  flex: 1;
+.content {
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: #fff;
-  padding: 3rem 2rem;
-  min-width: 320px;
-  box-sizing: border-box;
+  width: 70%;
+  background-color: transparent;
 }
-
+.registerContainer {
+  display: flex;
+  width: 50%;
+  padding-left: 3rem;
+}
 .loginContainer {
-  border-right: 1px solid #eee;
-}
-
-@media (max-width: 900px) {
-  .container {
-    flex-direction: column;
-  }
-  .loginContainer,
-  .registerContainer {
-    border-right: none;
-    border-bottom: 1px solid #eee;
-    min-width: 0;
-    width: 100%;
-    padding: 2rem 1rem;
-  }
-  .registerContainer {
-    border-bottom: none;
-  }
+  display: flex;
+  width: 50%;
+  padding-right: 3rem;
 }

@@ -4,18 +4,10 @@ body,
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  margin-top: 3rem;
-  padding: 0 0 0 0;
+  padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
 }
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
 body {
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;

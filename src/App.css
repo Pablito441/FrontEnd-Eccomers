@@ -1,0 +1,8 @@
+.containerApp {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.content {
+  margin-top: 10rem;
+}

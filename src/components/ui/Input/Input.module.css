@@ -1,21 +1,16 @@
 .InputGroup {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0;
+  justify-content: space-between;
   width: 100%;
-  margin-bottom: 0.5rem;
+  background-color: transparent;
 }
 
 .labelform {
-  width: 140px; /* ancho fijo para el label */
-  min-width: 140px;
-  max-width: 140px;
-  font-size: 1rem;
-  font-weight: 500;
-  justify-content: flex-start;
-  padding-left: 0;
-  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .inputWithIcon {
@@ -23,22 +18,17 @@
   flex: 1;
   display: flex;
   align-items: center;
-  min-width: 220px; /* ancho fijo para el input */
-  max-width: 220px;
+  min-width: 20rem;
 }
 
 .formInput {
   width: 100%;
-  min-width: 0;
-  padding: 0.7rem 1rem;
-  border-radius: 0; /* borde recto */
-  border: 1px solid #000; /* borde negro */
-  background-color: #fafafa;
+  padding: 0.9rem 1rem;
+  border: 1px solid #000;
+  background-color: transparent;
   color: #222;
   font-size: 1rem;
   padding-right: 2.5rem;
-  box-sizing: border-box;
-  background-color: transparent;
 }
 
 .icon {
@@ -49,6 +39,7 @@
   cursor: pointer;
   color: #888;
   font-size: 20px;
+  font-weight: 800;
   user-select: none;
   transition: color 0.3s ease;
 }

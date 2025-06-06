@@ -85,11 +85,10 @@ export const RegisterForm = () => {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <h2 className={styles.title}>Registrarse</h2>
-      <div className={styles.row}>
-        <label htmlFor="name">Nombre:</label>
+      <h2 className={styles.title}>Vans® | Registrarse</h2>
+      <div className={styles.inputContainer}>
         <Input
-          label=""
+          label="Nombre"
           name="name"
           type="text"
           value={formData.name}
@@ -97,11 +96,8 @@ export const RegisterForm = () => {
           handleChange={handleChange}
           error={errors.name}
         />
-      </div>
-      <div className={styles.row}>
-        <label htmlFor="surname">Apellido:</label>
         <Input
-          label=""
+          label="Apellido"
           name="surname"
           type="text"
           value={formData.surname}
@@ -109,11 +105,8 @@ export const RegisterForm = () => {
           handleChange={handleChange}
           error={errors.surname}
         />
-      </div>
-      <div className={styles.row}>
-        <label htmlFor="email">Correo:</label>
         <Input
-          label=""
+          label="Correo"
           name="email"
           type="text"
           value={formData.email}
@@ -121,11 +114,8 @@ export const RegisterForm = () => {
           handleChange={handleChange}
           error={errors.email}
         />
-      </div>
-      <div className={styles.row}>
-        <label htmlFor="birthdate">Fecha de nacimiento:</label>
         <Input
-          label=""
+          label="Fecha de nacimiento"
           name="birthdate"
           type="date"
           value={formData.birthdate}
@@ -133,11 +123,8 @@ export const RegisterForm = () => {
           handleChange={handleChange}
           error={errors.birthdate}
         />
-      </div>
-      <div className={styles.row}>
-        <label htmlFor="password">Contraseña:</label>
         <Input
-          label=""
+          label="Contraseña"
           name="password"
           type="password"
           value={formData.password}
@@ -145,11 +132,8 @@ export const RegisterForm = () => {
           handleChange={handleChange}
           error={errors.password}
         />
-      </div>
-      <div className={styles.row}>
-        <label htmlFor="confirmPassword">Repetir Contraseña:</label>
         <Input
-          label=""
+          label="Repetir Contraseña"
           name="confirmPassword"
           type="password"
           value={formData.confirmPassword}
@@ -158,9 +142,11 @@ export const RegisterForm = () => {
           error={errors.confirmPassword}
         />
       </div>
-      <button className={styles.button} type="submit">
-        Registrarse
-      </button>
+      <div className={styles.buttonContainer}>
+        <button className={styles.button} type="submit">
+          Registrarse
+        </button>
+      </div>
     </form>
   );
 };
