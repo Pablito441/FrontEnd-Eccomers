@@ -1,43 +1,56 @@
+.container {
+  background-color: transparent;
+}
+.title {
+  font-size: 1.5rem;
+  font-weight: 750;
+}
+/* tabla de talles */
 .sizesGrid {
   display: grid;
-  grid-template-columns: repeat(4, 2.2rem);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
-  margin: 0.7rem 0;
+  width: 100%;
+  margin-bottom: 1.2rem;
 }
 
 .sizeBtn {
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
+  width: 100%;
+  padding: 0.5rem 0;
+  border: 3px solid #000;
+  background: transparent;
+  color: #000;
+  font-size: 1rem;
   font-weight: 600;
-  transition: background 0.2s, color 0.2s;
-}
-.sizeBtn:hover,
-.selected {
-  background: #222;
-  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
 }
 
+.sizeBtn.selected,
+.sizeBtn:hover {
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+}
+/* Filtro de Precios */
 .priceInputs {
   display: flex;
   gap: 0.7rem;
-  margin: 0.7rem 0;
+  width: 100%;
+  margin-bottom: 1.4rem;
 }
 .priceInput {
-  width: 4rem;
-  padding: 0.3rem;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+  width: 100%;
+  padding: 0.4rem;
+  border: 3px solid #000;
 }
-
+/* Tabla de colores */
 .colorsGrid {
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 1.4rem;
 }
 .colorCheck {
   display: flex;
@@ -51,12 +64,15 @@
   border-radius: 3px;
   margin-right: 0.3rem;
 }
-
+.nameColor {
+  font-size: 1rem;
+  font-weight: 500;
+}
+/* filtro de género */
 .genderGrid {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin: 0.7rem 0;
 }
 .genderCheck {
   display: flex;

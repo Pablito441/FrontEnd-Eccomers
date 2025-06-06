@@ -2,20 +2,17 @@
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  width: 80%;
+  width: 70vw;
   margin: 0 auto;
-  background-color: rgb(240, 240, 240);
   box-sizing: border-box;
 }
 .sidebar {
   display: flex;
   flex-direction: column;
   width: 15%;
+  padding: 4rem 0rem;
 }
-.sidebar h1 {
-  font-size: 1.5rem;
-  font-weight: 500;
-}
+
 .catalog {
   display: flex;
   justify-content: center;

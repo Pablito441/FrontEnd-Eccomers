@@ -2,7 +2,25 @@ import { useState } from "react";
 import { Dropdown } from "../../ui/Dropdown/Dropdown";
 import styles from "./CatalogFilters.module.css";
 
-const shoeSizes = Array.from({ length: 13 }, (_, i) => (35 + i).toString());
+const shoeSizes = [
+  "35.0",
+  "36.0",
+  "36.5",
+  "37.0",
+  "38.0",
+  "38.5",
+  "39.0",
+  "40.0",
+  "40.5",
+  "41.0",
+  "42.0",
+  "42.5",
+  "43.0",
+  "44.0",
+  "44.5",
+  "46.0",
+  "47.0",
+];
 const colors = [
   { name: "Negro", code: "#222" },
   { name: "Blanco", code: "#fff" },
@@ -43,8 +61,8 @@ export const CatalogFilters = () => {
   };
 
   return (
-    <div>
-      <h1>CLASSICS</h1>
+    <div className={styles.container}>
+      <div className={styles.title}>CLASSICS</div>
       <Dropdown
         title="SHOES"
         options={[
@@ -107,7 +125,7 @@ export const CatalogFilters = () => {
                 className={styles.colorBox}
                 style={{ background: color.code, borderColor: "#aaa" }}
               />
-              {color.name}
+              <span className={styles.nameColor}>{color.name}</span>
             </label>
           ))}
         </div>

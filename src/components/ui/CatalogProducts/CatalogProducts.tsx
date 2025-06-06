@@ -11,24 +11,31 @@ export const CatalogProducts = () => {
   return (
     <div className={s.container}>
       <div className={s.header}>
-        <span>CATÁLOGO</span>
         <div className={s.icons}>
-          <button
-            className={columns === 4 ? s.active : ""}
+          <span
+            className={`material-symbols-outlined ${
+              columns === 4 ? s.active : ""
+            } ${s.iconButton}`}
             onClick={() => setColumns(4)}
             title="Vista de 4 columnas"
+            tabIndex={0}
+            role="button"
+            aria-pressed={columns === 4}
           >
-            {/* Icono grid 4 columnas */}
-            <span>🔳</span>
-          </button>
-          <button
-            className={columns === 3 ? s.active : ""}
+            background_grid_small
+          </span>
+          <span
+            className={`material-symbols-outlined ${
+              columns === 3 ? s.active : ""
+            } ${s.iconButton}`}
             onClick={() => setColumns(3)}
             title="Vista de 3 columnas"
+            tabIndex={0}
+            role="button"
+            aria-pressed={columns === 3}
           >
-            {/* Icono grid 3 columnas */}
-            <span>🔲</span>
-          </button>
+            grid_on
+          </span>
         </div>
       </div>
       <div
@@ -42,13 +49,13 @@ export const CatalogProducts = () => {
         ))}
       </div>
       <div className={s.description}>
-        <h1>Classics Vans</h1>
-        <h2>
+        <span className={s.titlte}>Classics Vans</span>
+        <span>
           Compra Zapatillas Classics Vans. Variedad de colores y talles.
           Recibílo en tu casa o retirá gratis en el local más cercano. Descubrí
           todo lo que tenemos para vos en la única tienda oficial de Vans en
           Argentina.
-        </h2>
+        </span>
       </div>
     </div>
   );
