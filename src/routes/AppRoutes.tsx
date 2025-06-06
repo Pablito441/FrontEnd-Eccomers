@@ -3,10 +3,12 @@ import { Landing } from "../components/screens/Landing/Landing";
 import { Catalog } from "../components/screens/Catalog/Catalog";
 import { ProductDetails } from "../components/screens/ProductDetails/ProductDetails";
 import { LoginRegister } from "../components/screens/LoginRegister/LoginRegister";
+import { ShoppingCart } from "../components/screens/ShoppingCart/ShoppingCart";
 
 export const AppRouter = () => {
   return (
     <Routes>
+      <Route path="/shoppingCart" element={<ShoppingCart />} />
       <Route path="/loginRegister" element={<LoginRegister />} />
       <Route path="/productDetail" element={<ProductDetails />} />
       <Route path="/catalog" element={<Catalog />} />

@@ -13,7 +13,10 @@ export const Navbar = () => {
             <span className="material-symbols-outlined">person</span>INICIAR
             SESIÓN
           </div>
-          <div className={styles.NavbarLoggin}>
+          <div
+            className={styles.NavbarLoggin}
+            onClick={() => navigate("/shoppingCart")}
+          >
             <span className="material-symbols-outlined">shopping_cart</span>
             CARRITO
           </div>
