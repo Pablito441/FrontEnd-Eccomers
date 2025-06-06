@@ -14,21 +14,29 @@ export const ProductImageCarousel = ({ images }: Props) => {
   return (
     <div className={s.carouselWrapper}>
       <div className={s.carouselMain}>
-        <button
-          className={`${s.arrow} ${s.left}`}
+        <span
+          className={`material-symbols-outlined ${s.arrow} ${s.left}`}
           onClick={prev}
           aria-label="Anterior"
+          tabIndex={0}
+          role="button"
         >
-          &#8592;
-        </button>
-        <img src={images[current]} alt={`Producto ${current + 1}`} />
-        <button
-          className={`${s.arrow} ${s.right}`}
+          arrow_back_ios
+        </span>
+        <img
+          className={s.image}
+          src={images[current]}
+          alt={`Producto ${current + 1}`}
+        />
+        <span
+          className={`material-symbols-outlined ${s.arrow} ${s.right}`}
           onClick={next}
           aria-label="Siguiente"
+          tabIndex={0}
+          role="button"
         >
-          &#8594;
-        </button>
+          arrow_forward_ios
+        </span>
       </div>
       <div className={s.carouselThumbs}>
         {images.map((img, idx) => (
