@@ -1,9 +1,9 @@
-import type { User } from "./IUser";
-import type { Adress } from "./IAdress";
+import type { IAdress } from "./IAdress";
+import type { IUser } from "./IUser";
 
-export type UsersAdress = {
+export type IUsersAdress = {
   userId: number;
   addressId: number;
-  user?: User;
-  adress?: Adress;
+  user?: IUser;
+  adress?: IAdress;
 };

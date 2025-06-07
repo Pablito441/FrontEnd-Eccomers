@@ -1,4 +1,4 @@
-export type Type = {
+export type IType = {
   id: number;
   name: string;
   createdAt: string;

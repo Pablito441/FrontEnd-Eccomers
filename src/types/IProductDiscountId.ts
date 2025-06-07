@@ -1,4 +1,4 @@
-export type ProductDiscountId = {
+export type IProductDiscountId = {
   idDiscount: number;
   idProduct: number;
 };

@@ -1,8 +1,8 @@
-import type { Brand } from "./IBrand";
-import type { Category } from "./ICategory";
-import type { Colour } from "./IColour";
+import type { IBrand } from "./IBrand";
+import type { ICategory } from "./ICategory";
+import type { IColour } from "./IColour";
 
-export type Product = {
+export type IProduct = {
   id: number;
   name: string;
   price: number;
@@ -12,9 +12,9 @@ export type Product = {
   colourId: number;
   brandId: number;
   status: boolean;
-  category?: Category;
-  colour?: Colour;
-  brand?: Brand;
+  category?: ICategory;
+  colour?: IColour;
+  brand?: IBrand;
   createdAt: string; // LocalDateTime suele venir como string ISO
   updatedAt?: string | null;
   deletedAt?: string | null;

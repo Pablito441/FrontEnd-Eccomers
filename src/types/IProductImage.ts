@@ -1,11 +1,11 @@
-import type { Product } from "./IProduct";
+import type { IProduct } from "./IProduct";
 
-export type ProductImage = {
+export type IProductImage = {
   id: number;
   link: string;
   productId: number;
   isPrincipalProductImage: boolean;
-  product?: Product;
+  product?: IProduct;
   createdAt: string;
   updatedAt?: string | null;
   deletedAt?: string | null;

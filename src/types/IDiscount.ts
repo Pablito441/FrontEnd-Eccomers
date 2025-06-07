@@ -1,4 +1,4 @@
-export type Discount = {
+export type IDiscount = {
   id: number;
   startDate: string; // Date suele venir como string ISO
   endDate: string;

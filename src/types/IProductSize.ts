@@ -1,9 +1,9 @@
-import type { Product } from "./IProduct";
-import type { Size } from "./ISize";
+import type { IProduct } from "./IProduct";
+import type { ISize } from "./ISize";
 
-export type ProductSize = {
+export type IProductSize = {
   idSize: number;
   idProduct: number;
-  size?: Size;
-  product?: Product;
+  size?: ISize;
+  product?: IProduct;
 };

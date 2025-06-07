@@ -1,4 +1,4 @@
-export type Size = {
+export type ISize = {
   id: number;
   number: string;
   systemType: "EU" | "US" | "UK" | "CM";

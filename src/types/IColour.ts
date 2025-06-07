@@ -1,4 +1,4 @@
-export type Colour = {
+export type IColour = {
   id: number;
   name: string;
   value: string;

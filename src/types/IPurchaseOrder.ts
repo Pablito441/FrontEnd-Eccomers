@@ -1,15 +1,15 @@
-import type { User } from "./IUser";
-import type { UsersAdress } from "./IUsersAdress";
+import type { IUser } from "./IUser";
+import type { IUsersAdress } from "./IUsersAdress";
 
-export type PurchaseOrder = {
+export type IPurchaseOrder = {
   id: number;
   userId: number;
   userAddressId: number;
   total: number;
   paymentMethod: string;
   status: "PENDING" | "PAID" | "CANCELLED";
-  usersAdress?: UsersAdress;
-  user?: User;
+  usersAdress?: IUsersAdress;
+  user?: IUser;
   createdAt: string;
   updatedAt?: string | null;
   deletedAt?: string | null;

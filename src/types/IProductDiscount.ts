@@ -1,9 +1,9 @@
-import type { Discount } from "./IDiscount";
-import type { Product } from "./IProduct";
+import type { IDiscount } from "./IDiscount";
+import type { IProduct } from "./IProduct";
 
-export type ProductDiscount = {
+export type IProductDiscount = {
   idDiscount: number;
   idProduct: number;
-  discount?: Discount;
-  product?: Product;
+  discount?: IDiscount;
+  product?: IProduct;
 };

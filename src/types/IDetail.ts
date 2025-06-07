@@ -1,13 +1,13 @@
-import type { Product } from "./IProduct";
-import type { PurchaseOrder } from "./IPurchaseOrder";
+import type { IProduct } from "./IProduct";
+import type { IPurchaseOrder } from "./IPurchaseOrder";
 
-export type Detail = {
+export type IDetail = {
   id: number;
   quantity: number;
   productId: number;
   orderId: number;
-  product?: Product;
-  purchaseOrder?: PurchaseOrder;
+  product?: IProduct;
+  purchaseOrder?: IPurchaseOrder;
   createdAt: string;
   updatedAt?: string | null;
   deletedAt?: string | null;

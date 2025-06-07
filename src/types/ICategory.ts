@@ -1,10 +1,10 @@
-import type { Type } from "./IType";
+import type { IType } from "./IType";
 
-export type Category = {
+export type ICategory = {
   id: number;
   name: string;
   typeId: number;
-  type?: Type;
+  type?: IType;
   createdAt: string;
   updatedAt?: string | null;
   deletedAt?: string | null;
