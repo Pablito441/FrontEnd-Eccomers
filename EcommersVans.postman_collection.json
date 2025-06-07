@@ -1,0 +1,175 @@
+{
+  "info": {
+    "name": "EcommersVans API",
+    "_postman_id": "ecommersvans-api-collection",
+    "description": "Colección básica para probar endpoints de la base de datos EcommersVans",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Colours",
+      "item": [
+        {
+          "name": "Get all colours",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/colours",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "colours"]
+            }
+          }
+        },
+        {
+          "name": "Get colour by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/colours/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "colours", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Brands",
+      "item": [
+        {
+          "name": "Get all brands",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/brands",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "brands"]
+            }
+          }
+        },
+        {
+          "name": "Get brand by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/brands/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "brands", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get all categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/categories",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Get category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/categories/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "categories", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Types",
+      "item": [
+        {
+          "name": "Get all types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/types",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "types"]
+            }
+          }
+        },
+        {
+          "name": "Get type by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/types/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "types", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get all products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Get product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/api/v1/products/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "9000",
+              "path": ["api", "v1", "products", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "../../ui/Dropdown/Dropdown";
 import styles from "./CatalogFilters.module.css";
+import { useCategoryStore } from "../../../hooks/useCategoryStore";
 
 const shoeSizes = [
   "35.0",
@@ -59,21 +60,17 @@ export const CatalogFilters = () => {
         : [...prev, gender]
     );
   };
+  // ESTADO DE CATEGORIAS
+  const { categories, fetchAllCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchAllCategories();
+  }, [fetchAllCategories]);
 
   return (
     <div className={styles.container}>
       <div className={styles.title}>CLASSICS</div>
-      <Dropdown
-        title="SHOES"
-        options={[
-          "Old skool",
-          "Era",
-          "Authentic",
-          "Sk8-Hi",
-          "Slip-on",
-          "KNU skool",
-        ]}
-      />
+      <Dropdown title="SHOES" options={categories.map((cat) => cat.name)} />
       <Dropdown title="Talle Calzado">
         <div className={styles.sizesGrid}>
           {shoeSizes.map((size) => (
