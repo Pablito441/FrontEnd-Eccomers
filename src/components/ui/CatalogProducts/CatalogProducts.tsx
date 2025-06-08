@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardCatalogProduct } from "../CardCatalogProduct/CardCatalogProduct";
 import s from "./CatalogProducts.module.css";
+import { useProductStore } from "../../../hooks/useProductStore";
 
 export const CatalogProducts = () => {
   const [columns, setColumns] = useState(4);
 
-  // Simula varios productos
-  const products = Array.from({ length: 12 });
+  const { items: products, fetchAll: fetchAllProducts } = useProductStore();
 
+  useEffect(() => {
+    fetchAllProducts();
+  }, [fetchAllProducts]);
   return (
     <div className={s.container}>
       <div className={s.header}>
@@ -44,8 +47,8 @@ export const CatalogProducts = () => {
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
         }}
       >
-        {products.map((_, i) => (
-          <CardCatalogProduct key={i} />
+        {products.map((e, i) => (
+          <CardCatalogProduct key={i} element={e} />
         ))}
       </div>
       <div className={s.description}>

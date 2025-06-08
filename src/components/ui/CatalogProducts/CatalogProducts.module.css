@@ -43,6 +43,8 @@
 .grid {
   display: grid;
   width: 100%;
+  gap: 4rem;
+  /* Hay que cambiar el gap porque si lo pongo a 0 como debería ser se superponen los elementos o cards */
 }
 
 .description {

@@ -2,38 +2,8 @@ import { useEffect, useState } from "react";
 import { Dropdown } from "../../ui/Dropdown/Dropdown";
 import styles from "./CatalogFilters.module.css";
 import { useCategoryStore } from "../../../hooks/useCategoryStore";
-
-const shoeSizes = [
-  "35.0",
-  "36.0",
-  "36.5",
-  "37.0",
-  "38.0",
-  "38.5",
-  "39.0",
-  "40.0",
-  "40.5",
-  "41.0",
-  "42.0",
-  "42.5",
-  "43.0",
-  "44.0",
-  "44.5",
-  "46.0",
-  "47.0",
-];
-const colors = [
-  { name: "Negro", code: "#222" },
-  { name: "Blanco", code: "#fff" },
-  { name: "Rojo", code: "#e53935" },
-  { name: "Azul", code: "#1976d2" },
-  { name: "Verde", code: "#43a047" },
-  { name: "Amarillo", code: "#fbc02d" },
-  { name: "Gris", code: "#757575" },
-  { name: "Beige", code: "#f5f5dc" },
-  { name: "Rosa", code: "#e91e63" },
-  { name: "Marrón", code: "#795548" },
-];
+import { useSizeStore } from "../../../hooks/useSizeStore";
+import { useColourStore } from "../../../hooks/useColourStore";
 
 export const CatalogFilters = () => {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -61,28 +31,34 @@ export const CatalogFilters = () => {
     );
   };
   // ESTADO DE CATEGORIAS
-  const { categories, fetchAllCategories } = useCategoryStore();
+  const { items: categories, fetchAll: fetchAllCategories } =
+    useCategoryStore();
+  // ESTADO DE TALLES
+  const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
+  const { items: colours, fetchAll: fetchAllColours } = useColourStore();
 
   useEffect(() => {
     fetchAllCategories();
-  }, [fetchAllCategories]);
+    fetchAllSizes();
+    fetchAllColours();
+  }, [fetchAllCategories, fetchAllSizes, fetchAllColours]);
 
   return (
     <div className={styles.container}>
       <div className={styles.title}>CLASSICS</div>
-      <Dropdown title="SHOES" options={categories.map((cat) => cat.name)} />
+      <Dropdown title="Shoes" options={categories.map((cat) => cat.name)} />
       <Dropdown title="Talle Calzado">
         <div className={styles.sizesGrid}>
-          {shoeSizes.map((size) => (
+          {sizes.map((size) => (
             <button
-              key={size}
+              key={size.number}
               className={`${styles.sizeBtn} ${
-                selectedSizes.includes(size) ? styles.selected : ""
+                selectedSizes.includes(size.number) ? styles.selected : ""
               }`}
-              onClick={() => toggleSize(size)}
+              onClick={() => toggleSize(size.number)}
               type="button"
             >
-              {size}
+              {size.number}
             </button>
           ))}
         </div>
@@ -110,17 +86,17 @@ export const CatalogFilters = () => {
       </Dropdown>
       <Dropdown title="Color">
         <div className={styles.colorsGrid}>
-          {colors.map((color) => (
+          {colours.map((color) => (
             <label key={color.name} className={styles.colorCheck}>
               <input
                 type="checkbox"
                 checked={selectedColors.includes(color.name)}
                 onChange={() => toggleColor(color.name)}
-                style={{ accentColor: color.code }}
+                style={{ accentColor: color.value }}
               />
               <span
                 className={styles.colorBox}
-                style={{ background: color.code, borderColor: "#aaa" }}
+                style={{ background: color.value, borderColor: "#aaa" }}
               />
               <span className={styles.nameColor}>{color.name}</span>
             </label>

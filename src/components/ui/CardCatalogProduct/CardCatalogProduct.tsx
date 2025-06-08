@@ -1,7 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import s from "./CardCatalogProduct.module.css";
-
-export const CardCatalogProduct = () => {
+import type { IProduct } from "../../../types/IProduct";
+import type { FC } from "react";
+type CardCatalogProductProps = {
+  element: IProduct;
+};
+export const CardCatalogProduct: FC<CardCatalogProductProps> = ({
+  element,
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -15,12 +21,12 @@ export const CardCatalogProduct = () => {
       style={{ cursor: "pointer" }}
     >
       <div className={s.containerImg}>
-        <img src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2024/10/2/10042260_800.jpg" />
+        <img src={element.image} />
       </div>
       <div className={s.containerContent}>
-        <h1>Vans</h1>
-        <h2>Zapatillas U Knu Skool</h2>
-        <h2>$ 189.000</h2>
+        <h1>{element.brand?.name}</h1>
+        <h2>{element.name}</h2>
+        <h2>{element.price}</h2>
       </div>
     </div>
   );

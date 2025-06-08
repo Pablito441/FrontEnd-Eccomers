@@ -3,11 +3,11 @@
   flex-direction: column;
   align-items: center;
   background: transparent;
+  /* poner en red para ver los elementos */
   padding: 1.5rem;
   width: 100%;
   height: 100%;
 }
-
 .containerImg {
   width: 100%;
   aspect-ratio: 1/1;
