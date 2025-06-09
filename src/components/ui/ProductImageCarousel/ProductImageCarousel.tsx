@@ -1,15 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import s from "./ProductImageCarousel.module.css";
+import type { IProduct } from "../../../types/IProduct";
+import { useProductImageStore } from "../../../hooks/useProductImage";
 
 interface Props {
-  images: string[];
+  product: IProduct;
 }
 
-export const ProductImageCarousel = ({ images }: Props) => {
+export const ProductImageCarousel = ({ product }: Props) => {
   const [current, setCurrent] = useState(0);
 
-  const prev = () => setCurrent((c) => (c === 0 ? images.length - 1 : c - 1));
-  const next = () => setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
+  const { items: productImages, fetchAll: fetchAllProductImage } =
+    useProductImageStore();
+
+  // Filtrar las imágenes que corresponden al producto actual
+  const productImagesFiltered = productImages
+    .filter((img) => img.productId === product.id)
+    .map((img) => img.link);
+
+  useEffect(() => {
+    fetchAllProductImage();
+  }, [fetchAllProductImage]);
+
+  const prev = () =>
+    setCurrent((c) => (c === 0 ? productImagesFiltered.length - 1 : c - 1));
+  const next = () =>
+    setCurrent((c) => (c === productImagesFiltered.length - 1 ? 0 : c + 1));
 
   return (
     <div className={s.carouselWrapper}>
@@ -25,7 +41,7 @@ export const ProductImageCarousel = ({ images }: Props) => {
         </span>
         <img
           className={s.image}
-          src={images[current]}
+          src={productImagesFiltered[current]}
           alt={`Producto ${current + 1}`}
         />
         <span
@@ -39,7 +55,7 @@ export const ProductImageCarousel = ({ images }: Props) => {
         </span>
       </div>
       <div className={s.carouselThumbs}>
-        {images.map((img, idx) => (
+        {productImagesFiltered.map((img, idx) => (
           <img
             key={img}
             src={img}

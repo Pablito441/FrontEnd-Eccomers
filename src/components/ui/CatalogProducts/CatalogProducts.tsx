@@ -11,6 +11,7 @@ export const CatalogProducts = () => {
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
+
   return (
     <div className={s.container}>
       <div className={s.header}>
@@ -48,7 +49,7 @@ export const CatalogProducts = () => {
         }}
       >
         {products.map((e, i) => (
-          <CardCatalogProduct key={i} element={e} />
+          <CardCatalogProduct key={i} product={e} />
         ))}
       </div>
       <div className={s.description}>

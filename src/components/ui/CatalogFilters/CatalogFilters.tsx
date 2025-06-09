@@ -30,10 +30,9 @@ export const CatalogFilters = () => {
         : [...prev, gender]
     );
   };
-  // ESTADO DE CATEGORIAS
+  // ESTADOS GLOBALES
   const { items: categories, fetchAll: fetchAllCategories } =
     useCategoryStore();
-  // ESTADO DE TALLES
   const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
   const { items: colours, fetchAll: fetchAllColours } = useColourStore();
 

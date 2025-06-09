@@ -3,15 +3,15 @@ import s from "./CardCatalogProduct.module.css";
 import type { IProduct } from "../../../types/IProduct";
 import type { FC } from "react";
 type CardCatalogProductProps = {
-  element: IProduct;
+  product: IProduct;
 };
 export const CardCatalogProduct: FC<CardCatalogProductProps> = ({
-  element,
+  product,
 }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/productDetail");
+    navigate("/productDetail", { state: { product } });
   };
 
   return (
@@ -21,12 +21,12 @@ export const CardCatalogProduct: FC<CardCatalogProductProps> = ({
       style={{ cursor: "pointer" }}
     >
       <div className={s.containerImg}>
-        <img src={element.image} />
+        <img src={product.image} />
       </div>
       <div className={s.containerContent}>
-        <h1>{element.brand?.name}</h1>
-        <h2>{element.name}</h2>
-        <h2>{element.price}</h2>
+        <h1>{product.brand?.name}</h1>
+        <h2>{product.name}</h2>
+        <h2>{product.price}</h2>
       </div>
     </div>
   );

@@ -62,25 +62,7 @@ h2 {
   padding: 1rem 0rem;
   border-top: 1px solid #dddddd;
 }
-.containerProductColors {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  width: 100%;
-  margin: 0rem 0.1rem;
-  gap: 1rem;
-}
-.imgColorProuct {
-  display: flex;
-  width: 90px;
-  height: 90px;
-  cursor: pointer;
-  transition: border 0.2s, box-shadow 0.2s;
-}
 
-.imgColorProuct:hover {
-  box-shadow: 0 0 0 2px #0002;
-}
 .size {
   color: #424242;
 }
