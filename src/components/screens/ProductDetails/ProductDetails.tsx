@@ -5,6 +5,7 @@ import s from "./ProductDetails.module.css";
 import type { IProduct } from "../../../types/IProduct";
 import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useProductStore } from "../../../hooks/useProductStore";
+import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 
 export const ProductDetails = () => {
   const [open, setOpen] = useState(false);
@@ -17,11 +18,19 @@ export const ProductDetails = () => {
   // ESTADOS GLOBALES
   const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
   const { items: allProducts, fetchAll: fetchAllProducts } = useProductStore();
+  const { items: productSizes, fetchAll: fetchAllProductSizes } =
+    useProductSizeStore();
 
   useEffect(() => {
     fetchAllSizes();
     fetchAllProducts();
-  }, [fetchAllSizes, fetchAllProducts]);
+    fetchAllProductSizes();
+  }, [fetchAllSizes, fetchAllProducts, fetchAllProductSizes]);
+
+  // Filtro para poder organizar los talles disponibles en este producto
+  const availableSizeIds = productSizes
+    .filter((ps) => ps.idProduct === product.id)
+    .map((ps) => ps.idSize);
 
   // Ordenar productos relacionados solo una vez cuando se cargan los productos
   useEffect(() => {
@@ -33,10 +42,10 @@ export const ProductDetails = () => {
     }
   }, [allProducts, product.id]);
 
+  // función para manejar el scroll del carrusel mediante las flechas
   const handleScroll = (direction: "left" | "right") => {
     const container = document.querySelector(`.${s.otherProducts}`);
     if (container) {
-      // El ancho de una imagen (200px) más el gap (1rem = 16px)
       const scrollAmount = 216;
       const newPosition =
         direction === "left"
@@ -73,11 +82,26 @@ export const ProductDetails = () => {
             <h4 className={s.gender}> Colour: {product.colour?.name}</h4>
             <h4 className={s.size}>Talle:</h4>
             <div className={s.gridSizee}>
-              {sizes.map((size) => (
-                <button className={s.sizeButtonn} key={size.id}>
-                  {size.number}
-                </button>
-              ))}
+              {sizes.map((size) => {
+                const isAvailable = availableSizeIds.includes(size.id);
+                return (
+                  <button
+                    className={`${s.sizeButtonn} ${
+                      !isAvailable ? s.sizeUnavailable : ""
+                    }`}
+                    key={size.id}
+                    disabled={!isAvailable}
+                    style={{
+                      background: !isAvailable ? "#eee" : undefined,
+                      color: !isAvailable ? "#aaa" : undefined,
+                      textDecoration: !isAvailable ? "line-through" : undefined,
+                      cursor: !isAvailable ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {size.number}
+                  </button>
+                );
+              })}
             </div>
             <div className={s.dropdown}>
               <div

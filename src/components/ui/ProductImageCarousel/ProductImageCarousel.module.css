@@ -11,15 +11,15 @@
   background-color: transparent;
 }
 .image {
-  width: 100%;
+  width: 90%;
   height: auto;
   object-fit: contain;
-  margin: 0rem 2.5rem;
 }
 .arrow {
   cursor: pointer;
   font-size: 3rem;
   font-weight: 800;
+  background-color: transparent;
 }
 .carouselThumbs {
   display: flex;

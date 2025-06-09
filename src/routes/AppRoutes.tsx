@@ -6,10 +6,13 @@ import { LoginRegister } from "../components/screens/LoginRegister/LoginRegister
 import { ShoppingCart } from "../components/screens/ShoppingCart/ShoppingCart";
 import { TermsAndConditions } from "../components/screens/TermsAndConditions/TermsAndConditions";
 import { PrivacyPolicies } from "../components/screens/PrivacyPolicies/PrivacyPolicies";
+import ProductSizeTest from "../components/screens/prueba";
 
 export const AppRouter = () => {
   return (
     <Routes>
+      <Route path="/pruebas" element={<ProductSizeTest />} />
+      {/* /pruebas es solo para probar las tablas con id compuestos */}
       <Route path="/privacypolicies" element={<PrivacyPolicies />} />
       <Route path="/termsandconditions" element={<TermsAndConditions />} />
       <Route path="/shoppingCart" element={<ShoppingCart />} />
