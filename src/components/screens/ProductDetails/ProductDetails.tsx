@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ProductImageCarousel } from "../../ui/ProductImageCarousel/ProductImageCarousel";
 import s from "./ProductDetails.module.css";
 import type { IProduct } from "../../../types/IProduct";
@@ -8,24 +8,52 @@ import { useProductStore } from "../../../hooks/useProductStore";
 
 export const ProductDetails = () => {
   const [open, setOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [relatedProducts, setRelatedProducts] = useState<IProduct[]>([]);
   const location = useLocation();
+  const navigate = useNavigate();
   const { product } = location.state as { product: IProduct };
 
   // ESTADOS GLOBALES
-
   const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
   const { items: allProducts, fetchAll: fetchAllProducts } = useProductStore();
-
-  // Filtrar productos relacionados (excluyendo el producto actual)
-  const relatedProducts = allProducts
-    .filter((p) => p.id !== product.id)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 6);
 
   useEffect(() => {
     fetchAllSizes();
     fetchAllProducts();
   }, [fetchAllSizes, fetchAllProducts]);
+
+  // Ordenar productos relacionados solo una vez cuando se cargan los productos
+  useEffect(() => {
+    if (allProducts.length > 0) {
+      const filteredProducts = allProducts
+        .filter((p) => p.id !== product.id)
+        .sort(() => Math.random() - 0.5);
+      setRelatedProducts(filteredProducts);
+    }
+  }, [allProducts, product.id]);
+
+  const handleScroll = (direction: "left" | "right") => {
+    const container = document.querySelector(`.${s.otherProducts}`);
+    if (container) {
+      // El ancho de una imagen (200px) más el gap (1rem = 16px)
+      const scrollAmount = 216;
+      const newPosition =
+        direction === "left"
+          ? scrollPosition - scrollAmount
+          : scrollPosition + scrollAmount;
+
+      container.scrollTo({
+        left: newPosition,
+        behavior: "smooth",
+      });
+      setScrollPosition(newPosition);
+    }
+  };
+
+  const handleProductClick = (relatedProduct: IProduct) => {
+    navigate("/productDetail", { state: { product: relatedProduct } });
+  };
 
   return (
     <div className={s.containerMain}>
@@ -79,17 +107,31 @@ export const ProductDetails = () => {
         <div className={s.interesentContent}>
           <h1>TAMBIÉN TE PUEDE INTERESAR</h1>
           <div className={s.imgCarrousel}>
-            <span className="material-symbols-outlined">arrow_back_ios</span>
+            <span
+              className="material-symbols-outlined"
+              onClick={() => handleScroll("left")}
+              style={{ cursor: "pointer" }}
+            >
+              arrow_back_ios
+            </span>
             <div className={s.otherProducts}>
               {relatedProducts.map((relatedProduct) => (
                 <img
                   key={relatedProduct.id}
                   src={relatedProduct.image}
                   alt={relatedProduct.name}
+                  onClick={() => handleProductClick(relatedProduct)}
+                  style={{ cursor: "pointer" }}
                 />
               ))}
             </div>
-            <span className="material-symbols-outlined">arrow_forward_ios</span>
+            <span
+              className="material-symbols-outlined"
+              onClick={() => handleScroll("right")}
+              style={{ cursor: "pointer" }}
+            >
+              arrow_forward_ios
+            </span>
           </div>
         </div>
       </div>
