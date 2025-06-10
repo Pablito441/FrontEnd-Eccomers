@@ -5,11 +5,14 @@ import { useCategoryStore } from "../../../hooks/useCategoryStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useColourStore } from "../../../hooks/useColourStore";
 import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
+import { useProductStore } from "../../../hooks/useProductStore";
 
 export const CatalogFilters = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [price, setPrice] = useState({ min: "", max: "" });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
+  const [colorCounts, setColorCounts] = useState<Record<string, number>>({});
 
   const toggleSize = (size: string) => {
     const newSelectedSize = selectedSize === size ? null : size;
@@ -21,9 +24,15 @@ export const CatalogFilters = () => {
   };
 
   const toggleColor = (color: string) => {
-    setSelectedColors((prev) =>
-      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
-    );
+    const newSelectedColors = selectedColors.includes(color)
+      ? selectedColors.filter((c) => c !== color)
+      : [...selectedColors, color];
+
+    setSelectedColors(newSelectedColors);
+
+    // Emitir evento con los colores seleccionados
+    const event = new CustomEvent("colorChange", { detail: newSelectedColors });
+    window.dispatchEvent(event);
   };
 
   // ESTADOS GLOBALES
@@ -33,24 +42,66 @@ export const CatalogFilters = () => {
   const { items: colours, fetchAll: fetchAllColours } = useColourStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
     useProductSizeStore();
+  const { items: products, fetchAll: fetchAllProducts } = useProductStore();
 
   useEffect(() => {
     fetchAllCategories();
     fetchAllSizes();
     fetchAllColours();
     fetchAllProductSizes();
+    fetchAllProducts();
   }, [
     fetchAllCategories,
     fetchAllSizes,
     fetchAllColours,
     fetchAllProductSizes,
+    fetchAllProducts,
   ]);
+
+  // Calcular el rango de precios cuando los productos cambian
+  useEffect(() => {
+    if (products.length > 0) {
+      const prices = products.map((p) => p.price);
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      setPriceRange({ min, max });
+    }
+  }, [products]);
+
+  // Calcular la cantidad de productos por color
+  useEffect(() => {
+    if (products.length > 0 && colours.length > 0) {
+      const counts: Record<string, number> = {};
+      colours.forEach((color) => {
+        if (color && color.name) {
+          counts[color.name] = products.filter(
+            (p) => p.colour?.name === color.name
+          ).length;
+        }
+      });
+      setColorCounts(counts);
+    }
+  }, [products, colours]);
 
   const isSizeAvailable = (sizeNumber: string) => {
     const sizeId = sizes.find((s) => s.number === sizeNumber)?.id;
     if (!sizeId) return false;
 
     return productSizes.some((ps) => ps.idSize === sizeId && ps.stock > 0);
+  };
+
+  const handlePriceChange = (type: "min" | "max", value: string) => {
+    const newPrice = { ...price, [type]: value };
+    setPrice(newPrice);
+
+    // Emitir evento con el rango de precios
+    const event = new CustomEvent("priceChange", {
+      detail: {
+        min: newPrice.min ? Number(newPrice.min) : null,
+        max: newPrice.max ? Number(newPrice.max) : null,
+      },
+    });
+    window.dispatchEvent(event);
   };
 
   return (
@@ -82,19 +133,21 @@ export const CatalogFilters = () => {
           <input
             className={styles.priceInput}
             type="number"
-            placeholder="Mín"
+            placeholder={`$${priceRange.min}`}
             value={price.min}
-            min={0}
-            onChange={(e) => setPrice({ ...price, min: e.target.value })}
+            min={priceRange.min}
+            max={priceRange.max}
+            onChange={(e) => handlePriceChange("min", e.target.value)}
           />
           <span>-</span>
           <input
             className={styles.priceInput}
             type="number"
-            placeholder="Máx"
+            placeholder={`$${priceRange.max}`}
             value={price.max}
-            min={0}
-            onChange={(e) => setPrice({ ...price, max: e.target.value })}
+            min={priceRange.min}
+            max={priceRange.max}
+            onChange={(e) => handlePriceChange("max", e.target.value)}
           />
         </div>
       </Dropdown>
@@ -112,7 +165,9 @@ export const CatalogFilters = () => {
                 className={styles.colorBox}
                 style={{ background: color.value, borderColor: "#aaa" }}
               />
-              <span className={styles.nameColor}>{color.name}</span>
+              <span className={styles.nameColor}>
+                {color.name} ({colorCounts[color.name] || 0})
+              </span>
             </label>
           ))}
         </div>

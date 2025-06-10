@@ -9,9 +9,28 @@ interface SizeChangeEvent extends CustomEvent {
   detail: string | null;
 }
 
+interface PriceChangeEvent extends CustomEvent {
+  detail: {
+    min: number | null;
+    max: number | null;
+  };
+}
+
+interface ColorChangeEvent extends CustomEvent {
+  detail: string[];
+}
+
 export const CatalogProducts = () => {
   const [columns, setColumns] = useState(4);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [priceRange, setPriceRange] = useState<{
+    min: number | null;
+    max: number | null;
+  }>({
+    min: null,
+    max: null,
+  });
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   const { items: products, fetchAll: fetchAllProducts } = useProductStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
@@ -24,7 +43,7 @@ export const CatalogProducts = () => {
     fetchAllSizes();
   }, [fetchAllProducts, fetchAllProductSizes, fetchAllSizes]);
 
-  // Escuchar cambios en el talle seleccionado desde CatalogFilters
+  // Escuchar cambios en el talle seleccionado
   useEffect(() => {
     const handleSizeChange = (event: SizeChangeEvent) => {
       setSelectedSize(event.detail);
@@ -38,16 +57,59 @@ export const CatalogProducts = () => {
       );
   }, []);
 
+  // Escuchar cambios en el rango de precios
+  useEffect(() => {
+    const handlePriceChange = (event: PriceChangeEvent) => {
+      setPriceRange(event.detail);
+    };
+
+    window.addEventListener("priceChange", handlePriceChange as EventListener);
+    return () =>
+      window.removeEventListener(
+        "priceChange",
+        handlePriceChange as EventListener
+      );
+  }, []);
+
+  // Escuchar cambios en los colores seleccionados
+  useEffect(() => {
+    const handleColorChange = (event: ColorChangeEvent) => {
+      setSelectedColors(event.detail);
+    };
+
+    window.addEventListener("colorChange", handleColorChange as EventListener);
+    return () =>
+      window.removeEventListener(
+        "colorChange",
+        handleColorChange as EventListener
+      );
+  }, []);
+
   const filteredProducts = products.filter((product) => {
-    if (!selectedSize) return true;
+    // Filtrar por talle
+    if (selectedSize) {
+      const sizeId = sizes.find((s) => s.number === selectedSize)?.id;
+      if (!sizeId) return false;
 
-    const sizeId = sizes.find((s) => s.number === selectedSize)?.id;
-    if (!sizeId) return true;
+      const hasSize = productSizes.some(
+        (ps) =>
+          ps.idProduct === product.id && ps.idSize === sizeId && ps.stock > 0
+      );
+      if (!hasSize) return false;
+    }
 
-    return productSizes.some(
-      (ps) =>
-        ps.idProduct === product.id && ps.idSize === sizeId && ps.stock > 0
-    );
+    // Filtrar por precio
+    if (priceRange.min !== null && product.price < priceRange.min) return false;
+    if (priceRange.max !== null && product.price > priceRange.max) return false;
+
+    // Filtrar por color
+    if (
+      selectedColors.length > 0 &&
+      !selectedColors.includes(product.colour?.name || "")
+    )
+      return false;
+
+    return true;
   });
 
   return (
