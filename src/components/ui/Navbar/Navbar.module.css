@@ -97,13 +97,14 @@
   cursor: pointer;
   transition: 0.5s;
   color: #000;
+  padding: 0rem 1rem;
 }
 .NavbarMen:hover {
   color: rgb(182, 0, 0);
 }
-.NavbarDropdownIcon {
+/* .NavbarDropdownIcon {
   font-size: 3rem;
-}
+} */
 .NavbarSearchContainer {
   display: flex;
   align-items: center;

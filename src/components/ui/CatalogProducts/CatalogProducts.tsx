@@ -4,6 +4,7 @@ import s from "./CatalogProducts.module.css";
 import { useProductStore } from "../../../hooks/useProductStore";
 import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
+import { useSearchParams } from "react-router-dom";
 
 interface SizeChangeEvent extends CustomEvent {
   detail: string | null;
@@ -20,11 +21,8 @@ interface ColorChangeEvent extends CustomEvent {
   detail: string[];
 }
 
-interface CategoryChangeEvent extends CustomEvent {
-  detail: string;
-}
-
 export const CatalogProducts = () => {
+  const [searchParams] = useSearchParams();
   const [columns, setColumns] = useState(4);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<{
@@ -47,6 +45,14 @@ export const CatalogProducts = () => {
     fetchAllProductSizes();
     fetchAllSizes();
   }, [fetchAllProducts, fetchAllProductSizes, fetchAllSizes]);
+
+  // Leer la categoría de la URL cuando se carga el componente
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [searchParams]);
 
   // Escuchar cambios en el talle seleccionado
   useEffect(() => {
@@ -92,7 +98,7 @@ export const CatalogProducts = () => {
 
   // Escuchar cambios en la categoría seleccionada
   useEffect(() => {
-    const handleCategoryChange = (event: CategoryChangeEvent) => {
+    const handleCategoryChange = (event: CustomEvent) => {
       setSelectedCategory(event.detail);
     };
 

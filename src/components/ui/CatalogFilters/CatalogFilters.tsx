@@ -6,14 +6,29 @@ import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useColourStore } from "../../../hooks/useColourStore";
 import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 import { useProductStore } from "../../../hooks/useProductStore";
+import { useSearchParams } from "react-router-dom";
 
 export const CatalogFilters = () => {
+  const [searchParams] = useSearchParams();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [price, setPrice] = useState({ min: "", max: "" });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [colorCounts, setColorCounts] = useState<Record<string, number>>({});
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Leer la categoría de la URL cuando se carga el componente
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+      // Emitir evento con la categoría seleccionada
+      const event = new CustomEvent("categoryChange", {
+        detail: categoryFromUrl,
+      });
+      window.dispatchEvent(event);
+    }
+  }, [searchParams]);
 
   const toggleSize = (size: string) => {
     const newSelectedSize = selectedSize === size ? null : size;
@@ -104,6 +119,31 @@ export const CatalogFilters = () => {
     });
     window.dispatchEvent(event);
   };
+
+  // Escuchar el evento de cambio de categoría cuando se carga el componente
+  useEffect(() => {
+    const handleInitialCategoryChange = (event: CustomEvent) => {
+      setSelectedCategory(event.detail);
+    };
+
+    // Verificar si hay un evento pendiente de categoría
+    const pendingEvent = window.dispatchEvent(
+      new CustomEvent("checkCategoryChange")
+    );
+    if (pendingEvent) {
+      window.addEventListener(
+        "categoryChange",
+        handleInitialCategoryChange as EventListener
+      );
+    }
+
+    return () => {
+      window.removeEventListener(
+        "categoryChange",
+        handleInitialCategoryChange as EventListener
+      );
+    };
+  }, []);
 
   const handleCategorySelect = (category: string | null) => {
     setSelectedCategory(category);

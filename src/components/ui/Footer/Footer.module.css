@@ -19,6 +19,15 @@
 }
 .footerContainerSocialMedia h3 {
   font-size: 0.7rem;
+  transition: color 0.2s ease;
+}
+.footerShop h3,
+.footerCompany h3 {
+  cursor: pointer;
+}
+.footerShop h3:hover,
+.footerCompany h3:hover {
+  color: #ff0000;
 }
 .footerLogos {
   display: flex;
@@ -35,4 +44,8 @@
   padding: 1px;
   border-radius: 50%;
   background-color: #fff;
+  transition: opacity 0.2s ease;
+}
+.footerLogos img:hover {
+  opacity: 0.8;
 }

@@ -1,11 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useCartStore } from "../../../hooks/useCartStore";
+import { useCategoryStore } from "../../../hooks/useCategoryStore";
+import { useEffect } from "react";
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const { items } = useCartStore();
+  const { items: categories, fetchAll: fetchAllCategories } =
+    useCategoryStore();
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  useEffect(() => {
+    fetchAllCategories();
+  }, [fetchAllCategories]);
 
   return (
     <div className={styles.NavbarContainerMain}>
@@ -39,22 +47,19 @@ export const Navbar = () => {
             />
           </div>
           <div className={styles.NavbarContainerCategories}>
-            <div className={styles.NavbarMen}>
-              HOMBRE
-              <span
-                className={`material-symbols-outlined ${styles.NavbarDropdownIcon}`}
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                className={styles.NavbarMen}
+                onClick={() =>
+                  navigate(
+                    `/catalog?category=${encodeURIComponent(category.name)}`
+                  )
+                }
               >
-                arrow_drop_down
-              </span>
-            </div>
-            <div className={styles.NavbarMen}>
-              MUJER
-              <span
-                className={`material-symbols-outlined ${styles.NavbarDropdownIcon}`}
-              >
-                arrow_drop_down
-              </span>
-            </div>
+                {category.name}
+              </div>
+            ))}
             <div className={styles.NavbarSearchContainer}>
               <span
                 className={`material-symbols-outlined ${styles.NavbarSearchIcon}`}

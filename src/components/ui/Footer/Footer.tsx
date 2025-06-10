@@ -1,17 +1,35 @@
 import { useNavigate } from "react-router-dom";
 import s from "./Footer.module.css";
+import { useCategoryStore } from "../../../hooks/useCategoryStore";
+import { useEffect } from "react";
 
 export const Footer = () => {
   const navigate = useNavigate();
+  const { items: categories, fetchAll: fetchAllCategories } =
+    useCategoryStore();
+
+  useEffect(() => {
+    fetchAllCategories();
+  }, [fetchAllCategories]);
+
   return (
     <div className={s.footerContainerMain}>
       <div className={s.footerContainerSocialMedia}>
         <div className={s.footerShop}>
           <h1>SHOP</h1>
-          <h3>Classic</h3>
-          <h3>Skaterboarding</h3>
-          <h3>Surf</h3>
-          <h3>UltraRange</h3>
+          {categories.map((category) => (
+            <h3
+              key={category.id}
+              style={{ cursor: "pointer" }}
+              onClick={() =>
+                navigate(
+                  `/catalog?category=${encodeURIComponent(category.name)}`
+                )
+              }
+            >
+              {category.name}
+            </h3>
+          ))}
         </div>
         <div className={s.footerSocialMedia}>
           <h1>SEGUINOS EN REDES</h1>
