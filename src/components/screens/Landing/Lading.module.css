@@ -8,11 +8,43 @@
 .landingImgMain {
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100dvw;
+  height: 30rem;
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
 }
 .landingImgMain img {
   width: 100%;
   height: auto;
+}
+
+.landingImgMain .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  color: white;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+  padding: 0.5rem;
+}
+
+.landingImgMain .arrow:hover {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.landingImgMain .left {
+  left: 2rem;
+}
+
+.landingImgMain .right {
+  right: 2rem;
 }
 
 .landingContainerBody {
@@ -23,27 +55,34 @@
   background-color: transparent;
 }
 .landingListShoes {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 4rem;
-  justify-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
   background-color: transparent;
   width: 100%;
   padding: 4rem 0rem;
+  position: relative;
+}
+
+.productsCarousel {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 900px) {
   .landingListShoes {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
   }
 }
 
 @media (max-width: 600px) {
   .landingListShoes {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
   }
 }
 .landingContainerImgStyle {
@@ -85,14 +124,62 @@
   padding-bottom: 4rem;
   background-color: transparent;
 }
-.landingBuyByCategories h1 {
-  display: flex;
-  justify-content: center;
-  font-size: 1.4rem;
-  padding-bottom: 2rem;
-}
 .landingCateogiries {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  background-color: transparent;
+}
+.landingCateogiries img {
+  width: 31%;
+  height: auto;
+}
+
+.carouselContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carouselImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.carouselImage.active {
+  opacity: 1;
+}
+
+.landingListShoes .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: #000;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+}
+
+.landingListShoes .arrow:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.landingListShoes .left {
+  left: 0;
+}
+
+.landingListShoes .right {
+  right: 0;
 }

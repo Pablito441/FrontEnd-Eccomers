@@ -26,14 +26,23 @@
   gap: 1rem;
   justify-content: center;
   width: 100%;
+  padding: 1rem 0;
 }
 .carouselThumbs img {
   width: 10rem;
   height: auto;
   object-fit: contain;
   cursor: pointer;
-  transition: border 0.2s;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
 }
+
+.carouselThumbs img:hover {
+  transform: scale(1.1);
+  border-bottom: 2px solid #5f5f5f;
+}
+
 .carouselThumbs img.selected {
   border-bottom: 2px solid #5f5f5f !important;
+  transform: scale(1.1);
 }

@@ -3,16 +3,43 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  background-color: transparent;
 }
+
+.imageContainer {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .nameProduct {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 1.3rem;
+  font-weight: 700;
   padding-top: 1rem;
+  text-align: center;
 }
+
 .button {
   border: 1px black solid;
   padding: 1rem 1.5rem;
   margin-top: 1rem;
   background-color: rgb(255, 255, 255);
   font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #000;
+  color: #fff;
 }
