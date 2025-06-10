@@ -7,6 +7,7 @@ export type IProductSizeId = {
 };
 
 export type IProductSize = IProductSizeId & {
+  stock: number;
   size?: ISize;
   product?: IProduct;
 };
