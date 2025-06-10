@@ -2,15 +2,53 @@ import { useEffect, useState } from "react";
 import { CardCatalogProduct } from "../CardCatalogProduct/CardCatalogProduct";
 import s from "./CatalogProducts.module.css";
 import { useProductStore } from "../../../hooks/useProductStore";
+import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
+import { useSizeStore } from "../../../hooks/useSizeStore";
+
+interface SizeChangeEvent extends CustomEvent {
+  detail: string | null;
+}
 
 export const CatalogProducts = () => {
   const [columns, setColumns] = useState(4);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const { items: products, fetchAll: fetchAllProducts } = useProductStore();
+  const { items: productSizes, fetchAll: fetchAllProductSizes } =
+    useProductSizeStore();
+  const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
 
   useEffect(() => {
     fetchAllProducts();
-  }, [fetchAllProducts]);
+    fetchAllProductSizes();
+    fetchAllSizes();
+  }, [fetchAllProducts, fetchAllProductSizes, fetchAllSizes]);
+
+  // Escuchar cambios en el talle seleccionado desde CatalogFilters
+  useEffect(() => {
+    const handleSizeChange = (event: SizeChangeEvent) => {
+      setSelectedSize(event.detail);
+    };
+
+    window.addEventListener("sizeChange", handleSizeChange as EventListener);
+    return () =>
+      window.removeEventListener(
+        "sizeChange",
+        handleSizeChange as EventListener
+      );
+  }, []);
+
+  const filteredProducts = products.filter((product) => {
+    if (!selectedSize) return true;
+
+    const sizeId = sizes.find((s) => s.number === selectedSize)?.id;
+    if (!sizeId) return true;
+
+    return productSizes.some(
+      (ps) =>
+        ps.idProduct === product.id && ps.idSize === sizeId && ps.stock > 0
+    );
+  });
 
   return (
     <div className={s.container}>
@@ -48,8 +86,8 @@ export const CatalogProducts = () => {
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
         }}
       >
-        {products.map((e, i) => (
-          <CardCatalogProduct key={i} product={e} />
+        {filteredProducts.map((product) => (
+          <CardCatalogProduct key={product.id} product={product} />
         ))}
       </div>
       <div className={s.description}>

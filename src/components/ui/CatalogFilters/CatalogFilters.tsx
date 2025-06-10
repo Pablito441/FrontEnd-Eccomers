@@ -4,16 +4,20 @@ import styles from "./CatalogFilters.module.css";
 import { useCategoryStore } from "../../../hooks/useCategoryStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useColourStore } from "../../../hooks/useColourStore";
+import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 
 export const CatalogFilters = () => {
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [price, setPrice] = useState({ min: "", max: "" });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   const toggleSize = (size: string) => {
-    setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
-    );
+    const newSelectedSize = selectedSize === size ? null : size;
+    setSelectedSize(newSelectedSize);
+
+    // Emitir evento con el talle seleccionado
+    const event = new CustomEvent("sizeChange", { detail: newSelectedSize });
+    window.dispatchEvent(event);
   };
 
   const toggleColor = (color: string) => {
@@ -27,12 +31,27 @@ export const CatalogFilters = () => {
     useCategoryStore();
   const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
   const { items: colours, fetchAll: fetchAllColours } = useColourStore();
+  const { items: productSizes, fetchAll: fetchAllProductSizes } =
+    useProductSizeStore();
 
   useEffect(() => {
     fetchAllCategories();
     fetchAllSizes();
     fetchAllColours();
-  }, [fetchAllCategories, fetchAllSizes, fetchAllColours]);
+    fetchAllProductSizes();
+  }, [
+    fetchAllCategories,
+    fetchAllSizes,
+    fetchAllColours,
+    fetchAllProductSizes,
+  ]);
+
+  const isSizeAvailable = (sizeNumber: string) => {
+    const sizeId = sizes.find((s) => s.number === sizeNumber)?.id;
+    if (!sizeId) return false;
+
+    return productSizes.some((ps) => ps.idSize === sizeId && ps.stock > 0);
+  };
 
   return (
     <div className={styles.container}>
@@ -40,18 +59,22 @@ export const CatalogFilters = () => {
       <Dropdown title="Shoes" options={categories.map((cat) => cat.name)} />
       <Dropdown title="Talle Calzado">
         <div className={styles.sizesGrid}>
-          {sizes.map((size) => (
-            <button
-              key={size.number}
-              className={`${styles.sizeBtn} ${
-                selectedSizes.includes(size.number) ? styles.selected : ""
-              }`}
-              onClick={() => toggleSize(size.number)}
-              type="button"
-            >
-              {size.number}
-            </button>
-          ))}
+          {sizes.map((size) => {
+            const isAvailable = isSizeAvailable(size.number);
+            return (
+              <button
+                key={size.id}
+                className={`${styles.sizeBtn} ${
+                  selectedSize === size.number ? styles.selected : ""
+                } ${!isAvailable ? styles.unavailable : ""}`}
+                onClick={() => isAvailable && toggleSize(size.number)}
+                disabled={!isAvailable}
+                type="button"
+              >
+                {size.number}
+              </button>
+            );
+          })}
         </div>
       </Dropdown>
       <Dropdown title="Precios">
