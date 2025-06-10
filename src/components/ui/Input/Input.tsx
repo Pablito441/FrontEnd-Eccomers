@@ -33,7 +33,7 @@ export const Input: React.FC<InputProps> = ({
       </label>
       <div className={styles.inputWithIcon}>
         <input
-          className={styles.formInput}
+          className={`${styles.formInput} ${error ? styles.errorInput : ""}`}
           id={name}
           name={name}
           type={inputType}
@@ -44,14 +44,16 @@ export const Input: React.FC<InputProps> = ({
 
         {isPasswordField && (
           <span
-            className={`material-symbols-outlined ${styles.icon}`}
+            className={`material-symbols-outlined ${styles.icon} ${
+              error ? styles.errorIcon : ""
+            }`}
             onClick={toggleVisibility}
           >
             {showPassword ? "visibility_off" : "visibility"}
           </span>
         )}
+        {error && <span className={styles.error}>{error}</span>}
       </div>
-      {error && <span className={styles.error}>{error}</span>}
     </div>
   );
 };

@@ -3,6 +3,8 @@
   justify-content: space-between;
   width: 100%;
   background-color: transparent;
+  position: relative;
+  height: 5rem;
 }
 
 .labelform {
@@ -29,6 +31,13 @@
   color: #222;
   font-size: 1rem;
   padding-right: 2.5rem;
+  box-sizing: border-box;
+  height: 3rem;
+}
+
+.errorInput {
+  border: 1px solid #d32f2f;
+  box-sizing: border-box;
 }
 
 .icon {
@@ -42,16 +51,20 @@
   font-weight: 800;
   user-select: none;
   transition: color 0.3s ease;
+  z-index: 2;
 }
-
+.errorIcon {
+  color: #d32f2f;
+}
 .icon:hover {
   color: #d32f2f;
 }
-
 .error {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 1rem;
   color: #d32f2f;
-  font-size: 0.85rem;
-  margin-left: 140px;
-  margin-top: 0.15rem;
-  display: block;
+  font-size: 0.7rem;
+  background-color: transparent;
+  z-index: 1;
 }
