@@ -2,18 +2,27 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useCartStore } from "../../../hooks/useCartStore";
 import { useCategoryStore } from "../../../hooks/useCategoryStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const { items } = useCartStore();
   const { items: categories, fetchAll: fetchAllCategories } =
     useCategoryStore();
+  const [searchTerm, setSearchTerm] = useState("");
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
     fetchAllCategories();
   }, [fetchAllCategories]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/catalog?search=${encodeURIComponent(searchTerm.trim())}`);
+      window.scrollTo(0, 0);
+    }
+  };
 
   return (
     <div className={styles.NavbarContainerMain}>
@@ -60,7 +69,10 @@ export const Navbar = () => {
                 {category.name}
               </div>
             ))}
-            <div className={styles.NavbarSearchContainer}>
+            <form
+              className={styles.NavbarSearchContainer}
+              onSubmit={handleSearch}
+            >
               <span
                 className={`material-symbols-outlined ${styles.NavbarSearchIcon}`}
               >
@@ -70,8 +82,10 @@ export const Navbar = () => {
                 type="text"
                 placeholder="Buscar"
                 className={styles.NavbarSearchInput}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </div>
+            </form>
           </div>
         </div>
       </div>

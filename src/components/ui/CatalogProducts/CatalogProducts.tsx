@@ -34,6 +34,7 @@ export const CatalogProducts = () => {
   });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
   const { items: products, fetchAll: fetchAllProducts } = useProductStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
@@ -46,12 +47,19 @@ export const CatalogProducts = () => {
     fetchAllSizes();
   }, [fetchAllProducts, fetchAllProductSizes, fetchAllSizes]);
 
-  // Leer la categoría de la URL cuando se carga el componente
+  // Leer la categoría y el término de búsqueda de la URL cuando se carga el componente
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
+    const searchFromUrl = searchParams.get("search");
+
     if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
     }
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl);
+    }
+    // Hacer scroll al inicio cuando cambian los parámetros de búsqueda
+    window.scrollTo(0, 0);
   }, [searchParams]);
 
   // Escuchar cambios en el talle seleccionado
@@ -118,6 +126,22 @@ export const CatalogProducts = () => {
   }, []);
 
   const filteredProducts = products.filter((product) => {
+    // Filtrar por término de búsqueda
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const productNameLower = product.name.toLowerCase();
+      const brandNameLower = product.brand?.name.toLowerCase() || "";
+      const categoryNameLower = product.category?.name.toLowerCase() || "";
+
+      if (
+        !productNameLower.includes(searchLower) &&
+        !brandNameLower.includes(searchLower) &&
+        !categoryNameLower.includes(searchLower)
+      ) {
+        return false;
+      }
+    }
+
     // Filtrar por categoría
     if (selectedCategory && product.category?.name !== selectedCategory)
       return false;
