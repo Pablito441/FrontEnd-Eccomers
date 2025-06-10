@@ -20,6 +20,10 @@ interface ColorChangeEvent extends CustomEvent {
   detail: string[];
 }
 
+interface CategoryChangeEvent extends CustomEvent {
+  detail: string;
+}
+
 export const CatalogProducts = () => {
   const [columns, setColumns] = useState(4);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -31,6 +35,7 @@ export const CatalogProducts = () => {
     max: null,
   });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const { items: products, fetchAll: fetchAllProducts } = useProductStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
@@ -85,7 +90,28 @@ export const CatalogProducts = () => {
       );
   }, []);
 
+  // Escuchar cambios en la categoría seleccionada
+  useEffect(() => {
+    const handleCategoryChange = (event: CategoryChangeEvent) => {
+      setSelectedCategory(event.detail);
+    };
+
+    window.addEventListener(
+      "categoryChange",
+      handleCategoryChange as EventListener
+    );
+    return () =>
+      window.removeEventListener(
+        "categoryChange",
+        handleCategoryChange as EventListener
+      );
+  }, []);
+
   const filteredProducts = products.filter((product) => {
+    // Filtrar por categoría
+    if (selectedCategory && product.category?.name !== selectedCategory)
+      return false;
+
     // Filtrar por talle
     if (selectedSize) {
       const sizeId = sizes.find((s) => s.number === selectedSize)?.id;

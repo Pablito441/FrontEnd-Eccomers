@@ -26,10 +26,24 @@
   background-color: transparent;
 }
 
-.dropdownList li {
+.dropdownItem {
   cursor: pointer;
   transition: color 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
 }
-.dropdownList li:hover {
+
+.dropdownItem:hover {
   color: #e53935;
+}
+
+.dropdownItem.selected {
+  color: #e53935;
+  font-weight: 600;
+}
+
+.dropdownItem .material-symbols-outlined {
+  font-size: 1.2rem;
 }

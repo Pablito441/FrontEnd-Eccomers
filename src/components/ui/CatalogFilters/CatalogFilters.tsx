@@ -13,6 +13,7 @@ export const CatalogFilters = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [colorCounts, setColorCounts] = useState<Record<string, number>>({});
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const toggleSize = (size: string) => {
     const newSelectedSize = selectedSize === size ? null : size;
@@ -104,10 +105,25 @@ export const CatalogFilters = () => {
     window.dispatchEvent(event);
   };
 
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category);
+    // Emitir evento con la categoría seleccionada
+    const event = new CustomEvent("categoryChange", { detail: category });
+    window.dispatchEvent(event);
+  };
+
+  // Obtener el tipo de la primera categoría (asumiendo que todas las categorías son del mismo tipo)
+  const typeName = categories[0]?.type?.name || "Categorías";
+
   return (
     <div className={styles.container}>
       <div className={styles.title}>CLASSICS</div>
-      <Dropdown title="Shoes" options={categories.map((cat) => cat.name)} />
+      <Dropdown
+        title={typeName}
+        options={categories.map((cat) => cat.name)}
+        onSelect={handleCategorySelect}
+        selectedOption={selectedCategory}
+      />
       <Dropdown title="Talle Calzado">
         <div className={styles.sizesGrid}>
           {sizes.map((size) => {
