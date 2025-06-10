@@ -1,7 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
+import { useCartStore } from "../../../hooks/useCartStore";
+
 export const Navbar = () => {
   const navigate = useNavigate();
+  const { items } = useCartStore();
+  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <div className={styles.NavbarContainerMain}>
       <div className={styles.NavContainerSecondary}>
@@ -19,6 +24,9 @@ export const Navbar = () => {
           >
             <span className="material-symbols-outlined">shopping_cart</span>
             CARRITO
+            {totalItems > 0 && (
+              <span className={styles.cartBadge}>{totalItems}</span>
+            )}
           </div>
         </div>
 

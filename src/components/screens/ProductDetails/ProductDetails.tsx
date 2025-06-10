@@ -6,11 +6,13 @@ import type { IProduct } from "../../../types/IProduct";
 import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useProductStore } from "../../../hooks/useProductStore";
 import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
+import { useCartStore } from "../../../hooks/useCartStore";
 
 export const ProductDetails = () => {
   const [open, setOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState<IProduct[]>([]);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { product } = location.state as { product: IProduct };
@@ -20,6 +22,7 @@ export const ProductDetails = () => {
   const { items: allProducts, fetchAll: fetchAllProducts } = useProductStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
     useProductSizeStore();
+  const { addItem } = useCartStore();
 
   useEffect(() => {
     fetchAllSizes();
@@ -27,10 +30,10 @@ export const ProductDetails = () => {
     fetchAllProductSizes();
   }, [fetchAllSizes, fetchAllProducts, fetchAllProductSizes]);
 
-  // Filtro para poder organizar los talles disponibles en este producto
-  const availableSizeIds = productSizes
-    .filter((ps) => ps.idProduct === product.id)
-    .map((ps) => ps.idSize);
+  // Resetear el talle seleccionado cuando cambia el producto
+  useEffect(() => {
+    setSelectedSize(null);
+  }, [product.id]);
 
   // Ordenar productos relacionados solo una vez cuando se cargan los productos
   useEffect(() => {
@@ -64,6 +67,51 @@ export const ProductDetails = () => {
     navigate("/productDetail", { state: { product: relatedProduct } });
   };
 
+  const handleBuyClick = () => {
+    if (!selectedSize) {
+      alert("Por favor selecciona un talle");
+      return;
+    }
+    // Verificar que el talle seleccionado tenga stock
+    const productSize = productSizes.find(
+      (ps) =>
+        ps.idProduct === product.id &&
+        ps.idSize === sizes.find((s) => s.number === selectedSize)?.id
+    );
+    if (!productSize || productSize.stock <= 0) {
+      alert("El talle seleccionado no tiene stock disponible");
+      return;
+    }
+    addItem(product, selectedSize);
+    navigate("/shoppingCart");
+  };
+
+  const handleAddToCartClick = () => {
+    if (!selectedSize) {
+      alert("Por favor selecciona un talle");
+      return;
+    }
+    // Verificar que el talle seleccionado tenga stock
+    const productSize = productSizes.find(
+      (ps) =>
+        ps.idProduct === product.id &&
+        ps.idSize === sizes.find((s) => s.number === selectedSize)?.id
+    );
+    if (!productSize || productSize.stock <= 0) {
+      alert("El talle seleccionado no tiene stock disponible");
+      return;
+    }
+    addItem(product, selectedSize);
+  };
+
+  const handleSizeClick = (sizeNumber: string) => {
+    if (selectedSize === sizeNumber) {
+      setSelectedSize(null); // Deseleccionar si se hace clic en el mismo talle
+    } else {
+      setSelectedSize(sizeNumber);
+    }
+  };
+
   return (
     <div className={s.containerMain}>
       <div className={s.container}>
@@ -83,14 +131,20 @@ export const ProductDetails = () => {
             <h4 className={s.size}>Talle:</h4>
             <div className={s.gridSizee}>
               {sizes.map((size) => {
-                const isAvailable = availableSizeIds.includes(size.id);
+                const productSize = productSizes.find(
+                  (ps) => ps.idProduct === product.id && ps.idSize === size.id
+                );
+                const isAvailable = productSize && productSize.stock > 0;
+                const isSelected = selectedSize === size.number;
+
                 return (
                   <button
                     className={`${s.sizeButtonn} ${
                       !isAvailable ? s.sizeUnavailable : ""
-                    }`}
+                    } ${isSelected ? s.sizeSelected : ""}`}
                     key={size.id}
                     disabled={!isAvailable}
+                    onClick={() => isAvailable && handleSizeClick(size.number)}
                     style={{
                       background: !isAvailable ? "#eee" : undefined,
                       color: !isAvailable ? "#aaa" : undefined,
@@ -124,8 +178,12 @@ export const ProductDetails = () => {
                 />
               )}
             </div>
-            <button className={s.buttonBuy}>COMPRAR</button>
-            <button className={s.buttonCarShop}>Agregar al Carrito</button>
+            <button className={s.buttonBuy} onClick={handleBuyClick}>
+              COMPRAR
+            </button>
+            <button className={s.buttonCarShop} onClick={handleAddToCartClick}>
+              Agregar al Carrito
+            </button>
           </div>
         </div>
         <div className={s.interesentContent}>

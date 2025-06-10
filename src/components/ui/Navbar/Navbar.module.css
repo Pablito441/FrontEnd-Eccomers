@@ -47,6 +47,25 @@
   font-size: 1.2rem;
   padding-right: 0.4rem;
 }
+
+.cartBadge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(182, 0, 0);
+  color: white;
+  font-size: 1rem !important;
+  font-weight: bold;
+  min-width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  padding: 0.2rem;
+  margin-left: 0.4rem;
+  position: relative;
+  top: -0.5rem;
+  right: 0.2rem;
+}
+
 .NavbarBody {
   display: flex;
   justify-content: space-between;
