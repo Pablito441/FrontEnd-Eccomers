@@ -30,9 +30,10 @@ export const ProductDetails = () => {
     fetchAllProductSizes();
   }, [fetchAllSizes, fetchAllProducts, fetchAllProductSizes]);
 
-  // Resetear el talle seleccionado cuando cambia el producto
+  // Resetear el talle seleccionado y hacer scroll al inicio cuando cambia el producto
   useEffect(() => {
     setSelectedSize(null);
+    window.scrollTo(0, 0);
   }, [product.id]);
 
   // Ordenar productos relacionados solo una vez cuando se cargan los productos

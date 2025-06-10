@@ -27,6 +27,8 @@ export const CatalogFilters = () => {
         detail: categoryFromUrl,
       });
       window.dispatchEvent(event);
+      // Hacer scroll al inicio de la página
+      window.scrollTo(0, 0);
     }
   }, [searchParams]);
 
@@ -150,6 +152,8 @@ export const CatalogFilters = () => {
     // Emitir evento con la categoría seleccionada
     const event = new CustomEvent("categoryChange", { detail: category });
     window.dispatchEvent(event);
+    // Hacer scroll al inicio de la página
+    window.scrollTo(0, 0);
   };
 
   // Obtener el tipo de la primera categoría (asumiendo que todas las categorías son del mismo tipo)

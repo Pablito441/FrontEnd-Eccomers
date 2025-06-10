@@ -58,6 +58,7 @@ export const CatalogProducts = () => {
   useEffect(() => {
     const handleSizeChange = (event: SizeChangeEvent) => {
       setSelectedSize(event.detail);
+      window.scrollTo(0, 0);
     };
 
     window.addEventListener("sizeChange", handleSizeChange as EventListener);
@@ -72,6 +73,7 @@ export const CatalogProducts = () => {
   useEffect(() => {
     const handlePriceChange = (event: PriceChangeEvent) => {
       setPriceRange(event.detail);
+      window.scrollTo(0, 0);
     };
 
     window.addEventListener("priceChange", handlePriceChange as EventListener);
@@ -86,6 +88,7 @@ export const CatalogProducts = () => {
   useEffect(() => {
     const handleColorChange = (event: ColorChangeEvent) => {
       setSelectedColors(event.detail);
+      window.scrollTo(0, 0);
     };
 
     window.addEventListener("colorChange", handleColorChange as EventListener);
@@ -100,6 +103,7 @@ export const CatalogProducts = () => {
   useEffect(() => {
     const handleCategoryChange = (event: CustomEvent) => {
       setSelectedCategory(event.detail);
+      window.scrollTo(0, 0);
     };
 
     window.addEventListener(
