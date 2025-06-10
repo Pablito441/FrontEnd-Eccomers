@@ -4,6 +4,7 @@
   width: 100%;
   height: 100%;
   background-color: transparent;
+  padding: 0 2rem;
 }
 
 .header {
@@ -11,40 +12,47 @@
   justify-content: end;
   align-items: center;
   height: 4rem;
+  padding: 0 1rem;
 }
+
 .icons {
   display: flex;
   gap: 1rem;
 }
+
 .material-symbols-outlined {
   margin: 0;
   padding: 0;
   vertical-align: middle;
   line-height: 1;
 }
+
 .iconButton {
   cursor: pointer;
   opacity: 0.5;
-  font-size: 3rem;
-  transition: opacity 0.2s, background 0.2s;
+  font-size: 2.5rem;
+  transition: all 0.3s ease;
   user-select: none;
   outline: none;
   border: none;
   background: none;
   display: inline-flex;
+  padding: 0.5rem;
+  border-radius: 50%;
 }
 
 .iconButton.active,
 .iconButton:hover,
 .iconButton:focus {
   opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .grid {
   display: grid;
   width: 100%;
-  gap: 4rem;
-  /* Hay que cambiar el gap porque si lo pongo a 0 como debería ser se superponen los elementos o cards */
+  gap: 2rem;
+  transition: all 0.5s ease;
 }
 
 .description {
@@ -52,13 +60,34 @@
   flex-direction: column;
   text-align: center;
   padding: 3rem 0rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .description span {
   font-size: 1.1rem;
   font-weight: 700;
   color: #4b4b4b;
+  line-height: 1.6;
 }
+
 .titlte {
   padding-bottom: 1rem;
+  font-size: 1.5rem !important;
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .grid {
+    gap: 1rem;
+  }
 }

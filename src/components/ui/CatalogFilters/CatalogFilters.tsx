@@ -9,7 +9,6 @@ export const CatalogFilters = () => {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [price, setPrice] = useState({ min: "", max: "" });
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedGender, setSelectedGender] = useState<string[]>([]);
 
   const toggleSize = (size: string) => {
     setSelectedSizes((prev) =>
@@ -23,13 +22,6 @@ export const CatalogFilters = () => {
     );
   };
 
-  const toggleGender = (gender: string) => {
-    setSelectedGender((prev) =>
-      prev.includes(gender)
-        ? prev.filter((g) => g !== gender)
-        : [...prev, gender]
-    );
-  };
   // ESTADOS GLOBALES
   const { items: categories, fetchAll: fetchAllCategories } =
     useCategoryStore();
@@ -98,20 +90,6 @@ export const CatalogFilters = () => {
                 style={{ background: color.value, borderColor: "#aaa" }}
               />
               <span className={styles.nameColor}>{color.name}</span>
-            </label>
-          ))}
-        </div>
-      </Dropdown>
-      <Dropdown title="Género">
-        <div className={styles.genderGrid}>
-          {["Hombre", "Mujer", "Unisex"].map((gender) => (
-            <label key={gender} className={styles.genderCheck}>
-              <input
-                type="checkbox"
-                checked={selectedGender.includes(gender)}
-                onChange={() => toggleGender(gender)}
-              />
-              {gender}
             </label>
           ))}
         </div>

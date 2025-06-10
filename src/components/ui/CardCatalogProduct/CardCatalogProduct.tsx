@@ -25,8 +25,8 @@ export const CardCatalogProduct: FC<CardCatalogProductProps> = ({
       </div>
       <div className={s.containerContent}>
         <h1>{product.brand?.name}</h1>
-        <h2>{product.name}</h2>
-        <h2>{product.price}</h2>
+        <h2>Zapatillas {product.name}</h2>
+        <h2>$ {product.price}</h2>
       </div>
     </div>
   );
