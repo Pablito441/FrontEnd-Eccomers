@@ -11,11 +11,20 @@ import { ScrollToTop } from "../components/ScrollToTop";
 import { ContinueShopping } from "../components/screens/ContinueShopping/ContinueShopping";
 import { PurchaseOrder } from "../components/screens/PurchaseOrder/PurchaseOrder";
 import { UserCount } from "../components/screens/UserCount/UserCount";
+import { AdminProducts } from "../pages/admin/AdminProducts";
 
 export const AppRouter = () => {
   return (
     <Routes>
       <Route path="/pruebas" element={<ProductSizeTest />} />
+      <Route
+        path="/admin"
+        element={
+          <ScrollToTop>
+            <AdminProducts />
+          </ScrollToTop>
+        }
+      />
       <Route
         path="/userCount"
         element={

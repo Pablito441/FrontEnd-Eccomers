@@ -44,6 +44,17 @@ export const Navbar = () => {
                 <span className="material-symbols-outlined">person</span>
                 {currentUser?.name}
               </div>
+              {currentUser?.role === "ADMIN" && (
+                <div
+                  className={`${styles.NavbarLoggin} ${styles.adminButton}`}
+                  onClick={() => navigate("/admin")}
+                >
+                  <span className="material-symbols-outlined">
+                    admin_panel_settings
+                  </span>
+                  ADMIN
+                </div>
+              )}
               <div className={styles.NavbarLoggin} onClick={handleLogout}>
                 <span className="material-symbols-outlined">logout</span>
                 CERRAR SESIÓN
