@@ -1,7 +1,7 @@
 export type ISize = {
   id: number;
   number: string;
-  systemType: "EU" | "US" | "UK" | "CM";
+  system: "ARG" | "US" | "UK" | "CM";
   createdAt: string;
   updatedAt?: string | null;
   deletedAt?: string | null;
