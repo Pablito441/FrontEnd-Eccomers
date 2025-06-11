@@ -33,12 +33,32 @@ export const AdminFilters = () => {
   const [selectedFilter, setSelectedFilter] = useState<Filter | null>(null);
   const [filterToEdit, setFilterToEdit] = useState<Filter | null>(null);
 
-  const { items: categories, fetchAll: fetchAllCategories } =
-    useCategoryStore();
-  const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
-  const { items: colours, fetchAll: fetchAllColours } = useColourStore();
-  const { items: brands, fetchAll: fetchAllBrands } = useBrandStore();
-  const { items: types, fetchAll: fetchAllTypes } = useTypeStore();
+  const {
+    items: categories,
+    fetchAll: fetchAllCategories,
+    delete: deleteCategory,
+    update: updateCategory,
+  } = useCategoryStore();
+  const {
+    items: sizes,
+    fetchAll: fetchAllSizes,
+    delete: deleteSize,
+  } = useSizeStore();
+  const {
+    items: colours,
+    fetchAll: fetchAllColours,
+    delete: deleteColour,
+  } = useColourStore();
+  const {
+    items: brands,
+    fetchAll: fetchAllBrands,
+    delete: deleteBrand,
+  } = useBrandStore();
+  const {
+    items: types,
+    fetchAll: fetchAllTypes,
+    delete: deleteType,
+  } = useTypeStore();
 
   useEffect(() => {
     fetchAllCategories();
@@ -94,6 +114,57 @@ export const AdminFilters = () => {
     fetchAllTypes();
   };
 
+  const handleDelete = async (filterType: FilterType, filter: Filter) => {
+    if (
+      !window.confirm("¿Estás seguro de que deseas eliminar este elemento?")
+    ) {
+      return;
+    }
+
+    try {
+      switch (filterType) {
+        case "category":
+          if (isCategory(filter)) {
+            // Primero actualizamos el tipo a undefined
+            await updateCategory(filter.id, { ...filter, typeId: undefined });
+            // Luego eliminamos la categoría
+            await deleteCategory(filter.id);
+          }
+          break;
+        case "brand":
+          if (isBrand(filter)) {
+            await deleteBrand(filter.id);
+          }
+          break;
+        case "type":
+          if (isType(filter)) {
+            await deleteType(filter.id);
+          }
+          break;
+        case "size":
+          if (isSize(filter)) {
+            await deleteSize(filter.id);
+          }
+          break;
+        case "colour":
+          if (isColour(filter)) {
+            await deleteColour(filter.id);
+          }
+          break;
+      }
+
+      // Actualizamos las listas
+      fetchAllCategories();
+      fetchAllSizes();
+      fetchAllColours();
+      fetchAllBrands();
+      fetchAllTypes();
+    } catch (error) {
+      console.error("Error al eliminar:", error);
+      alert("Error al eliminar el elemento");
+    }
+  };
+
   const renderFilterList = (
     items: Filter[],
     filterType: FilterType,
@@ -115,6 +186,12 @@ export const AdminFilters = () => {
               onClick={() => handleViewDetails(filterType, item)}
             >
               <span className="material-symbols-outlined">visibility</span>
+            </button>
+            <button
+              className={`${s.actionButton} ${s.deleteButton}`}
+              onClick={() => handleDelete(filterType, item)}
+            >
+              <span className="material-symbols-outlined">delete</span>
             </button>
           </div>
         </div>

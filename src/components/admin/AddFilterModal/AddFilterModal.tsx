@@ -15,9 +15,14 @@ import s from "./AddFilterModal.module.css";
 type FilterType = "brand" | "type" | "category" | "size" | "colour";
 type Filter = IBrand | IType | ICategory | ISize | IColour;
 
+const isBrand = (filter: Filter): filter is IBrand =>
+  "name" in filter && !("number" in filter);
+const isType = (filter: Filter): filter is IType =>
+  "name" in filter && !("number" in filter);
+const isCategory = (filter: Filter): filter is ICategory =>
+  "name" in filter && !("number" in filter);
 const isSize = (filter: Filter): filter is ISize => "number" in filter;
 const isColour = (filter: Filter): filter is IColour => "value" in filter;
-const isCategory = (filter: Filter): filter is ICategory => "typeId" in filter;
 
 interface AddFilterModalProps {
   isOpen: boolean;
@@ -86,68 +91,85 @@ export const AddFilterModal = ({
 
     try {
       if (filterToEdit) {
-        if (isSize(filterToEdit)) {
-          console.log("Editando talle:", {
-            number: formData.number,
-            systemType: formData.systemType,
-          });
-          await sizeService.update(filterToEdit.id, {
-            number: formData.number!,
-            systemType: formData.systemType!,
-          });
-        } else if (isColour(filterToEdit)) {
-          await colourService.update(filterToEdit.id, {
-            name: formData.name!,
-            value: formData.value!,
-          });
-        } else if (isCategory(filterToEdit)) {
-          await categoryService.update(filterToEdit.id, {
-            name: formData.name!,
-            typeId: formData.typeId!,
-          });
-        } else {
-          await brandService.update(filterToEdit.id, {
-            name: formData.name!,
-          });
+        switch (filterType) {
+          case "brand":
+            if (isBrand(filterToEdit)) {
+              await brandService.update(filterToEdit.id, {
+                name: formData.name,
+              });
+            }
+            break;
+          case "type":
+            if (isType(filterToEdit)) {
+              await typeService.update(filterToEdit.id, {
+                name: formData.name,
+              });
+            }
+            break;
+          case "category":
+            if (isCategory(filterToEdit)) {
+              await categoryService.update(filterToEdit.id, {
+                name: formData.name,
+                typeId: formData.typeId,
+              });
+            }
+            break;
+          case "size":
+            if (isSize(filterToEdit)) {
+              await sizeService.update(filterToEdit.id, {
+                number: formData.number,
+                systemType: formData.systemType,
+              });
+            }
+            break;
+          case "colour":
+            if (isColour(filterToEdit)) {
+              await colourService.update(filterToEdit.id, {
+                name: formData.name,
+                value: formData.value,
+              });
+            }
+            break;
         }
       } else {
         switch (filterType) {
           case "brand":
-            await brandService.create({ name: formData.name! });
+            await brandService.create({ name: formData.name });
             break;
           case "type":
-            await typeService.create({ name: formData.name! });
+            await typeService.create({ name: formData.name });
             break;
           case "category":
+            if (!formData.typeId) {
+              throw new Error("Debes seleccionar un tipo para la categoría");
+            }
             await categoryService.create({
-              name: formData.name!,
-              typeId: formData.typeId!,
+              name: formData.name,
+              typeId: formData.typeId,
             });
             break;
           case "size":
             if (!formData.systemType) {
-              throw new Error("El sistema es requerido");
+              throw new Error("Debes seleccionar un sistema para el talle");
             }
-            console.log("Creando talle:", {
-              number: formData.number,
-              systemType: formData.systemType,
-            });
             await sizeService.create({
-              number: formData.number!,
+              number: formData.number,
               systemType: formData.systemType,
             });
             break;
           case "colour":
             await colourService.create({
-              name: formData.name!,
-              value: formData.value!,
+              name: formData.name,
+              value: formData.value,
             });
             break;
         }
       }
+
       onClose();
     } catch (error) {
-      console.error("Error al guardar el filtro:", error);
+      console.error("Error al guardar:", error);
+      alert("Error al guardar el elemento");
     }
   };
 
