@@ -1,4 +1,8 @@
 .container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
   background: white;
   border-radius: 8px;
   padding: 1rem;
@@ -7,36 +11,87 @@
 
 .header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
   margin-bottom: 1rem;
 }
 
-.icons {
+.titleContainer {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 12px;
 }
 
-.iconButton {
-  padding: 0.5rem;
-  border: none;
-  background: none;
-  cursor: pointer;
+.titleContainer h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.productCount {
+  font-size: 14px;
   color: #666;
+}
+
+.viewOptions {
+  display: flex;
+  gap: 8px;
+}
+
+.viewButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  background: white;
   border-radius: 4px;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
-.iconButton:hover {
-  background-color: #f5f5f5;
-  color: #333;
+.viewButton:hover {
+  background: #f5f5f5;
 }
 
-.iconButton.active {
-  color: #2196f3;
+.viewButton.active {
+  background: #000;
+  border-color: #000;
+  color: white;
 }
 
-.grid {
+.productsGrid {
   display: grid;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.columns3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.columns4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .columns4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .columns3,
+  .columns4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .columns3,
+  .columns4 {
+    grid-template-columns: 1fr;
+  }
 }

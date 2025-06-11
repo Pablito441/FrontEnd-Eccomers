@@ -1,172 +1,149 @@
 import { useEffect, useState } from "react";
 import { AdminCardProduct } from "../AdminCardProduct/AdminCardProduct";
-import s from "./AdminCatalogProducts.module.css";
 import { useProductStore } from "../../../hooks/useProductStore";
-import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
+import { useCategoryStore } from "../../../hooks/useCategoryStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
-import { useSearchParams } from "react-router-dom";
+import { useColourStore } from "../../../hooks/useColourStore";
+import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
+import s from "./AdminCatalogProducts.module.css";
 
-interface SizeChangeEvent extends CustomEvent {
-  detail: string | null;
-}
-
-interface PriceChangeEvent extends CustomEvent {
-  detail: {
-    min: number | null;
-    max: number | null;
-  };
-}
-
-interface ColorChangeEvent extends CustomEvent {
-  detail: string[];
+interface FilterDetail {
+  id: string;
+  name: string;
 }
 
 export const AdminCatalogProducts = () => {
-  const [searchParams] = useSearchParams();
-  const [columns, setColumns] = useState(4);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<{
-    min: number | null;
-    max: number | null;
-  }>({
-    min: null,
-    max: null,
-  });
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+  const [columns, setColumns] = useState(3);
+  const [activeFilters, setActiveFilters] = useState<{
+    category?: FilterDetail;
+    colour?: FilterDetail;
+    size?: FilterDetail;
+    priceRange?: { min: number | null; max: number | null };
+  }>({});
 
   const { items: products, fetchAll: fetchAllProducts } = useProductStore();
+  const { items: categories } = useCategoryStore();
+  const { items: sizes } = useSizeStore();
+  const { items: colours } = useColourStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
     useProductSizeStore();
-  const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
 
   useEffect(() => {
     fetchAllProducts();
     fetchAllProductSizes();
-    fetchAllSizes();
-  }, [fetchAllProducts, fetchAllProductSizes, fetchAllSizes]);
+  }, [fetchAllProducts, fetchAllProductSizes]);
 
-  // Leer la categoría y el término de búsqueda de la URL
-  useEffect(() => {
-    const categoryFromUrl = searchParams.get("category");
-    const searchFromUrl = searchParams.get("search");
-
-    if (categoryFromUrl) {
-      setSelectedCategory(categoryFromUrl);
-    }
-    if (searchFromUrl) {
-      setSearchTerm(searchFromUrl);
-    }
-    window.scrollTo(0, 0);
-  }, [searchParams]);
-
-  // Escuchar cambios en el talle seleccionado
-  useEffect(() => {
-    const handleSizeChange = (event: SizeChangeEvent) => {
-      setSelectedSize(event.detail);
-      window.scrollTo(0, 0);
-    };
-
-    window.addEventListener("sizeChange", handleSizeChange as EventListener);
-    return () =>
-      window.removeEventListener(
-        "sizeChange",
-        handleSizeChange as EventListener
-      );
-  }, []);
-
-  // Escuchar cambios en el rango de precios
-  useEffect(() => {
-    const handlePriceChange = (event: PriceChangeEvent) => {
-      setPriceRange(event.detail);
-      window.scrollTo(0, 0);
-    };
-
-    window.addEventListener("priceChange", handlePriceChange as EventListener);
-    return () =>
-      window.removeEventListener(
-        "priceChange",
-        handlePriceChange as EventListener
-      );
-  }, []);
-
-  // Escuchar cambios en los colores seleccionados
-  useEffect(() => {
-    const handleColorChange = (event: ColorChangeEvent) => {
-      setSelectedColors(event.detail);
-      window.scrollTo(0, 0);
-    };
-
-    window.addEventListener("colorChange", handleColorChange as EventListener);
-    return () =>
-      window.removeEventListener(
-        "colorChange",
-        handleColorChange as EventListener
-      );
-  }, []);
-
-  // Escuchar cambios en la categoría seleccionada
   useEffect(() => {
     const handleCategoryChange = (event: CustomEvent) => {
-      setSelectedCategory(event.detail);
-      window.scrollTo(0, 0);
+      const categoryName = event.detail;
+      const category = categories.find((c) => c.name === categoryName);
+      setActiveFilters((prev) => ({
+        ...prev,
+        category: category
+          ? { id: category.id.toString(), name: category.name }
+          : undefined,
+      }));
+    };
+
+    const handleSizeChange = (event: CustomEvent) => {
+      const sizeNumber = event.detail;
+      const size = sizes.find((s) => s.number === sizeNumber);
+      setActiveFilters((prev) => ({
+        ...prev,
+        size: size ? { id: size.id.toString(), name: size.number } : undefined,
+      }));
+    };
+
+    const handleColorChange = (event: CustomEvent) => {
+      const colorNames = event.detail;
+      const color = colours.find((c) => colorNames.includes(c.name));
+      setActiveFilters((prev) => ({
+        ...prev,
+        colour: color
+          ? { id: color.id.toString(), name: color.name }
+          : undefined,
+      }));
+    };
+
+    const handlePriceChange = (event: CustomEvent) => {
+      const { min, max } = event.detail;
+      setActiveFilters((prev) => ({
+        ...prev,
+        priceRange: { min, max },
+      }));
     };
 
     window.addEventListener(
-      "categoryChange",
+      "adminCategoryChange",
       handleCategoryChange as EventListener
     );
-    return () =>
+    window.addEventListener(
+      "adminSizeChange",
+      handleSizeChange as EventListener
+    );
+    window.addEventListener(
+      "adminColorChange",
+      handleColorChange as EventListener
+    );
+    window.addEventListener(
+      "adminPriceChange",
+      handlePriceChange as EventListener
+    );
+
+    return () => {
       window.removeEventListener(
-        "categoryChange",
+        "adminCategoryChange",
         handleCategoryChange as EventListener
       );
-  }, []);
+      window.removeEventListener(
+        "adminSizeChange",
+        handleSizeChange as EventListener
+      );
+      window.removeEventListener(
+        "adminColorChange",
+        handleColorChange as EventListener
+      );
+      window.removeEventListener(
+        "adminPriceChange",
+        handlePriceChange as EventListener
+      );
+    };
+  }, [categories, sizes, colours]);
 
   const filteredProducts = products.filter((product) => {
-    // Filtrar por término de búsqueda
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const productNameLower = product.name.toLowerCase();
-      const brandNameLower = product.brand?.name.toLowerCase() || "";
-      const categoryNameLower = product.category?.name.toLowerCase() || "";
-
-      if (
-        !productNameLower.includes(searchLower) &&
-        !brandNameLower.includes(searchLower) &&
-        !categoryNameLower.includes(searchLower)
-      ) {
-        return false;
-      }
+    // Filtrar por categoría
+    if (
+      activeFilters.category &&
+      product.category?.id.toString() !== activeFilters.category.id
+    ) {
+      return false;
     }
 
-    // Filtrar por categoría
-    if (selectedCategory && product.category?.name !== selectedCategory)
+    // Filtrar por color
+    if (
+      activeFilters.colour &&
+      product.colour?.id.toString() !== activeFilters.colour.id
+    ) {
       return false;
+    }
 
     // Filtrar por talle
-    if (selectedSize) {
-      const sizeId = sizes.find((s) => s.number === selectedSize)?.id;
-      if (!sizeId) return false;
-
+    if (activeFilters.size) {
       const hasSize = productSizes.some(
         (ps) =>
-          ps.idProduct === product.id && ps.idSize === sizeId && ps.stock > 0
+          ps.idProduct === product.id &&
+          ps.idSize.toString() === activeFilters.size?.id &&
+          ps.stock > 0
       );
       if (!hasSize) return false;
     }
 
     // Filtrar por precio
-    if (priceRange.min !== null && product.price < priceRange.min) return false;
-    if (priceRange.max !== null && product.price > priceRange.max) return false;
-
-    // Filtrar por color
-    if (
-      selectedColors.length > 0 &&
-      !selectedColors.includes(product.colour?.name || "")
-    )
-      return false;
+    if (activeFilters.priceRange) {
+      const { min, max } = activeFilters.priceRange;
+      if (min !== null && product.price < min) return false;
+      if (max !== null && product.price > max) return false;
+    }
 
     return true;
   });
@@ -174,39 +151,28 @@ export const AdminCatalogProducts = () => {
   return (
     <div className={s.container}>
       <div className={s.header}>
-        <div className={s.icons}>
-          <span
-            className={`material-symbols-outlined ${
-              columns === 4 ? s.active : ""
-            } ${s.iconButton}`}
-            onClick={() => setColumns(4)}
-            title="Vista de 4 columnas"
-            tabIndex={0}
-            role="button"
-            aria-pressed={columns === 4}
-          >
-            background_grid_small
-          </span>
-          <span
-            className={`material-symbols-outlined ${
-              columns === 3 ? s.active : ""
-            } ${s.iconButton}`}
-            onClick={() => setColumns(3)}
-            title="Vista de 3 columnas"
-            tabIndex={0}
-            role="button"
-            aria-pressed={columns === 3}
-          >
-            grid_on
+        <div className={s.titleContainer}>
+          <h2>Productos</h2>
+          <span className={s.productCount}>
+            ({filteredProducts.length} productos)
           </span>
         </div>
+        <div className={s.viewOptions}>
+          <button
+            className={`${s.viewButton} ${columns === 3 ? s.active : ""}`}
+            onClick={() => setColumns(3)}
+          >
+            <span className="material-symbols-outlined">grid_view</span>
+          </button>
+          <button
+            className={`${s.viewButton} ${columns === 4 ? s.active : ""}`}
+            onClick={() => setColumns(4)}
+          >
+            <span className="material-symbols-outlined">view_agenda</span>
+          </button>
+        </div>
       </div>
-      <div
-        className={s.grid}
-        style={{
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        }}
-      >
+      <div className={`${s.productsGrid} ${s[`columns${columns}`]}`}>
         {filteredProducts.map((product) => (
           <AdminCardProduct key={product.id} product={product} />
         ))}

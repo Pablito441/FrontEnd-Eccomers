@@ -1,0 +1,95 @@
+.container {
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 750;
+  margin-bottom: 20px;
+}
+
+/* tabla de talles */
+.sizesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.sizeBtn {
+  width: 100%;
+  padding: 0.5rem 0;
+  border: 3px solid #000;
+  background: transparent;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+
+.sizeBtn:hover:not(.unavailable) {
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+}
+
+.sizeBtn.selected {
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+}
+
+.sizeBtn.unavailable {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  border-color: #eee;
+}
+
+/* Filtro de Precios */
+.priceInputs {
+  display: flex;
+  gap: 0.7rem;
+  width: 100%;
+  margin-bottom: 1.4rem;
+}
+
+.priceInput {
+  width: 100%;
+  padding: 0.4rem;
+  border: 3px solid #000;
+}
+
+/* Tabla de colores */
+.colorsGrid {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
+}
+
+.colorCheck {
+  display: flex;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+.colorBox {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  margin-right: 0.3rem;
+}
+
+.nameColor {
+  font-size: 1rem;
+  font-weight: 500;
+}

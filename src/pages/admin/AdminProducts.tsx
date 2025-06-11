@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AdminCatalogProducts } from "../../components/admin/AdminCatalogProducts/AdminCatalogProducts";
 import { AdminFilters } from "../../components/admin/AdminFilters/AdminFilters";
+import { AdminCatalogFilters } from "../../components/admin/AdminCatalogFilters/AdminCatalogFilters";
 import { AddProductModal } from "../../components/admin/AddProductModal/AddProductModal";
 import s from "./AdminProducts.module.css";
 import { useProductStore } from "../../hooks/useProductStore";
@@ -23,6 +24,7 @@ export const AdminProducts = () => {
       </div>
       <div className={s.content}>
         <div className={s.sidebar}>
+          <AdminCatalogFilters />
           <AdminFilters />
         </div>
         <div className={s.catalog}>
