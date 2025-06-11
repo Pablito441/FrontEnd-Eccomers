@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./Input.module.css";
 
 interface InputProps {
-  label: string;
+  label?: string;
   name: string;
   type: string;
   placeholder: string;
@@ -27,10 +27,12 @@ export const Input: React.FC<InputProps> = ({
   const toggleVisibility = () => setShowPassword((prev) => !prev);
 
   return (
-    <div className={styles.InputGroup}>
-      <label className={styles.labelform} htmlFor={name}>
-        {label}
-      </label>
+    <div className={`${styles.InputGroup} ${!label ? styles.noLabel : ""}`}>
+      {label && (
+        <label className={styles.labelform} htmlFor={name}>
+          {label}
+        </label>
+      )}
       <div className={styles.inputWithIcon}>
         <input
           className={`${styles.formInput} ${error ? styles.errorInput : ""}`}

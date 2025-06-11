@@ -1,0 +1,81 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 48.2vh;
+  padding: 3rem 0rem;
+  margin-bottom: 1rem;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  background-color: transparent;
+  gap: 2rem;
+}
+
+.section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.description {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  height: 10rem;
+}
+
+/* estilos para botton */
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d32f2f;
+  padding: 1rem 3rem;
+  color: #fff;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #b71c1c;
+}
+
+@media (max-width: 1200px) {
+  .content {
+    width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    width: 95%;
+  }
+
+  .section {
+    width: 100%;
+  }
+}

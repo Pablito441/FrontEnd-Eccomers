@@ -66,7 +66,9 @@ export const ShoppingCart = () => {
                   <span>$ {totalPrice.toLocaleString()}</span>
                 </div>
                 <span className={s.freeShepping}>¡Envío gratis!</span>
-                <button>FINALIZAR COMPRA</button>
+                <button onClick={() => navigate("/continueShopping")}>
+                  FINALIZAR COMPRA
+                </button>
                 <span
                   className={s.ultSpan}
                   onClick={() => navigate("/catalog")}

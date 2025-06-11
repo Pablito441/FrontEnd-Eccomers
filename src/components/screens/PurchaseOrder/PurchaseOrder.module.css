@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 71vw;
+  min-height: 58.2vh;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.deliveryData {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  background-color: transparent;
+}
+/* LISTA DE PRODUCTOS */
+.products {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  background-color: rgb(245, 245, 235);
+  padding: 0.8rem;
+  margin: 1rem 0rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.headerProducts {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #333;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.resumePurchaseOrder {
+  margin-top: 2rem;
+  padding: 1.5rem 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.resumePurchaseOrder h1 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.subtotal,
+.shopingCost,
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #666;
+  padding: 0.5rem 0;
+}
+
+.total {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(7, 6, 6, 0.1);
+  font-weight: 900;
+  color: #333;
+  font-size: 1.4rem;
+}

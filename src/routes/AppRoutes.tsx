@@ -8,12 +8,29 @@ import { TermsAndConditions } from "../components/screens/TermsAndConditions/Ter
 import { PrivacyPolicies } from "../components/screens/PrivacyPolicies/PrivacyPolicies";
 import ProductSizeTest from "../components/screens/prueba";
 import { ScrollToTop } from "../components/ScrollToTop";
+import { ContinueShopping } from "../components/screens/ContinueShopping/ContinueShopping";
+import { PurchaseOrder } from "../components/screens/PurchaseOrder/PurchaseOrder";
 
 export const AppRouter = () => {
   return (
     <Routes>
       <Route path="/pruebas" element={<ProductSizeTest />} />
-      {/* /pruebas es solo para probar las tablas con id compuestos */}
+      <Route
+        path="/purchaseOrder"
+        element={
+          <ScrollToTop>
+            <PurchaseOrder />
+          </ScrollToTop>
+        }
+      />
+      <Route
+        path="/continueShopping"
+        element={
+          <ScrollToTop>
+            <ContinueShopping />
+          </ScrollToTop>
+        }
+      />
       <Route
         path="/privacypolicies"
         element={
