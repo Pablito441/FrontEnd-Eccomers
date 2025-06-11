@@ -9,6 +9,7 @@ interface InputProps {
   value: string;
   error?: string;
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -19,6 +20,7 @@ export const Input: React.FC<InputProps> = ({
   value,
   error,
   handleChange,
+  required = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPasswordField = type === "password";
@@ -42,6 +44,7 @@ export const Input: React.FC<InputProps> = ({
           placeholder={placeholder}
           value={value}
           onChange={handleChange}
+          required={required}
         />
 
         {isPasswordField && (

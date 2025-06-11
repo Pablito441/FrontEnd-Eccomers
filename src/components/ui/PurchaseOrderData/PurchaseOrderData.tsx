@@ -7,6 +7,7 @@ export const PurchaseOrderData = () => {
     shippingMethod: "domicilio",
     name: "",
     lastName: "",
+    email: "",
     dni: "",
     gender: "",
     address: "",
@@ -17,6 +18,7 @@ export const PurchaseOrderData = () => {
     postalCode: "",
     city: "",
     province: "",
+    country: "Argentina",
     observations: "",
     useDeliveryForBilling: false,
     paymentMethod: "mercadopago",
@@ -131,6 +133,7 @@ export const PurchaseOrderData = () => {
               placeholder="Nombre"
               value={formData.name}
               handleChange={handleChange}
+              required
             />
             <Input
               name="lastName"
@@ -138,24 +141,38 @@ export const PurchaseOrderData = () => {
               placeholder="Apellido"
               value={formData.lastName}
               handleChange={handleChange}
+              required
             />
           </div>
 
           <div className={s.inputGroup}>
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              handleChange={handleChange}
+              required
+            />
             <Input
               name="dni"
               type="text"
               placeholder="Número de DNI"
               value={formData.dni}
               handleChange={handleChange}
+              required
             />
+          </div>
+
+          <div className={s.inputGroup}>
             <select
               name="gender"
               value={formData.gender}
               onChange={handleChange}
               className={s.select}
+              required
             >
-              <option className={s.optionSelect} value="seleccioneunaopción">
+              <option className={s.optionSelect} value="">
                 Seleccione una opción
               </option>
               <option className={s.optionSelect} value="masculino">
@@ -174,6 +191,7 @@ export const PurchaseOrderData = () => {
               placeholder="Ingresa una ubicación"
               value={formData.address}
               handleChange={handleChange}
+              required
             />
           </div>
 
@@ -184,6 +202,7 @@ export const PurchaseOrderData = () => {
               placeholder="Calle"
               value={formData.street}
               handleChange={handleChange}
+              required
             />
             <Input
               name="number"
@@ -191,6 +210,7 @@ export const PurchaseOrderData = () => {
               placeholder="Número"
               value={formData.number}
               handleChange={handleChange}
+              required
             />
           </div>
 
@@ -218,6 +238,7 @@ export const PurchaseOrderData = () => {
               placeholder="Código Postal"
               value={formData.postalCode}
               handleChange={handleChange}
+              required
             />
             <Input
               name="city"
@@ -225,6 +246,7 @@ export const PurchaseOrderData = () => {
               placeholder="Ciudad"
               value={formData.city}
               handleChange={handleChange}
+              required
             />
           </div>
 
@@ -234,6 +256,7 @@ export const PurchaseOrderData = () => {
               value={formData.province}
               onChange={handleChange}
               className={s.select}
+              required
             >
               <option value="">Seleccione una provincia</option>
               <option value="buenosAires">Buenos Aires</option>

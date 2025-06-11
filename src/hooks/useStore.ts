@@ -40,9 +40,12 @@ export const createStore = <T extends { id: number }>(
             items: [...state.items, newItem],
             loading: false,
           }));
+          return newItem;
         }
+        return null;
       } catch (error) {
         set({ error: `Error al crear el elemento: ${error}`, loading: false });
+        return null;
       }
     },
 
@@ -58,12 +61,15 @@ export const createStore = <T extends { id: number }>(
             item: updatedItem,
             loading: false,
           }));
+          return updatedItem;
         }
+        return null;
       } catch (error) {
         set({
           error: `Error al actualizar el elemento: ${error}`,
           loading: false,
         });
+        return null;
       }
     },
 
