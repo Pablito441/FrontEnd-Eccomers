@@ -1,8 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "../Input/Input";
+import { useUserStore } from "../../../hooks/useUserStore";
+import { useAddressStore } from "../../../hooks/useAddressStore";
+import { useUserAddressStore } from "../../../hooks/useUserAddressStore";
+import { useCartStore } from "../../../hooks/useCartStore";
+import { usePurchaseOrderStore } from "../../../hooks/usePurchaseOrderStore";
+import { useDetailStore } from "../../../hooks/useDetailStore";
+import { useSizeStore } from "../../../hooks/useSizeStore";
+import type { IPurchaseOrder } from "../../../types/IPurchaseOrder";
+import type { IDetail } from "../../../types/IDetail";
 import s from "./PurchaseOrderData.module.css";
 
 export const PurchaseOrderData = () => {
+  const navigate = useNavigate();
+  const { currentUser } = useUserStore();
+  const {
+    items: addresses,
+    create: createAddress,
+    update: updateAddress,
+  } = useAddressStore();
+  const { items: userAddresses, create: createUserAddress } =
+    useUserAddressStore();
+  const { items: cartItems, clearCart } = useCartStore();
+  const { create: createPurchaseOrder } = usePurchaseOrderStore();
+  const { create: createDetail } = useDetailStore();
+  const { items: sizes } = useSizeStore();
+
   const [formData, setFormData] = useState({
     shippingMethod: "domicilio",
     name: "",
@@ -10,7 +34,6 @@ export const PurchaseOrderData = () => {
     email: "",
     dni: "",
     gender: "",
-    address: "",
     street: "",
     number: "",
     floor: "",
@@ -25,6 +48,35 @@ export const PurchaseOrderData = () => {
     discountCode: "",
   });
 
+  // Cargar datos del usuario y dirección al montar el componente
+  useEffect(() => {
+    if (currentUser) {
+      setFormData((prev) => ({
+        ...prev,
+        name: currentUser.name,
+        lastName: currentUser.lastName,
+        email: currentUser.email,
+      }));
+
+      // Buscar la dirección del usuario
+      const userAddress = userAddresses
+        .filter((ua) => ua.userId === currentUser.id)
+        .map((ua) => addresses.find((a) => a.id === ua.addressId))
+        .filter(Boolean)[0];
+
+      if (userAddress) {
+        setFormData((prev) => ({
+          ...prev,
+          street: userAddress.street,
+          city: userAddress.town,
+          province: userAddress.state,
+          postalCode: userAddress.cpi,
+          country: userAddress.country,
+        }));
+      }
+    }
+  }, [currentUser, addresses, userAddresses]);
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -38,9 +90,130 @@ export const PurchaseOrderData = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+
+    if (!currentUser?.id) {
+      alert("Debe iniciar sesión para continuar");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert("El carrito está vacío");
+      return;
+    }
+
+    try {
+      // Crear o actualizar la dirección
+      const addressData = {
+        street: formData.street,
+        town: formData.city,
+        state: formData.province,
+        cpi: formData.postalCode,
+        country: formData.country,
+        isActive: true,
+      };
+
+      // Buscar si el usuario ya tiene una dirección
+      const existingUserAddress = userAddresses.find(
+        (ua) => ua.userId === currentUser.id
+      );
+
+      let addressId: number;
+
+      if (existingUserAddress) {
+        // Actualizar dirección existente
+        const updatedAddress = await updateAddress(
+          existingUserAddress.addressId,
+          addressData
+        );
+        if (!updatedAddress)
+          throw new Error("Error al actualizar la dirección");
+        addressId = updatedAddress.id;
+      } else {
+        // Crear nueva dirección
+        const newAddress = await createAddress(addressData);
+        if (!newAddress) throw new Error("Error al crear la dirección");
+        addressId = newAddress.id;
+
+        // Crear relación usuario-dirección
+        await createUserAddress({
+          userId: currentUser.id,
+          addressId: newAddress.id,
+        });
+      }
+
+      // Calcular totales
+      const subtotal = cartItems.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
+        0
+      );
+      const shippingCost = 0; // Envío gratis
+      const total = subtotal + shippingCost;
+
+      // Crear la orden de compra
+      const purchaseOrderData: Partial<IPurchaseOrder> = {
+        userId: currentUser.id,
+        userAddressId: addressId,
+        status: "PENDING" as const,
+        total: total,
+        paymentMethod: formData.paymentMethod,
+        isActive: true,
+      };
+
+      const newPurchaseOrder = await createPurchaseOrder(purchaseOrderData);
+
+      if (newPurchaseOrder) {
+        // Crear los detalles de la orden de compra
+        const detailPromises = cartItems.map((item) => {
+          // Buscar el talle en la base de datos
+          const size = sizes.find((s) => s.number === item.size);
+
+          if (!size) {
+            throw new Error(`No se encontró el talle ${item.size}`);
+          }
+
+          const detailData: Partial<IDetail> = {
+            quantity: item.quantity,
+            productId: item.product.id,
+            orderId: newPurchaseOrder.id,
+            sizeId: size.id,
+            isActive: true,
+          };
+
+          console.log("Creando detalle:", detailData);
+          return createDetail(detailData);
+        });
+
+        try {
+          const createdDetails = await Promise.all(detailPromises);
+          console.log("Detalles creados:", createdDetails);
+
+          if (createdDetails.length === 0) {
+            throw new Error("No se crearon los detalles");
+          }
+
+          // Limpiar el carrito
+          clearCart();
+
+          // Mostrar mensaje de éxito
+          alert("¡Orden de compra creada exitosamente!");
+
+          // Redirigir a la página de cuenta del usuario
+          navigate("/userCount");
+        } catch (error) {
+          console.error("Error al crear los detalles:", error);
+          alert(
+            "Error al crear los detalles de la orden. Por favor, intente nuevamente."
+          );
+        }
+      } else {
+        throw new Error("Error al crear la orden de compra");
+      }
+    } catch (error) {
+      console.error("Error al procesar el formulario:", error);
+      alert("Error al procesar el formulario. Por favor, intente nuevamente.");
+    }
   };
 
   return (
@@ -182,17 +355,6 @@ export const PurchaseOrderData = () => {
                 Femenino
               </option>
             </select>
-          </div>
-
-          <div className={s.inputGroup}>
-            <Input
-              name="address"
-              type="text"
-              placeholder="Ingresa una ubicación"
-              value={formData.address}
-              handleChange={handleChange}
-              required
-            />
           </div>
 
           <div className={s.inputGroup}>
