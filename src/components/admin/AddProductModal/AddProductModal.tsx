@@ -146,7 +146,16 @@ export const AddProductModal = ({
     if (isOpen) {
       loadProductData();
     }
-  }, [isOpen, productToEdit, hasLoadedData]);
+  }, [
+    isOpen,
+    productToEdit,
+    hasLoadedData,
+    fetchAllProductImages,
+    fetchAllProductSizes,
+    productImages,
+    productSizes,
+    products,
+  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
