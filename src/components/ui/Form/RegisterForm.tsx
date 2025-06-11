@@ -3,18 +3,22 @@ import { Input } from "../Input/Input";
 import styles from "./RegisterForm.module.css";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
+import { useUserStore } from "../../../hooks/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .required("El nombre es obligatorio")
     .min(2, "Mínimo 2 caracteres"),
-  surname: Yup.string()
+  lastName: Yup.string()
     .required("El apellido es obligatorio")
     .min(2, "Mínimo 2 caracteres"),
+  username: Yup.string()
+    .required("El nombre de usuario es obligatorio")
+    .min(3, "Mínimo 3 caracteres"),
   email: Yup.string()
     .required("El correo es obligatorio")
     .email("Correo inválido"),
-  birthdate: Yup.string().required("La fecha de nacimiento es obligatoria"),
   password: Yup.string()
     .required("La contraseña es obligatoria")
     .min(6, "Mínimo 6 caracteres"),
@@ -24,19 +28,21 @@ const validationSchema = Yup.object().shape({
 });
 
 export const RegisterForm = () => {
+  const navigate = useNavigate();
+  const { register } = useUserStore();
   const [formData, setFormData] = useState({
     name: "",
-    surname: "",
+    lastName: "",
+    username: "",
     email: "",
-    birthdate: "",
     password: "",
     confirmPassword: "",
   });
   type FormErrors = {
     name?: string;
-    surname?: string;
+    lastName?: string;
+    username?: string;
     email?: string;
-    birthdate?: string;
     password?: string;
     confirmPassword?: string;
     [key: string]: string | undefined;
@@ -62,16 +68,32 @@ export const RegisterForm = () => {
     e.preventDefault();
     try {
       await validationSchema.validate(formData, { abortEarly: false });
-      Swal.fire("Registro exitoso", "", "success");
-      setFormData({
-        name: "",
-        surname: "",
-        email: "",
-        birthdate: "",
-        password: "",
-        confirmPassword: "",
+
+      const { name, lastName, username, email, password } = formData;
+      const success = await register({
+        name,
+        lastName,
+        username,
+        email,
+        password,
+        role: "CLIENT",
+        isActive: true,
       });
-      setErrors({});
+
+      if (success) {
+        Swal.fire({
+          title: "¡Registro exitoso!",
+          text: "Tu cuenta ha sido creada correctamente",
+          icon: "success",
+        });
+        navigate("/");
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo crear la cuenta",
+          icon: "error",
+        });
+      }
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const validationErrors: FormErrors = {};
@@ -98,12 +120,21 @@ export const RegisterForm = () => {
         />
         <Input
           label="Apellido"
-          name="surname"
+          name="lastName"
           type="text"
-          value={formData.surname}
+          value={formData.lastName}
           placeholder="Ingrese su apellido"
           handleChange={handleChange}
-          error={errors.surname}
+          error={errors.lastName}
+        />
+        <Input
+          label="Nombre de Usuario"
+          name="username"
+          type="text"
+          value={formData.username}
+          placeholder="Ingrese su nombre de usuario"
+          handleChange={handleChange}
+          error={errors.username}
         />
         <Input
           label="Correo"
@@ -113,15 +144,6 @@ export const RegisterForm = () => {
           placeholder="Ingrese su correo"
           handleChange={handleChange}
           error={errors.email}
-        />
-        <Input
-          label="Fecha de nacimiento"
-          name="birthdate"
-          type="date"
-          value={formData.birthdate}
-          placeholder=""
-          handleChange={handleChange}
-          error={errors.birthdate}
         />
         <Input
           label="Contraseña"

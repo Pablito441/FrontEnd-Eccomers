@@ -10,11 +10,20 @@ import ProductSizeTest from "../components/screens/prueba";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { ContinueShopping } from "../components/screens/ContinueShopping/ContinueShopping";
 import { PurchaseOrder } from "../components/screens/PurchaseOrder/PurchaseOrder";
+import { UserCount } from "../components/screens/UserCount/UserCount";
 
 export const AppRouter = () => {
   return (
     <Routes>
       <Route path="/pruebas" element={<ProductSizeTest />} />
+      <Route
+        path="/userCount"
+        element={
+          <ScrollToTop>
+            <UserCount />
+          </ScrollToTop>
+        }
+      />
       <Route
         path="/purchaseOrder"
         element={

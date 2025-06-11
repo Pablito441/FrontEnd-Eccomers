@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useCartStore } from "../../../hooks/useCartStore";
 import { useCategoryStore } from "../../../hooks/useCategoryStore";
+import { useUserStore } from "../../../hooks/useUserStore";
 import { useEffect, useState } from "react";
 
 export const Navbar = () => {
@@ -9,6 +10,7 @@ export const Navbar = () => {
   const { items } = useCartStore();
   const { items: categories, fetchAll: fetchAllCategories } =
     useCategoryStore();
+  const { currentUser, isAuthenticated, logout } = useUserStore();
   const [searchTerm, setSearchTerm] = useState("");
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -24,17 +26,38 @@ export const Navbar = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <div className={styles.NavbarContainerMain}>
       <div className={styles.NavContainerSecondary}>
         <div className={styles.navbarContainerLoggin}>
-          <div
-            className={styles.NavbarLoggin}
-            onClick={() => navigate("/loginRegister")}
-          >
-            <span className="material-symbols-outlined">person</span>INICIAR
-            SESIÓN
-          </div>
+          {isAuthenticated ? (
+            <>
+              <div
+                className={styles.NavbarLoggin}
+                onClick={() => navigate("/userCount")}
+              >
+                <span className="material-symbols-outlined">person</span>
+                {currentUser?.name}
+              </div>
+              <div className={styles.NavbarLoggin} onClick={handleLogout}>
+                <span className="material-symbols-outlined">logout</span>
+                CERRAR SESIÓN
+              </div>
+            </>
+          ) : (
+            <div
+              className={styles.NavbarLoggin}
+              onClick={() => navigate("/loginRegister")}
+            >
+              <span className="material-symbols-outlined">person</span>
+              INICIAR SESIÓN
+            </div>
+          )}
           <div
             className={styles.NavbarLoggin}
             onClick={() => navigate("/shoppingCart")}

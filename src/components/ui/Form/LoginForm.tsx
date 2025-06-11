@@ -3,6 +3,8 @@ import { Input } from "../Input/Input";
 import styles from "./LoginForm.module.css";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
+import { useUserStore } from "../../../hooks/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -14,6 +16,8 @@ const validationSchema = Yup.object().shape({
 });
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+  const { login } = useUserStore();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
@@ -38,9 +42,22 @@ export const LoginForm = () => {
     e.preventDefault();
     try {
       await validationSchema.validate(formData, { abortEarly: false });
-      Swal.fire("Login exitoso", "", "success");
-      setFormData({ email: "", password: "" });
-      setErrors({});
+      const success = await login(formData.email, formData.password);
+
+      if (success) {
+        Swal.fire({
+          title: "¡Bienvenido!",
+          text: "Has iniciado sesión correctamente",
+          icon: "success",
+        });
+        navigate("/");
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Credenciales inválidas",
+          icon: "error",
+        });
+      }
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const validationErrors: { email?: string; password?: string } = {};
