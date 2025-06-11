@@ -100,26 +100,23 @@ export const FilterDetailsModal = ({
 
     if (filterType === "category" && isCategory(filter)) {
       return (
-        <div className={s.detailRow}>
-          <span className={s.label}>Nombre:</span>
-          <span className={s.value}>{filter.name}</span>
-        </div>
+        <>
+          <div className={s.detailRow}>
+            <span className={s.label}>Nombre:</span>
+            <span className={s.value}>{filter.name}</span>
+          </div>
+          <div className={s.detailRow}>
+            <span className={s.label}>Tipo:</span>
+            <span className={s.value}>
+              {filter.type ? filter.type.name : "No asignado"}
+            </span>
+          </div>
+        </>
       );
     }
 
     if (filterType === "size" && isSize(filter)) {
-      return (
-        <>
-          <div className={s.detailRow}>
-            <span className={s.label}>Número:</span>
-            <span className={s.value}>{filter.number}</span>
-          </div>
-          <div className={s.detailRow}>
-            <span className={s.label}>Sistema:</span>
-            <span className={s.value}>{filter.system}</span>
-          </div>
-        </>
-      );
+      return renderSizeDetails(filter);
     }
 
     if (filterType === "colour" && isColour(filter)) {
@@ -145,6 +142,19 @@ export const FilterDetailsModal = ({
 
     return null;
   };
+
+  const renderSizeDetails = (size: ISize) => (
+    <>
+      <div className={s.detailRow}>
+        <span className={s.label}>Número:</span>
+        <span className={s.value}>{size.number}</span>
+      </div>
+      <div className={s.detailRow}>
+        <span className={s.label}>Sistema:</span>
+        <span className={s.value}>{size.systemType}</span>
+      </div>
+    </>
+  );
 
   if (!isOpen) return null;
 

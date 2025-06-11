@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
-import { useBrandStore } from "../../../hooks/useBrandStore";
-import s from "./AddFilterModal.module.css";
+import { useTypeStore } from "../../../hooks/useTypeStore";
+import { brandService } from "../../../http/BrandService";
+import { typeService } from "../../../http/TypeService";
+import { categoryService } from "../../../http/CategoryService";
+import { sizeService } from "../../../http/SizeService";
+import { colourService } from "../../../http/ColourService";
 import type { IBrand } from "../../../types/IBrand";
 import type { ICategory } from "../../../types/ICategory";
 import type { IColour } from "../../../types/IColour";
 import type { ISize } from "../../../types/ISize";
 import type { IType } from "../../../types/IType";
+import s from "./AddFilterModal.module.css";
 
 type FilterType = "brand" | "type" | "category" | "size" | "colour";
 type Filter = IBrand | IType | ICategory | ISize | IColour;
 
-const isBrand = (filter: Filter): filter is IBrand =>
-  "name" in filter && !("number" in filter);
-const isType = (filter: Filter): filter is IType =>
-  "name" in filter && !("number" in filter);
-const isCategory = (filter: Filter): filter is ICategory =>
-  "name" in filter && !("number" in filter);
 const isSize = (filter: Filter): filter is ISize => "number" in filter;
 const isColour = (filter: Filter): filter is IColour => "value" in filter;
+const isCategory = (filter: Filter): filter is ICategory => "typeId" in filter;
 
 interface AddFilterModalProps {
   isOpen: boolean;
@@ -32,191 +32,245 @@ export const AddFilterModal = ({
   filterType,
   filterToEdit,
 }: AddFilterModalProps) => {
-  const { create: createBrand, update: updateBrand } = useBrandStore();
-  const [formData, setFormData] = useState({
+  const { items: types } = useTypeStore();
+
+  const [formData, setFormData] = useState<{
+    name?: string;
+    number?: string;
+    systemType?: "ARG" | "US" | "UK" | "CM";
+    value?: string;
+    typeId?: number;
+  }>({
     name: "",
     number: "",
-    system: "ARG",
-    value: "#000000",
+    systemType: "ARG",
+    value: "",
+    typeId: undefined,
   });
 
   useEffect(() => {
-    if (!isOpen) {
-      resetForm();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
     if (filterToEdit) {
-      if (filterType === "brand" && isBrand(filterToEdit)) {
-        setFormData((prev) => ({ ...prev, name: filterToEdit.name }));
-      } else if (filterType === "type" && isType(filterToEdit)) {
-        setFormData((prev) => ({ ...prev, name: filterToEdit.name }));
-      } else if (filterType === "category" && isCategory(filterToEdit)) {
-        setFormData((prev) => ({ ...prev, name: filterToEdit.name }));
-      } else if (filterType === "size" && isSize(filterToEdit)) {
-        setFormData((prev) => ({
-          ...prev,
+      if (isSize(filterToEdit)) {
+        setFormData({
           number: filterToEdit.number,
-          system: filterToEdit.system,
-        }));
-      } else if (filterType === "colour" && isColour(filterToEdit)) {
-        setFormData((prev) => ({
-          ...prev,
+          systemType: filterToEdit.systemType,
+        });
+      } else if (isColour(filterToEdit)) {
+        setFormData({
           name: filterToEdit.name,
           value: filterToEdit.value,
-        }));
+        });
+      } else if (isCategory(filterToEdit)) {
+        setFormData({
+          name: filterToEdit.name,
+          typeId: filterToEdit.typeId,
+        });
+      } else {
+        setFormData({
+          name: filterToEdit.name,
+        });
       }
+    } else {
+      setFormData({
+        name: "",
+        number: "",
+        systemType: "ARG",
+        value: "",
+        typeId: undefined,
+      });
     }
-  }, [filterToEdit, filterType]);
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      number: "",
-      system: "ARG",
-      value: "#000000",
-    });
-  };
+  }, [filterToEdit]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       if (filterToEdit) {
-        // Modo edición
-        if (filterType === "brand" && isBrand(filterToEdit)) {
-          await updateBrand(filterToEdit.id, { name: formData.name });
+        if (isSize(filterToEdit)) {
+          console.log("Editando talle:", {
+            number: formData.number,
+            systemType: formData.systemType,
+          });
+          await sizeService.update(filterToEdit.id, {
+            number: formData.number!,
+            systemType: formData.systemType!,
+          });
+        } else if (isColour(filterToEdit)) {
+          await colourService.update(filterToEdit.id, {
+            name: formData.name!,
+            value: formData.value!,
+          });
+        } else if (isCategory(filterToEdit)) {
+          await categoryService.update(filterToEdit.id, {
+            name: formData.name!,
+            typeId: formData.typeId!,
+          });
+        } else {
+          await brandService.update(filterToEdit.id, {
+            name: formData.name!,
+          });
         }
-        // Otros tipos se implementarán después
       } else {
-        // Modo creación
-        if (filterType === "brand") {
-          await createBrand({ name: formData.name });
+        switch (filterType) {
+          case "brand":
+            await brandService.create({ name: formData.name! });
+            break;
+          case "type":
+            await typeService.create({ name: formData.name! });
+            break;
+          case "category":
+            await categoryService.create({
+              name: formData.name!,
+              typeId: formData.typeId!,
+            });
+            break;
+          case "size":
+            if (!formData.systemType) {
+              throw new Error("El sistema es requerido");
+            }
+            console.log("Creando talle:", {
+              number: formData.number,
+              systemType: formData.systemType,
+            });
+            await sizeService.create({
+              number: formData.number!,
+              systemType: formData.systemType,
+            });
+            break;
+          case "colour":
+            await colourService.create({
+              name: formData.name!,
+              value: formData.value!,
+            });
+            break;
         }
-        // Otros tipos se implementarán después
       }
-
-      resetForm();
       onClose();
     } catch (error) {
-      console.error("Error al procesar el filtro:", error);
+      console.error("Error al guardar el filtro:", error);
     }
-  };
-
-  const handleCancel = () => {
-    resetForm();
-    onClose();
   };
 
   const renderForm = () => {
-    if (
-      filterType === "brand" ||
-      filterType === "type" ||
-      filterType === "category"
-    ) {
-      return (
-        <div className={s.formGroup}>
-          <label htmlFor="name">Nombre</label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, name: e.target.value }))
-            }
-            placeholder={`Ingrese el nombre del ${filterType}`}
-            required
-          />
-        </div>
-      );
-    }
-
-    if (filterType === "size") {
-      return (
-        <>
+    switch (filterType) {
+      case "size":
+        return (
+          <>
+            <div className={s.formGroup}>
+              <label htmlFor="number">Número:</label>
+              <input
+                type="text"
+                id="number"
+                value={formData.number}
+                onChange={(e) =>
+                  setFormData({ ...formData, number: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className={s.formGroup}>
+              <label htmlFor="systemType">Sistema:</label>
+              <select
+                id="systemType"
+                value={formData.systemType || "ARG"}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    systemType: e.target.value as "ARG" | "US" | "UK" | "CM",
+                  })
+                }
+                required
+              >
+                <option value="ARG">Argentina</option>
+                <option value="US">Estados Unidos</option>
+                <option value="UK">Reino Unido</option>
+                <option value="CM">Centímetros</option>
+              </select>
+            </div>
+          </>
+        );
+      case "colour":
+        return (
+          <>
+            <div className={s.formGroup}>
+              <label htmlFor="name">Nombre:</label>
+              <input
+                type="text"
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className={s.formGroup}>
+              <label htmlFor="value">Color:</label>
+              <input
+                type="color"
+                id="value"
+                value={formData.value}
+                onChange={(e) =>
+                  setFormData({ ...formData, value: e.target.value })
+                }
+                required
+              />
+            </div>
+          </>
+        );
+      case "category":
+        return (
+          <>
+            <div className={s.formGroup}>
+              <label htmlFor="name">Nombre:</label>
+              <input
+                type="text"
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className={s.formGroup}>
+              <label htmlFor="typeId">Tipo:</label>
+              <select
+                id="typeId"
+                value={formData.typeId}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    typeId: Number(e.target.value),
+                  })
+                }
+                required
+              >
+                <option value="">Seleccione un tipo</option>
+                {types.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        );
+      default:
+        return (
           <div className={s.formGroup}>
-            <label htmlFor="number">Número</label>
-            <input
-              type="text"
-              id="number"
-              value={formData.number}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, number: e.target.value }))
-              }
-              placeholder="Ingrese el número"
-              required
-            />
-          </div>
-          <div className={s.formGroup}>
-            <label htmlFor="system">Sistema</label>
-            <select
-              id="system"
-              value={formData.system}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, system: e.target.value }))
-              }
-            >
-              <option value="ARG">ARG</option>
-              <option value="US">US</option>
-              <option value="UK">UK</option>
-              <option value="CM">CM</option>
-            </select>
-          </div>
-        </>
-      );
-    }
-
-    if (filterType === "colour") {
-      return (
-        <>
-          <div className={s.formGroup}>
-            <label htmlFor="name">Nombre</label>
+            <label htmlFor="name">Nombre:</label>
             <input
               type="text"
               id="name"
               value={formData.name}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, name: e.target.value }))
+                setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="Ingrese el nombre del color"
               required
             />
           </div>
-          <div className={s.formGroup}>
-            <label htmlFor="value">Color</label>
-            <input
-              type="color"
-              id="value"
-              value={formData.value}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, value: e.target.value }))
-              }
-              className={s.colorPicker}
-            />
-          </div>
-        </>
-      );
-    }
-
-    return null;
-  };
-
-  const getTitle = () => {
-    const action = filterToEdit ? "Editar" : "Agregar";
-    switch (filterType) {
-      case "brand":
-        return `${action} Marca`;
-      case "type":
-        return `${action} Tipo`;
-      case "category":
-        return `${action} Categoría`;
-      case "size":
-        return `${action} Talle`;
-      case "colour":
-        return `${action} Color`;
-      default:
-        return `${action} Filtro`;
+        );
     }
   };
 
@@ -226,19 +280,19 @@ export const AddFilterModal = ({
     <div className={s.modalOverlay}>
       <div className={s.modal}>
         <div className={s.modalHeader}>
-          <h2>{getTitle()}</h2>
-          <button className={s.closeButton} onClick={handleCancel}>
+          <h2>
+            {filterToEdit
+              ? `Editar ${filterType === "size" ? "Talle" : filterType}`
+              : `Agregar ${filterType === "size" ? "Talle" : filterType}`}
+          </h2>
+          <button className={s.closeButton} onClick={onClose}>
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
         <form onSubmit={handleSubmit}>
           {renderForm()}
           <div className={s.modalActions}>
-            <button
-              type="button"
-              className={s.cancelButton}
-              onClick={handleCancel}
-            >
+            <button type="button" className={s.cancelButton} onClick={onClose}>
               Cancelar
             </button>
             <button type="submit" className={s.submitButton}>

@@ -70,6 +70,11 @@ export const AdminFilters = () => {
     setIsAddModalOpen(false);
     setSelectedFilterType(null);
     setFilterToEdit(null);
+    fetchAllCategories();
+    fetchAllSizes();
+    fetchAllColours();
+    fetchAllBrands();
+    fetchAllTypes();
   };
 
   const handleViewDetails = (filterType: FilterType, filter: Filter) => {
@@ -82,6 +87,11 @@ export const AdminFilters = () => {
     setIsDetailsModalOpen(false);
     setSelectedFilterType(null);
     setSelectedFilter(null);
+    fetchAllCategories();
+    fetchAllSizes();
+    fetchAllColours();
+    fetchAllBrands();
+    fetchAllTypes();
   };
 
   const renderFilterList = (
