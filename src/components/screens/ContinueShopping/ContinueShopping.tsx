@@ -37,20 +37,6 @@ export const ContinueShopping = () => {
             Registrarse
           </button>
         </div>
-
-        <div className={s.section}>
-          <h2 className={s.title}>Usuarios invitados</h2>
-          <p className={s.description}>
-            No es obligatorio registrarse para completar su compra, puede
-            ingresar como usuario invitado.
-          </p>
-          <button
-            className={s.button}
-            onClick={() => navigate("/purchaseOrder")}
-          >
-            Invitado
-          </button>
-        </div>
       </div>
     </div>
   );

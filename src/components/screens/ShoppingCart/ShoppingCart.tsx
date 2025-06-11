@@ -2,16 +2,26 @@ import { useNavigate } from "react-router-dom";
 import s from "./ShoppingCart.module.css";
 import { useCartStore } from "../../../hooks/useCartStore";
 import { ItemProductCart } from "../../ui/ItemProductCart/ItemProductCart";
+import { useUserStore } from "../../../hooks/useUserStore";
 
 export const ShoppingCart = () => {
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, clearCart } = useCartStore();
+  const { isAuthenticated } = useUserStore();
 
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = items.reduce(
     (acc, item) => acc + item.product.price * item.quantity,
     0
   );
+
+  const handleCheckout = () => {
+    if (isAuthenticated) {
+      navigate("/purchaseOrder");
+    } else {
+      navigate("/continueShopping");
+    }
+  };
 
   return (
     <div className={s.container}>
@@ -66,9 +76,7 @@ export const ShoppingCart = () => {
                   <span>$ {totalPrice.toLocaleString()}</span>
                 </div>
                 <span className={s.freeShepping}>¡Envío gratis!</span>
-                <button onClick={() => navigate("/continueShopping")}>
-                  FINALIZAR COMPRA
-                </button>
+                <button onClick={handleCheckout}>FINALIZAR COMPRA</button>
                 <span
                   className={s.ultSpan}
                   onClick={() => navigate("/catalog")}

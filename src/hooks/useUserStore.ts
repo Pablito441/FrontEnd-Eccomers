@@ -20,13 +20,24 @@ interface UserStore {
   logout: () => void;
 }
 
+// Función para obtener el estado inicial desde localStorage
+const getInitialState = () => {
+  const storedUser = localStorage.getItem("user");
+  const storedAuth = localStorage.getItem("isAuthenticated");
+
+  return {
+    currentUser: storedUser ? JSON.parse(storedUser) : null,
+    isAuthenticated: storedAuth === "true",
+  };
+};
+
 export const useUserStore = create<UserStore>((set, get) => ({
   items: [],
   item: null,
-  currentUser: null,
+  currentUser: getInitialState().currentUser,
   loading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: getInitialState().isAuthenticated,
 
   fetchAll: async () => {
     if (get().items.length > 0) return;
@@ -80,6 +91,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
         // Si el usuario actualizado es el usuario actual, actualizar también currentUser
         if (get().currentUser?.id === id) {
           set({ currentUser: updatedItem });
+          localStorage.setItem("user", JSON.stringify(updatedItem));
         }
       }
     } catch (error) {
@@ -111,6 +123,10 @@ export const useUserStore = create<UserStore>((set, get) => ({
       );
 
       if (user) {
+        // Guardar en localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("isAuthenticated", "true");
+
         set({
           currentUser: user,
           isAuthenticated: true,
@@ -130,6 +146,10 @@ export const useUserStore = create<UserStore>((set, get) => ({
     try {
       const newUser = await userService.create(userData);
       if (newUser) {
+        // Guardar en localStorage
+        localStorage.setItem("user", JSON.stringify(newUser));
+        localStorage.setItem("isAuthenticated", "true");
+
         set({
           currentUser: newUser,
           isAuthenticated: true,
@@ -145,6 +165,10 @@ export const useUserStore = create<UserStore>((set, get) => ({
   },
 
   logout: () => {
+    // Limpiar localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("isAuthenticated");
+
     set({
       currentUser: null,
       isAuthenticated: false,
