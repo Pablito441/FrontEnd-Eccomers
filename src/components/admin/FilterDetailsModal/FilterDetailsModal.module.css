@@ -15,11 +15,8 @@
   background-color: white;
   border-radius: 8px;
   padding: 24px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -27,7 +24,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .modalHeader h2 {
@@ -39,7 +36,6 @@
 .closeButton {
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
   color: #666;
   padding: 4px;
@@ -53,43 +49,27 @@
   color: #333;
 }
 
-.modalContent {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-
 .detailRow {
-  display: flex;
   margin-bottom: 16px;
-  align-items: flex-start;
+  display: flex;
+  align-items: center;
 }
 
 .label {
-  flex: 0 0 150px;
   font-weight: 500;
   color: #666;
+  width: 100px;
+  flex-shrink: 0;
 }
 
 .value {
-  flex: 1;
   color: #333;
 }
 
-.active {
-  color: #2e7d32;
-  font-weight: 500;
-}
-
-.inactive {
-  color: #d32f2f;
-  font-weight: 500;
-}
-
-.colorPreview {
+.colorInfo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .colorBox {
@@ -102,22 +82,21 @@
 .modalActions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
   margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
 }
 
-.modalActions .closeButton {
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
-  color: #333;
+.closeDetailsButton {
   padding: 8px 16px;
   border-radius: 4px;
   font-size: 1rem;
+  cursor: pointer;
   transition: all 0.2s;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  color: #333;
 }
 
-.modalActions .closeButton:hover {
+.closeDetailsButton:hover {
   background-color: #e9ecef;
-  color: #333;
 }

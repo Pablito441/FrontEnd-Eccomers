@@ -206,15 +206,21 @@ export const AddFilterModal = ({
             </div>
             <div className={s.formGroup}>
               <label htmlFor="value">Color:</label>
-              <input
-                type="color"
-                id="value"
-                value={formData.value}
-                onChange={(e) =>
-                  setFormData({ ...formData, value: e.target.value })
-                }
-                required
-              />
+              <div className={s.colorPickerContainer}>
+                <input
+                  type="color"
+                  id="value"
+                  value={formData.value || "#000000"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, value: e.target.value })
+                  }
+                  className={s.colorPicker}
+                  required
+                />
+                <span className={s.colorValue}>
+                  {formData.value || "#000000"}
+                </span>
+              </div>
             </div>
           </>
         );

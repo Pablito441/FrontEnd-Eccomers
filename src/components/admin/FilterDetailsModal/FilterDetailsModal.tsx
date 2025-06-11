@@ -120,24 +120,7 @@ export const FilterDetailsModal = ({
     }
 
     if (filterType === "colour" && isColour(filter)) {
-      return (
-        <>
-          <div className={s.detailRow}>
-            <span className={s.label}>Nombre:</span>
-            <span className={s.value}>{filter.name}</span>
-          </div>
-          <div className={s.detailRow}>
-            <span className={s.label}>Color:</span>
-            <div className={s.colorValue}>
-              <div
-                className={s.colorBox}
-                style={{ backgroundColor: filter.value }}
-              />
-              <span>{filter.value}</span>
-            </div>
-          </div>
-        </>
-      );
+      return renderColourDetails(filter);
     }
 
     return null;
@@ -152,6 +135,25 @@ export const FilterDetailsModal = ({
       <div className={s.detailRow}>
         <span className={s.label}>Sistema:</span>
         <span className={s.value}>{size.systemType}</span>
+      </div>
+    </>
+  );
+
+  const renderColourDetails = (colour: IColour) => (
+    <>
+      <div className={s.detailRow}>
+        <span className={s.label}>Nombre:</span>
+        <span className={s.value}>{colour.name}</span>
+      </div>
+      <div className={s.detailRow}>
+        <span className={s.label}>Color:</span>
+        <div className={s.colorInfo}>
+          <div
+            className={s.colorBox}
+            style={{ backgroundColor: colour.value }}
+          />
+          <span className={s.value}>{colour.value}</span>
+        </div>
       </div>
     </>
   );
