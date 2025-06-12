@@ -31,13 +31,46 @@ export const ShoppingCart = () => {
         </div>
         {items.length === 0 ? (
           <div className={s.contentZero}>
-            <h3>El carrito no tiene elementos</h3>
-            <h3>Inicia sesión para recuperar tu carrito</h3>
-            <button onClick={() => navigate("/landing")}>
+            <div className={s.emptyCartIcon}>
+              <span className="material-symbols-outlined">shopping_cart</span>
+            </div>
+            <h2>El carrito no tiene elementos</h2>
+            {!isAuthenticated ? (
+              <>
+                <p>Inicia sesión para recuperar tu carrito</p>
+                <div className={s.buttonGroup}>
+                  <button 
+                    className={s.primaryButton}
+                    onClick={() => navigate("/login")}
+                  >
+                    INICIAR SESIÓN
+                  </button>
+                  <button 
+                    className={s.secondaryButton}
+                    onClick={() => navigate("/register")}
+                  >
+                    REGISTRARSE
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>¡Comienza a agregar productos a tu carrito!</p>
+                <div className={s.buttonGroup}>
+                  <button 
+                    className={s.primaryButton}
+                    onClick={() => navigate("/catalog")}
+                  >
+                    VER PRODUCTOS
+                  </button>
+                </div>
+              </>
+            )}
+            <button 
+              className={s.backButton}
+              onClick={() => navigate("/landing")}
+            >
               VOLVER AL INICIO
-            </button>
-            <button onClick={() => navigate("/loginRegister")}>
-              INICIAR SESIÓN
             </button>
           </div>
         ) : (

@@ -15,7 +15,7 @@ export const ContinueShopping = () => {
           </p>
           <button
             className={s.button}
-            onClick={() => navigate("/loginRegister")}
+            onClick={() => navigate("/login")}
           >
             Loguearse
           </button>
@@ -32,7 +32,7 @@ export const ContinueShopping = () => {
           </p>
           <button
             className={s.button}
-            onClick={() => navigate("/loginRegister")}
+            onClick={() => navigate("/register")}
           >
             Registrarse
           </button>

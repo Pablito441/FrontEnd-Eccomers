@@ -2,27 +2,32 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  background: #f8f9fa;
+  width: 80%;
 }
 
 .title {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #000;
+  font-weight: 700;
 }
 
 .section {
   background: white;
-  border-radius: 8px;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 80
 }
 
 .sectionTitle {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: #333;
-  border-bottom: 2px solid #eee;
+  color: #000;
+  font-weight: 700;
+  border-bottom: 2px solid #000;
   padding-bottom: 0.5rem;
 }
 
@@ -39,18 +44,20 @@
 }
 
 .label {
-  font-weight: 600;
-  color: #666;
+  font-weight: 700;
+  color: #000;
 }
 
 .value {
   color: #333;
+  font-weight: 400;
 }
 
 /* Estilos para el formulario de direcciones */
 .addressForm {
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: white;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 1.5rem;
   margin-bottom: 2rem;
   max-width: 800px;
@@ -60,8 +67,9 @@
 
 .addressForm h3 {
   margin-bottom: 1.5rem;
-  color: #333;
+  color: #000;
   font-size: 1.2rem;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -76,17 +84,19 @@
 .formGrid select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
+  border: 2px solid #000;
+  border-radius: 0;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  background: white;
+  transition: all 0.2s ease;
 }
 
 .formGrid input:focus,
 .formGrid select:focus {
   outline: none;
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #000;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
 }
 
 .formActions {
@@ -97,42 +107,48 @@
 }
 
 .saveButton {
-  background: #28a745;
+  background: #000;
   color: white;
-  border: none;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 0.75rem 2rem;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   font-size: 1rem;
+  font-weight: 600;
   min-width: 120px;
 }
 
 .saveButton:hover {
-  background: #218838;
+  background: #d32f2f;
+  border-color: #d32f2f;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
 }
 
 .cancelButton {
-  background: #6c757d;
+  background: #9e9e9e;
   color: white;
-  border: none;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 0.75rem 2rem;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   font-size: 1rem;
+  font-weight: 600;
   min-width: 120px;
 }
 
 .cancelButton:hover {
-  background: #5a6268;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
 }
 
 .select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
+  border: 2px solid #000;
+  border-radius: 0;
   background-color: white;
   font-size: 1rem;
   cursor: pointer;
@@ -148,18 +164,18 @@
 
 .addressCard {
   background: white;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
 }
 
 .addressCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 4px 0px #000;
+  transform: translate(-2px, -2px);
 }
 
 .addressInfo {
@@ -172,19 +188,49 @@
   font-size: 1rem;
 }
 
+.addressActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .editButton {
-  background: #007bff;
+  background: #000;
   color: white;
-  border: none;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   font-size: 0.9rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
 }
 
 .editButton:hover {
-  background: #0056b3;
+  background: #d32f2f;
+  border-color: #d32f2f;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
+}
+
+.deleteButton {
+  background: #000;
+  color: white;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.deleteButton:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
 }
 
 /* Estilos para la lista de órdenes */
@@ -195,10 +241,16 @@
 }
 
 .orderCard {
-  background: #f8f9fa;
-  border-radius: 8px;
+  background: white;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 1.5rem;
-  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.orderCard:hover {
+  box-shadow: 4px 4px 0px #000;
+  transform: translate(-2px, -2px);
 }
 
 .orderHeader {
@@ -207,16 +259,59 @@
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 2px solid #000;
+}
+
+.orderHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.orderHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .orderNumber {
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #000;
+  font-size: 1.1rem;
 }
 
 .orderDate {
   color: #666;
+  font-size: 0.9rem;
+}
+
+.orderStatus {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+.customerInfo {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.customerInfo h4 {
+  margin: 0 0 0.5rem 0;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.customerInfo p {
+  margin: 0.25rem 0;
+  color: #333;
 }
 
 .orderDetails {
@@ -225,28 +320,30 @@
   gap: 0.75rem;
 }
 
-.orderStatus {
-  font-weight: 500;
-}
-
 .orderTotal {
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: #000;
+  font-size: 1.1rem;
 }
 
 .orderPayment {
   color: #666;
+  font-weight: 500;
 }
 
 .orderAddress {
   margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
+  padding: 1rem;
+  background: white;
+  border: 2px solid #000;
+  border-radius: 0;
 }
 
 .orderAddress h4 {
-  margin-bottom: 0.5rem;
-  color: #333;
+  margin: 0 0 0.5rem 0;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .orderAddress p {
@@ -254,10 +351,83 @@
   margin: 0.25rem 0;
 }
 
+.orderItems {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+.orderItems h4 {
+  margin: 0 0 1rem 0;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
+  border-bottom: 2px solid #000;
+  padding-bottom: 0.5rem;
+}
+
+.orderItem {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.orderItem:last-child {
+  border-bottom: none;
+}
+
+.itemImage {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #000;
+  border-radius: 0;
+  overflow: hidden;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.itemDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemDetails h5 {
+  margin: 0;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.itemDetails p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.itemDetails p:last-child {
+  color: #000;
+  font-weight: 700;
+}
+
 .error {
-  color: #dc3545;
+  color: #f44336;
   text-align: center;
   padding: 1rem;
+  font-weight: 600;
 }
 
 /* Estados de la orden */
@@ -271,4 +441,88 @@
 
 .cancelled {
   color: #dc3545;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .orderHeaderRight {
+    align-self: flex-end;
+  }
+  
+  .orderItem {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .itemImage {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.approveButton {
+  background: #4caf50;
+  color: white;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.approveButton:hover:not(:disabled) {
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
+}
+
+.approveButton:disabled {
+  background: #9e9e9e;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.paymentId {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.payButton {
+  background: #000;
+  color: white;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.payButton:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
 }

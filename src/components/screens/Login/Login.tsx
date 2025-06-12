@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Input } from "../Input/Input";
-import styles from "./LoginForm.module.css";
+import { Input } from "../../ui/Input/Input";
+import styles from "./Login.module.css";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { useUserStore } from "../../../hooks/useUserStore";
@@ -14,7 +14,7 @@ const validationSchema = Yup.object().shape({
     .required("La contraseña es obligatoria"),
 });
 
-export const LoginForm = () => {
+export const Login = () => {
   const navigate = useNavigate();
   const { login, loading } = useUserStore();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -88,38 +88,54 @@ export const LoginForm = () => {
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <h2 className={styles.title}>Vans® | Iniciar Sesión</h2>
-      <div className={styles.inputContainer}>
-        <Input
-          label="Correo"
-          name="email"
-          type="email"
-          value={formData.email}
-          placeholder="Ingrese su correo"
-          handleChange={handleChange}
-          error={errors.email}
-        />
-        <Input
-          label="Contraseña"
-          name="password"
-          type="password"
-          value={formData.password}
-          placeholder="Ingrese su contraseña"
-          handleChange={handleChange}
-          error={errors.password}
-        />
-      </div>
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <h2 className={styles.title}>Vans® | Iniciar Sesión</h2>
+          <div className={styles.inputContainer}>
+            <Input
+              label="Correo"
+              name="email"
+              type="email"
+              value={formData.email}
+              placeholder="Ingrese su correo"
+              handleChange={handleChange}
+              error={errors.email}
+            />
+            <Input
+              label="Contraseña"
+              name="password"
+              type="password"
+              value={formData.password}
+              placeholder="Ingrese su contraseña"
+              handleChange={handleChange}
+              error={errors.password}
+            />
+          </div>
 
-      <div className={styles.buttonContainer}>
-        <button 
-          className={styles.button} 
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "Iniciando sesión..." : "Ingresar"}
-        </button>
+          <div className={styles.buttonContainer}>
+            <button 
+              className={styles.button} 
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Iniciando sesión..." : "Ingresar"}
+            </button>
+          </div>
+
+          <div className={styles.linkContainer}>
+            <p className={styles.linkText}>
+              ¿No tienes cuenta?{" "}
+              <span 
+                className={styles.link}
+                onClick={() => navigate("/register")}
+              >
+                Regístrate aquí
+              </span>
+            </p>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
-};
+}; 

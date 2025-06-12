@@ -1,181 +1,141 @@
 import { useEffect, useState } from "react";
 import { AdminCardProduct } from "../AdminCardProduct/AdminCardProduct";
 import { useProductStore } from "../../../hooks/useProductStore";
-import { useCategoryStore } from "../../../hooks/useCategoryStore";
-import { useSizeStore } from "../../../hooks/useSizeStore";
-import { useColourStore } from "../../../hooks/useColourStore";
-import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 import s from "./AdminCatalogProducts.module.css";
 
-interface FilterDetail {
-  id: string;
-  name: string;
-}
+type StatusFilter = "all" | "active" | "inactive" | "deleted";
+type ViewMode = "list" | "grid4";
 
 export const AdminCatalogProducts = () => {
-  const [columns, setColumns] = useState(3);
-  const [activeFilters, setActiveFilters] = useState<{
-    category?: FilterDetail;
-    colour?: FilterDetail;
-    size?: FilterDetail;
-    priceRange?: { min: number | null; max: number | null };
-  }>({});
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  
+  const { 
+    items: products, 
+    loading, 
+    error, 
+    fetchAll,
+    fetchActive,
+    fetchInactive,
+    fetchSoftDeleted
+  } = useProductStore();
+  
+  const [displayProducts, setDisplayProducts] = useState(products);
 
-  const { items: products, fetchAll: fetchAllProducts } = useProductStore();
-  const { items: categories } = useCategoryStore();
-  const { items: sizes } = useSizeStore();
-  const { items: colours } = useColourStore();
-  const { items: productSizes, fetchAll: fetchAllProductSizes } =
-    useProductSizeStore();
-
+  // Cargar productos según el filtro de estado
   useEffect(() => {
-    fetchAllProducts();
-    fetchAllProductSizes();
-  }, [fetchAllProducts, fetchAllProductSizes]);
+    const loadProducts = async () => {
+      switch (statusFilter) {
+        case "active":
+          await fetchActive();
+          break;
+        case "inactive":
+          await fetchInactive();
+          break;
+        case "deleted":
+          await fetchSoftDeleted();
+          break;
+        default:
+          await fetchAll();
+          break;
+      }
+    };
 
+    loadProducts();
+  }, [statusFilter, fetchAll, fetchActive, fetchInactive, fetchSoftDeleted]);
+
+  // Actualizar productos mostrados cuando cambian los productos
   useEffect(() => {
-    const handleCategoryChange = (event: CustomEvent) => {
-      const categoryName = event.detail;
-      const category = categories.find((c) => c.name === categoryName);
-      setActiveFilters((prev) => ({
-        ...prev,
-        category: category
-          ? { id: category.id.toString(), name: category.name }
-          : undefined,
-      }));
-    };
+    setDisplayProducts(products);
+  }, [products]);
 
-    const handleSizeChange = (event: CustomEvent) => {
-      const sizeNumber = event.detail;
-      const size = sizes.find((s) => s.number === sizeNumber);
-      setActiveFilters((prev) => ({
-        ...prev,
-        size: size ? { id: size.id.toString(), name: size.number } : undefined,
-      }));
-    };
-
-    const handleColorChange = (event: CustomEvent) => {
-      const colorNames = event.detail;
-      const color = colours.find((c) => colorNames.includes(c.name));
-      setActiveFilters((prev) => ({
-        ...prev,
-        colour: color
-          ? { id: color.id.toString(), name: color.name }
-          : undefined,
-      }));
-    };
-
-    const handlePriceChange = (event: CustomEvent) => {
-      const { min, max } = event.detail;
-      setActiveFilters((prev) => ({
-        ...prev,
-        priceRange: { min, max },
-      }));
-    };
-
-    window.addEventListener(
-      "adminCategoryChange",
-      handleCategoryChange as EventListener
+  if (loading) {
+    return (
+      <div className={s.container}>
+        <div className={s.loadingContainer}>
+          <div className={s.spinner}></div>
+          <p>Cargando productos...</p>
+        </div>
+      </div>
     );
-    window.addEventListener(
-      "adminSizeChange",
-      handleSizeChange as EventListener
+  }
+
+  if (error) {
+    return (
+      <div className={s.container}>
+        <div className={s.errorContainer}>
+          <p>Error: {error}</p>
+        </div>
+      </div>
     );
-    window.addEventListener(
-      "adminColorChange",
-      handleColorChange as EventListener
-    );
-    window.addEventListener(
-      "adminPriceChange",
-      handlePriceChange as EventListener
-    );
+  }
 
-    return () => {
-      window.removeEventListener(
-        "adminCategoryChange",
-        handleCategoryChange as EventListener
-      );
-      window.removeEventListener(
-        "adminSizeChange",
-        handleSizeChange as EventListener
-      );
-      window.removeEventListener(
-        "adminColorChange",
-        handleColorChange as EventListener
-      );
-      window.removeEventListener(
-        "adminPriceChange",
-        handlePriceChange as EventListener
-      );
-    };
-  }, [categories, sizes, colours]);
-
-  const filteredProducts = products.filter((product) => {
-    // Filtrar por categoría
-    if (
-      activeFilters.category &&
-      product.category?.id.toString() !== activeFilters.category.id
-    ) {
-      return false;
+  const getStatusLabel = () => {
+    switch (statusFilter) {
+      case "active":
+        return "Activos";
+      case "inactive":
+        return "Inactivos";
+      case "deleted":
+        return "Eliminados";
+      default:
+        return "Todos";
     }
-
-    // Filtrar por color
-    if (
-      activeFilters.colour &&
-      product.colour?.id.toString() !== activeFilters.colour.id
-    ) {
-      return false;
-    }
-
-    // Filtrar por talle
-    if (activeFilters.size) {
-      const hasSize = productSizes.some(
-        (ps) =>
-          ps.idProduct === product.id &&
-          ps.idSize.toString() === activeFilters.size?.id &&
-          ps.stock > 0
-      );
-      if (!hasSize) return false;
-    }
-
-    // Filtrar por precio
-    if (activeFilters.priceRange) {
-      const { min, max } = activeFilters.priceRange;
-      if (min !== null && product.price < min) return false;
-      if (max !== null && product.price > max) return false;
-    }
-
-    return true;
-  });
+  };
 
   return (
     <div className={s.container}>
       <div className={s.header}>
         <div className={s.titleContainer}>
-          <h2>Productos</h2>
-          <span className={s.productCount}>
-            ({filteredProducts.length} productos)
-          </span>
+          <h2>Productos {getStatusLabel()}</h2>
+          <span className={s.productCount}>({displayProducts.length} productos total)</span>
         </div>
-        <div className={s.viewOptions}>
-          <button
-            className={`${s.viewButton} ${columns === 3 ? s.active : ""}`}
-            onClick={() => setColumns(3)}
-          >
-            <span className="material-symbols-outlined">grid_view</span>
-          </button>
-          <button
-            className={`${s.viewButton} ${columns === 4 ? s.active : ""}`}
-            onClick={() => setColumns(4)}
-          >
-            <span className="material-symbols-outlined">view_agenda</span>
-          </button>
+        
+        <div className={s.headerControls}>
+          <div className={s.statusFilter}>
+            <label htmlFor="status-select">Filtrar por Estado:</label>
+            <select 
+              id="status-select"
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+              className={s.statusSelect}
+            >
+              <option value="all">Todos</option>
+              <option value="active">Activos</option>
+              <option value="inactive">Inactivos</option>
+              <option value="deleted">Eliminados</option>
+            </select>
+          </div>
+          
+          <div className={s.viewOptions}>
+            <button
+              className={`${s.viewButton} ${viewMode === "list" ? s.active : ""}`}
+              onClick={() => setViewMode("list")}
+              title="Vista de lista"
+            >
+              <span className="material-symbols-outlined">list</span>
+            </button>
+            <button
+              className={`${s.viewButton} ${viewMode === "grid4" ? s.active : ""}`}
+              onClick={() => setViewMode("grid4")}
+              title="Vista de cuadrícula 4 columnas"
+            >
+              <span className="material-symbols-outlined">grid_view</span>
+            </button>
+          </div>
         </div>
       </div>
-      <div className={`${s.productsGrid} ${s[`columns${columns}`]}`}>
-        {filteredProducts.map((product) => (
-          <AdminCardProduct key={product.id} product={product} />
-        ))}
+
+      <div className={`${s.productsContainer} ${s[viewMode]}`}>
+        {displayProducts.length === 0 ? (
+          <div className={s.emptyState}>
+            <p>No se encontraron productos</p>
+          </div>
+        ) : (
+          displayProducts.map((product) => (
+            <AdminCardProduct key={product.id} product={product} viewMode={viewMode} />
+          ))
+        )}
       </div>
     </div>
   );

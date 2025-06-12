@@ -61,13 +61,22 @@ export const Navbar = () => {
               </div>
             </>
           ) : (
-            <div
-              className={styles.NavbarLoggin}
-              onClick={() => navigate("/loginRegister")}
-            >
-              <span className="material-symbols-outlined">person</span>
-              INICIAR SESIÓN
-            </div>
+            <>
+              <div
+                className={styles.NavbarLoggin}
+                onClick={() => navigate("/login")}
+              >
+                <span className="material-symbols-outlined">person</span>
+                INICIAR SESIÓN
+              </div>
+              <div
+                className={styles.NavbarLoggin}
+                onClick={() => navigate("/register")}
+              >
+                <span className="material-symbols-outlined">person_add</span>
+                REGISTRARSE
+              </div>
+            </>
           )}
           <div
             className={styles.NavbarLoggin}

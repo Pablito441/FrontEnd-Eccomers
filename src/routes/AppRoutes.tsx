@@ -3,6 +3,8 @@ import { Landing } from "../components/screens/Landing/Landing";
 import { Catalog } from "../components/screens/Catalog/Catalog";
 import { ProductDetails } from "../components/screens/ProductDetails/ProductDetails";
 import { LoginRegister } from "../components/screens/LoginRegister/LoginRegister";
+import { Login } from "../components/screens/Login/Login";
+import { Register } from "../components/screens/Register/Register";
 import { ShoppingCart } from "../components/screens/ShoppingCart/ShoppingCart";
 import { TermsAndConditions } from "../components/screens/TermsAndConditions/TermsAndConditions";
 import { PrivacyPolicies } from "../components/screens/PrivacyPolicies/PrivacyPolicies";
@@ -11,7 +13,9 @@ import { ScrollToTop } from "../components/ScrollToTop";
 import { ContinueShopping } from "../components/screens/ContinueShopping/ContinueShopping";
 import { PurchaseOrder } from "../components/screens/PurchaseOrder/PurchaseOrder";
 import { UserCount } from "../components/screens/UserCount/UserCount";
+import { PaymentInstructions } from "../components/screens/PaymentInstructions/PaymentInstructions";
 import { AdminProducts } from "../pages/admin/AdminProducts";
+import { ProtectedRoute } from "../components/ProtectedRoute";
 
 export const AppRouter = () => {
   return (
@@ -20,25 +24,41 @@ export const AppRouter = () => {
       <Route
         path="/admin"
         element={
-          <ScrollToTop>
-            <AdminProducts />
-          </ScrollToTop>
+          <ProtectedRoute requireAdmin={true}>
+            <ScrollToTop>
+              <AdminProducts />
+            </ScrollToTop>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment-instructions/:orderId"
+        element={
+          <ProtectedRoute>
+            <ScrollToTop>
+              <PaymentInstructions />
+            </ScrollToTop>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/userCount"
         element={
-          <ScrollToTop>
-            <UserCount />
-          </ScrollToTop>
+          <ProtectedRoute>
+            <ScrollToTop>
+              <UserCount />
+            </ScrollToTop>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/purchaseOrder"
         element={
-          <ScrollToTop>
-            <PurchaseOrder />
-          </ScrollToTop>
+          <ProtectedRoute>
+            <ScrollToTop>
+              <PurchaseOrder />
+            </ScrollToTop>
+          </ProtectedRoute>
         }
       />
       <Route
@@ -70,6 +90,22 @@ export const AppRouter = () => {
         element={
           <ScrollToTop>
             <ShoppingCart />
+          </ScrollToTop>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <ScrollToTop>
+            <Login />
+          </ScrollToTop>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <ScrollToTop>
+            <Register />
           </ScrollToTop>
         }
       />

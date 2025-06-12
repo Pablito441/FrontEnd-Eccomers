@@ -1,86 +1,289 @@
 .container {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #000;
   background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+  position: relative;
+  transition: all 0.2s ease;
 }
 
 .container:hover {
-  transform: translateY(-4px);
+  box-shadow: 4px 4px 0px #000;
+  transform: translate(-2px, -2px);
 }
 
-.containerImg {
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
+/* Estados del producto */
+.container.active {
+  border-color: #000;
 }
 
-.containerImg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.container.inactive {
+  border-color: #000;
+  opacity: 0.8;
 }
 
-.containerContent {
-  padding: 1rem;
+.container.deleted {
+  border-color: #000;
+  opacity: 0.6;
 }
 
-.containerContent h1 {
-  font-size: 1rem;
-  color: #666;
-  margin: 0;
+/* Vistas diferentes */
+.container.list {
+  flex-direction: row;
+  min-height: 80px;
 }
 
-.containerContent h2 {
-  font-size: 1.25rem;
-  color: #333;
-  margin: 0.5rem 0;
-}
-
-.actions {
+.container.grid4 {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  flex-direction: column;
+  position: relative;
+  border: 2px solid #000;
+  border-radius: 0;
+  background: white;
+  transition: all 0.3s ease;
+  height: auto;
+  min-height: 300px;
 }
 
-.actions button {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.statusBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
+.badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  transition: background-color 0.2s;
+  width: 32px;
+  height: 32px;
+  border: 2px solid;
+  background: white;
+  border-radius: 50%;
+}
+
+.activeBadge {
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.inactiveBadge {
+  color: #ff9800;
+  border-color: #ff9800;
+}
+
+.deletedBadge {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+.badge .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.containerImg {
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list .containerImg {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  padding: 8px;
+}
+
+.list .containerImg img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.container.grid4 .containerImg {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+}
+
+.container.grid4 .containerImg img {
+  max-width: 20rem;
+  max-height: 20rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.containerContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 12px;
+  gap: 8px;
+}
+
+.list .containerContent {
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.container.grid4 .containerContent {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.container.grid4 .productInfo {
+  flex: 1;
+  margin-bottom: 50px;
+}
+
+.container.grid4 .actions {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productInfo h1 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.productInfo h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.productInfo h2:last-child {
+  font-size: 18px;
+  color: #000;
+}
+
+.actions {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  z-index: 3;
+}
+
+.list .actions {
+  position: static;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: auto;
+}
+
+.actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.list .actions button {
+  width: 32px;
+  height: 32px;
+}
+
+.actions button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0px currentColor;
+}
+
+.actions button .material-symbols-outlined {
+  font-size: 18px;
 }
 
 .viewButton {
-  background-color: #2196f3;
-  color: white;
-}
-
-.viewButton:hover {
-  background-color: #1976d2;
+  color: #2196f3;
+  border-color: #2196f3;
 }
 
 .editButton {
-  background-color: #ffc107;
-  color: #333;
+  color: #ff9800;
+  border-color: #ff9800;
 }
 
-.editButton:hover {
-  background-color: #ffa000;
+.activateButton {
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.deactivateButton {
+  color: #ff9800;
+  border-color: #ff9800;
+}
+
+.softDeleteButton {
+  color: #9e9e9e;
+  border-color: #9e9e9e;
 }
 
 .deleteButton {
-  background-color: #f44336;
-  color: white;
+  color: #f44336;
+  border-color: #f44336;
 }
 
-.deleteButton:hover {
-  background-color: #d32f2f;
+/* Responsive */
+@media (max-width: 768px) {
+  .list {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .list .containerImg {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .list .actions {
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .actions button {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .actions button .material-symbols-outlined {
+    font-size: 16px;
+  }
 }

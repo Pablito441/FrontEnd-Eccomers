@@ -2,30 +2,37 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../Input/Input";
 import { useUserStore } from "../../../hooks/useUserStore";
-import { useAddressStore } from "../../../hooks/useAddressStore";
-import { useUserAddressStore } from "../../../hooks/useUserAddressStore";
 import { useCartStore } from "../../../hooks/useCartStore";
-import { usePurchaseOrderStore } from "../../../hooks/usePurchaseOrderStore";
-import { useDetailStore } from "../../../hooks/useDetailStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
-import type { IPurchaseOrder } from "../../../types/IPurchaseOrder";
-import type { IDetail } from "../../../types/IDetail";
+import { purchaseOrderService } from "../../../http/PurchaseOrderService";
+import { userAddressService } from "../../../http/UserAddressService";
 import s from "./PurchaseOrderData.module.css";
+
+// Interfaz corregida para coincidir con la estructura real del backend
+interface IMyAddressResponse {
+  id: number;
+  userId: number;
+  addressId: number;
+  adress: {
+    id: number;
+    street: string;
+    town: string;
+    state: string;
+    cpi: string;
+    country: string;
+    isActive: boolean;
+  };
+}
 
 export const PurchaseOrderData = () => {
   const navigate = useNavigate();
   const { currentUser } = useUserStore();
-  const {
-    items: addresses,
-    create: createAddress,
-    update: updateAddress,
-  } = useAddressStore();
-  const { items: userAddresses, create: createUserAddress } =
-    useUserAddressStore();
   const { items: cartItems, clearCart } = useCartStore();
-  const { create: createPurchaseOrder } = usePurchaseOrderStore();
-  const { create: createDetail } = useDetailStore();
   const { items: sizes } = useSizeStore();
+
+  const [userAddresses, setUserAddresses] = useState<IMyAddressResponse[]>([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
     shippingMethod: "domicilio",
@@ -34,21 +41,13 @@ export const PurchaseOrderData = () => {
     email: "",
     dni: "",
     gender: "",
-    street: "",
-    number: "",
-    floor: "",
-    apartment: "",
-    postalCode: "",
-    city: "",
-    province: "",
-    country: "Argentina",
     observations: "",
     useDeliveryForBilling: false,
     paymentMethod: "mercadopago",
     discountCode: "",
   });
 
-  // Cargar datos del usuario y dirección al montar el componente
+  // Cargar datos del usuario y direcciones al montar el componente
   useEffect(() => {
     if (currentUser) {
       setFormData((prev) => ({
@@ -58,24 +57,28 @@ export const PurchaseOrderData = () => {
         email: currentUser.email,
       }));
 
-      // Buscar la dirección del usuario
-      const userAddress = userAddresses
-        .filter((ua) => ua.userId === currentUser.id)
-        .map((ua) => addresses.find((a) => a.id === ua.addressId))
-        .filter(Boolean)[0];
-
-      if (userAddress) {
-        setFormData((prev) => ({
-          ...prev,
-          street: userAddress.street,
-          city: userAddress.town,
-          province: userAddress.state,
-          postalCode: userAddress.cpi,
-          country: userAddress.country,
-        }));
-      }
+      // Cargar direcciones del usuario
+      loadUserAddresses();
     }
-  }, [currentUser, addresses, userAddresses]);
+  }, [currentUser]);
+
+  const loadUserAddresses = async () => {
+    try {
+      setLoadingAddresses(true);
+      const addresses = await userAddressService.getMyAddresses();
+      console.log("Direcciones cargadas:", addresses);
+      setUserAddresses(addresses);
+      
+      // Seleccionar la primera dirección por defecto si existe
+      if (addresses.length > 0) {
+        setSelectedAddressId(addresses[0].addressId);
+      }
+    } catch (error) {
+      console.error("Error al cargar direcciones:", error);
+    } finally {
+      setLoadingAddresses(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -88,6 +91,10 @@ export const PurchaseOrderData = () => {
       [name]:
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedAddressId(parseInt(e.target.value));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,46 +110,12 @@ export const PurchaseOrderData = () => {
       return;
     }
 
+    if (!selectedAddressId) {
+      alert("Debe seleccionar una dirección de entrega");
+      return;
+    }
+
     try {
-      // Crear o actualizar la dirección
-      const addressData = {
-        street: formData.street,
-        town: formData.city,
-        state: formData.province,
-        cpi: formData.postalCode,
-        country: formData.country,
-        isActive: true,
-      };
-
-      // Buscar si el usuario ya tiene una dirección
-      const existingUserAddress = userAddresses.find(
-        (ua) => ua.userId === currentUser.id
-      );
-
-      let addressId: number;
-
-      if (existingUserAddress) {
-        // Actualizar dirección existente
-        const updatedAddress = await updateAddress(
-          existingUserAddress.addressId,
-          addressData
-        );
-        if (!updatedAddress)
-          throw new Error("Error al actualizar la dirección");
-        addressId = updatedAddress.id;
-      } else {
-        // Crear nueva dirección
-        const newAddress = await createAddress(addressData);
-        if (!newAddress) throw new Error("Error al crear la dirección");
-        addressId = newAddress.id;
-
-        // Crear relación usuario-dirección
-        await createUserAddress({
-          userId: currentUser.id,
-          addressId: newAddress.id,
-        });
-      }
-
       // Calcular totales
       const subtotal = cartItems.reduce(
         (acc, item) => acc + item.product.price * item.quantity,
@@ -151,62 +124,43 @@ export const PurchaseOrderData = () => {
       const shippingCost = 0; // Envío gratis
       const total = subtotal + shippingCost;
 
-      // Crear la orden de compra
-      const purchaseOrderData: Partial<IPurchaseOrder> = {
+      // Preparar los detalles de la orden
+      const orderDetails = cartItems.map((item) => {
+        // Buscar el sizeId correspondiente al talle del item
+        const sizeObj = sizes.find(s => s.number === item.size);
+        
+        if (!sizeObj) {
+          throw new Error(`No se encontró el talle ${item.size}`);
+        }
+
+        return {
+          productId: item.product.id,
+          quantity: item.quantity,
+          sizeId: sizeObj.id,
+        };
+      });
+
+      // Crear la orden de compra con detalles
+      const orderData = {
         userId: currentUser.id,
-        userAddressId: addressId,
-        status: "PENDING" as const,
+        userAddressId: selectedAddressId,
         total: total,
         paymentMethod: formData.paymentMethod,
-        isActive: true,
+        status: "PENDING",
+        details: orderDetails,
       };
 
-      const newPurchaseOrder = await createPurchaseOrder(purchaseOrderData);
+      console.log("Creando orden con detalles:", orderData);
+      const newPurchaseOrder = await purchaseOrderService.createOrderWithDetails(orderData);
 
       if (newPurchaseOrder) {
-        // Crear los detalles de la orden de compra
-        const detailPromises = cartItems.map((item) => {
-          // Buscar el talle en la base de datos
-          const size = sizes.find((s) => s.number === item.size);
+        console.log("Orden creada exitosamente:", newPurchaseOrder);
+        
+        // Limpiar el carrito
+        clearCart();
 
-          if (!size) {
-            throw new Error(`No se encontró el talle ${item.size}`);
-          }
-
-          const detailData: Partial<IDetail> = {
-            quantity: item.quantity,
-            productId: item.product.id,
-            orderId: newPurchaseOrder.id,
-            sizeId: size.id,
-            isActive: true,
-          };
-
-          console.log("Creando detalle:", detailData);
-          return createDetail(detailData);
-        });
-
-        try {
-          const createdDetails = await Promise.all(detailPromises);
-          console.log("Detalles creados:", createdDetails);
-
-          if (createdDetails.length === 0) {
-            throw new Error("No se crearon los detalles");
-          }
-
-          // Limpiar el carrito
-          clearCart();
-
-          // Mostrar mensaje de éxito
-          alert("¡Orden de compra creada exitosamente!");
-
-          // Redirigir a la página de cuenta del usuario
-          navigate("/userCount");
-        } catch (error) {
-          console.error("Error al crear los detalles:", error);
-          alert(
-            "Error al crear los detalles de la orden. Por favor, intente nuevamente."
-          );
-        }
+        // Redirigir a la página de instrucciones de pago
+        navigate(`/payment-instructions/${newPurchaseOrder.id}`);
       } else {
         throw new Error("Error al crear la orden de compra");
       }
@@ -214,6 +168,10 @@ export const PurchaseOrderData = () => {
       console.error("Error al procesar el formulario:", error);
       alert("Error al procesar el formulario. Por favor, intente nuevamente.");
     }
+  };
+
+  const getSelectedAddress = () => {
+    return userAddresses.find(ua => ua.addressId === selectedAddressId)?.adress;
   };
 
   return (
@@ -243,6 +201,59 @@ export const PurchaseOrderData = () => {
             TIEMPO DE ENTREGA: AMBA hasta 6 días hábiles. / Interior del país:
             hasta 9 días hábiles. No realizamos envíos a tierra del fuego.
           </p>
+        </div>
+
+        <div className={s.section}>
+          <h2 className={s.title}>DIRECCIÓN DE ENTREGA</h2>
+          {loadingAddresses ? (
+            <p>Cargando direcciones...</p>
+          ) : userAddresses.length === 0 ? (
+            <div className={s.noAddresses}>
+              <p>No tienes direcciones registradas.</p>
+              <p>Por favor, ve a tu perfil para agregar una dirección antes de continuar.</p>
+              <button 
+                type="button" 
+                onClick={() => navigate("/userCount")}
+                className={s.goToProfileButton}
+              >
+                Ir a Mi Perfil
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className={s.addressSelector}>
+                <label htmlFor="addressSelect" className={s.addressLabel}>
+                  Selecciona tu dirección de entrega:
+                </label>
+                <select
+                  id="addressSelect"
+                  value={selectedAddressId || ""}
+                  onChange={handleAddressChange}
+                  className={s.addressSelect}
+                  required
+                >
+                  <option value="">Selecciona una dirección</option>
+                  {userAddresses.map((userAddress) => (
+                    <option key={userAddress.id} value={userAddress.addressId}>
+                      {userAddress.adress?.street}, {userAddress.adress?.town}, {userAddress.adress?.state} - CP: {userAddress.adress?.cpi}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {getSelectedAddress() && (
+                <div className={s.selectedAddressPreview}>
+                  <h4>Dirección seleccionada:</h4>
+                  <div className={s.addressPreview}>
+                    <p><strong>{getSelectedAddress()?.street}</strong></p>
+                    <p>{getSelectedAddress()?.town}, {getSelectedAddress()?.state}</p>
+                    <p>CP: {getSelectedAddress()?.cpi}</p>
+                    <p>{getSelectedAddress()?.country}</p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className={s.section}>
@@ -296,8 +307,8 @@ export const PurchaseOrderData = () => {
           </div>
         </div>
 
-        <div className={s.section}>
-          <h2 className={s.title}>DATOS DE ENTREGA</h2>
+        <div className={s.section_mod}>
+          <h2 className={s.title}>DATOS PERSONALES</h2>
 
           <div className={s.inputGroup}>
             <Input
@@ -358,95 +369,6 @@ export const PurchaseOrderData = () => {
           </div>
 
           <div className={s.inputGroup}>
-            <Input
-              name="street"
-              type="text"
-              placeholder="Calle"
-              value={formData.street}
-              handleChange={handleChange}
-              required
-            />
-            <Input
-              name="number"
-              type="text"
-              placeholder="Número"
-              value={formData.number}
-              handleChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className={s.inputGroup}>
-            <Input
-              name="floor"
-              type="text"
-              placeholder="Piso"
-              value={formData.floor}
-              handleChange={handleChange}
-            />
-            <Input
-              name="apartment"
-              type="text"
-              placeholder="Departamento"
-              value={formData.apartment}
-              handleChange={handleChange}
-            />
-          </div>
-
-          <div className={s.inputGroup}>
-            <Input
-              name="postalCode"
-              type="text"
-              placeholder="Código Postal"
-              value={formData.postalCode}
-              handleChange={handleChange}
-              required
-            />
-            <Input
-              name="city"
-              type="text"
-              placeholder="Ciudad"
-              value={formData.city}
-              handleChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className={s.inputGroup}>
-            <select
-              name="province"
-              value={formData.province}
-              onChange={handleChange}
-              className={s.select}
-              required
-            >
-              <option value="">Seleccione una provincia</option>
-              <option value="buenosAires">Buenos Aires</option>
-              <option value="catamarca">Catamarca</option>
-              <option value="chaco">Chaco</option>
-              <option value="chubut">Chubut</option>
-              <option value="cordoba">Córdoba</option>
-              <option value="corrientes">Corrientes</option>
-              <option value="entreRios">Entre Ríos</option>
-              <option value="formosa">Formosa</option>
-              <option value="jujuy">Jujuy</option>
-              <option value="laPampa">La Pampa</option>
-              <option value="laRioja">La Rioja</option>
-              <option value="mendoza">Mendoza</option>
-              <option value="misiones">Misiones</option>
-              <option value="neuquen">Neuquén</option>
-              <option value="rioNegro">Río Negro</option>
-              <option value="salta">Salta</option>
-              <option value="sanJuan">San Juan</option>
-              <option value="sanLuis">San Luis</option>
-              <option value="santaCruz">Santa Cruz</option>
-              <option value="santaFe">Santa Fe</option>
-              <option value="santiagoDelEstero">Santiago del Estero</option>
-              <option value="tucuman">Tucumán</option>
-            </select>
-          </div>
-
-          <div className={s.inputGroup}>
             <textarea
               name="observations"
               placeholder="Observaciones"
@@ -466,7 +388,11 @@ export const PurchaseOrderData = () => {
             Usar datos de entrega para la facturación
           </label>
 
-          <button type="submit" className={s.submitButton}>
+          <button 
+            type="submit" 
+            className={s.submitButton}
+            disabled={!selectedAddressId || userAddresses.length === 0}
+          >
             Continuar
           </button>
         </div>

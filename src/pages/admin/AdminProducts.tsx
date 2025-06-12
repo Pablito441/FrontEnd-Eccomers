@@ -14,14 +14,20 @@ export const AdminProducts = () => {
     <div className={s.container}>
       <div className={s.header}>
         <div className={s.titleContainer}>
-          <h1>Administración de Productos</h1>
-          <span className={s.productCount}>({products.length} productos)</span>
+          <h1>Panel de Administración</h1>
+          <span className={s.productCount}>
+            ({products?.length || 0} productos)
+          </span>
         </div>
-        <button className={s.addButton} onClick={() => setIsModalOpen(true)}>
-          <span className="material-symbols-outlined">add</span>
-          Agregar Nuevo Producto
-        </button>
+        
+        <div className={s.headerActions}>
+          <button className={s.addButton} onClick={() => setIsModalOpen(true)}>
+            <span className="material-symbols-outlined">add</span>
+            Agregar Nuevo Producto
+          </button>
+        </div>
       </div>
+
       <div className={s.content}>
         <div className={s.sidebar}>
           <AdminCatalogFilters />

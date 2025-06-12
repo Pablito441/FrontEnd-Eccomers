@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { userService } from "../http/UserService";
+import { authService } from "../http/AuthService";
 import type { IUser } from "../types/IUser";
 
 interface UserStore {
@@ -18,16 +19,18 @@ interface UserStore {
   login: (email: string, password: string) => Promise<boolean>;
   register: (userData: Partial<IUser>) => Promise<boolean>;
   logout: () => void;
+  checkAuthStatus: () => void;
 }
 
 // Función para obtener el estado inicial desde localStorage
 const getInitialState = () => {
   const storedUser = localStorage.getItem("user");
-  const storedAuth = localStorage.getItem("isAuthenticated");
+  const token = authService.getToken();
+  const isValidToken = Boolean(token && authService.isTokenValid());
 
   return {
-    currentUser: storedUser ? JSON.parse(storedUser) : null,
-    isAuthenticated: storedAuth === "true",
+    currentUser: storedUser && isValidToken ? JSON.parse(storedUser) : null,
+    isAuthenticated: isValidToken,
   };
 };
 
@@ -115,27 +118,35 @@ export const useUserStore = create<UserStore>((set, get) => ({
   },
 
   login: async (email: string, password: string) => {
+    console.log("useUserStore.login iniciado con:", { email, password });
     set({ loading: true, error: null });
     try {
-      const users = await userService.getAll();
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
+      console.log("Llamando a authService.login...");
+      const response = await authService.login({ email, password });
+      console.log("Respuesta de authService.login:", response);
 
-      if (user) {
-        // Guardar en localStorage
-        localStorage.setItem("user", JSON.stringify(user));
+      if (response) {
+        console.log("Login exitoso, guardando datos...");
+        // Guardar token y usuario en localStorage
+        authService.setToken(response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
         localStorage.setItem("isAuthenticated", "true");
 
+        console.log("Datos guardados, actualizando estado...");
         set({
-          currentUser: user,
+          currentUser: response.user,
           isAuthenticated: true,
           loading: false,
         });
+        console.log("Estado actualizado, login completado");
         return true;
       }
+      
+      console.log("Login falló - response es null/undefined");
+      set({ loading: false });
       return false;
     } catch (error) {
+      console.error("Error en useUserStore.login:", error);
       set({ error: `Error: ${error}`, loading: false });
       return false;
     }
@@ -146,16 +157,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
     try {
       const newUser = await userService.create(userData);
       if (newUser) {
-        // Guardar en localStorage
-        localStorage.setItem("user", JSON.stringify(newUser));
-        localStorage.setItem("isAuthenticated", "true");
-
-        set({
-          currentUser: newUser,
-          isAuthenticated: true,
-          loading: false,
-        });
-        return true;
+        // Después del registro, hacer login automático
+        const loginSuccess = await get().login(userData.email!, userData.password!);
+        return loginSuccess;
       }
       return false;
     } catch (error) {
@@ -165,13 +169,31 @@ export const useUserStore = create<UserStore>((set, get) => ({
   },
 
   logout: () => {
-    // Limpiar localStorage
-    localStorage.removeItem("user");
-    localStorage.removeItem("isAuthenticated");
+    // Usar el servicio de autenticación para limpiar todo
+    authService.logout();
 
     set({
       currentUser: null,
       isAuthenticated: false,
     });
+  },
+
+  checkAuthStatus: () => {
+    const token = authService.getToken();
+    const storedUser = localStorage.getItem("user");
+    
+    if (token && authService.isTokenValid() && storedUser) {
+      set({
+        currentUser: JSON.parse(storedUser),
+        isAuthenticated: true,
+      });
+    } else {
+      // Token inválido o expirado, limpiar estado
+      authService.logout();
+      set({
+        currentUser: null,
+        isAuthenticated: false,
+      });
+    }
   },
 }));
