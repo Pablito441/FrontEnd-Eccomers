@@ -155,11 +155,28 @@ export const useUserStore = create<UserStore>((set, get) => ({
   register: async (userData: Partial<IUser>) => {
     set({ loading: true, error: null });
     try {
-      const newUser = await userService.create(userData);
-      if (newUser) {
-        // Después del registro, hacer login automático
-        const loginSuccess = await get().login(userData.email!, userData.password!);
-        return loginSuccess;
+      const response = await authService.register({
+        name: userData.name!,
+        lastName: userData.lastName!,
+        username: userData.username!,
+        email: userData.email!,
+        password: userData.password!,
+        role: userData.role!,
+        isActive: userData.isActive!,
+      });
+
+      if (response) {
+        // Guardar token y usuario en localStorage
+        authService.setToken(response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("isAuthenticated", "true");
+
+        set({
+          currentUser: response.user,
+          isAuthenticated: true,
+          loading: false,
+        });
+        return true;
       }
       return false;
     } catch (error) {

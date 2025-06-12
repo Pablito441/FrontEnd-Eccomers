@@ -18,6 +18,16 @@ export interface LoginResponse {
   role: "ADMIN" | "CLIENT";
 }
 
+export interface RegisterRequest {
+  name: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password: string;
+  role: "ADMIN" | "CLIENT";
+  isActive: boolean;
+}
+
 export const authService = {
   async login(credentials: LoginRequest): Promise<{ token: string; user: IUser } | null> {
     try {
@@ -63,6 +73,59 @@ export const authService = {
       return result;
     } catch (error) {
       console.error("Login failed:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data);
+        console.error("Error status:", error.response?.status);
+        console.error("Error config:", error.config);
+      }
+      return null;
+    }
+  },
+
+  async register(userData: RegisterRequest): Promise<{ token: string; user: IUser } | null> {
+    try {
+      console.log("Intentando registro con:", userData);
+      const response = await axios.post<LoginResponse>(
+        `${BASE_URL}/register`,
+        userData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log("Respuesta del backend:", response.data);
+
+      const data = response.data;
+
+      // Verificar que tenemos todos los datos necesarios
+      if (!data.token || !data.userId) {
+        console.error("Respuesta del backend incompleta:", data);
+        return null;
+      }
+
+      // Transformar la respuesta del backend al formato esperado por el frontend
+      const result = {
+        token: data.token,
+        user: {
+          id: data.userId,
+          name: data.name,
+          lastName: data.lastName,
+          username: data.username,
+          email: data.email,
+          password: "", // No necesitamos la contraseña en el frontend
+          role: data.role,
+          createdAt: new Date().toISOString(),
+          updatedAt: null,
+          deletedAt: null,
+          isActive: true,
+        }
+      };
+
+      console.log("Datos transformados:", result);
+      return result;
+    } catch (error) {
+      console.error("Register failed:", error);
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data);
         console.error("Error status:", error.response?.status);
