@@ -16,6 +16,8 @@ import { UserCount } from "../components/screens/UserCount/UserCount";
 import { PaymentInstructions } from "../components/screens/PaymentInstructions/PaymentInstructions";
 import { AdminProducts } from "../pages/admin/AdminProducts";
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import OrderStatus from "../components/screens/OrderStatus/OrderStatus";
+import TestPayment from '../components/screens/TestPayment/TestPayment';
 
 export const AppRouter = () => {
   return (
@@ -29,6 +31,30 @@ export const AppRouter = () => {
               <AdminProducts />
             </ScrollToTop>
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/paymentSuccess"
+        element={
+          <ScrollToTop>
+            <OrderStatus />
+          </ScrollToTop>
+        }
+      />
+      <Route
+        path="/paymentPending"
+        element={
+          <ScrollToTop>
+            <OrderStatus />
+          </ScrollToTop>
+        }
+      />
+      <Route
+        path="/paymentFailure"
+        element={
+          <ScrollToTop>
+            <OrderStatus />
+          </ScrollToTop>
         }
       />
       <Route
@@ -134,6 +160,7 @@ export const AppRouter = () => {
           </ScrollToTop>
         }
       />
+      <Route path="/testPayment" element={<ScrollToTop><TestPayment /></ScrollToTop>} />
       <Route path="*" element={<Navigate to="/landing" replace />} />
     </Routes>
   );
