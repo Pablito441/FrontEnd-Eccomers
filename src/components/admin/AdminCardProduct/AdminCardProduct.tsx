@@ -17,18 +17,18 @@ type AdminCardProductProps = {
   fetchList: () => Promise<void>;
 };
 
-export const AdminCardProduct: FC<AdminCardProductProps> = ({ 
-  product, 
+export const AdminCardProduct: FC<AdminCardProductProps> = ({
+  product,
   viewMode = "grid4",
-  fetchList
+  fetchList,
 }) => {
   const navigate = useNavigate();
-  const { 
-    update: updateProduct, 
+  const {
+    update: updateProduct,
     delete: deleteProduct,
     activate,
     deactivate,
-    softDelete
+    softDelete,
   } = useProductStore();
   const { items: productSizes, delete: deleteProductSize } =
     useProductSizeStore();
@@ -63,7 +63,11 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
   };
 
   const handleSoftDelete = async () => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este producto? Esta acción se puede revertir.")) {
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar este producto? Esta acción se puede revertir."
+      )
+    ) {
       try {
         await softDelete(product.id);
         await fetchList();
@@ -74,9 +78,13 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
   };
 
   const handleRestore = async () => {
-    if (window.confirm("¿Estás seguro de que quieres restaurar este producto?")) {
+    if (
+      window.confirm("¿Estás seguro de que quieres restaurar este producto?")
+    ) {
       try {
-        await axios.put(`http://localhost:9000/api/v1/products/${product.id}/restore`);
+        await axios.put(
+          `http://localhost:9000/api/v1/products/${product.id}/restore`
+        );
         await fetchList();
       } catch (error) {
         console.error("Error al restaurar el producto:", error);
@@ -85,7 +93,11 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
   };
 
   const handleDelete = async () => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar permanentemente este producto? Esta acción NO se puede revertir.")) {
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar permanentemente este producto? Esta acción NO se puede revertir."
+      )
+    ) {
       try {
         // Paso 1: Actualizar el producto para establecer las relaciones como NULL
         await updateProduct(product.id, {
@@ -153,7 +165,7 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
             </span>
           )}
         </div>
-        
+
         <div className={s.containerImg}>
           <img src={product.image} alt={product.name} />
         </div>
@@ -167,40 +179,62 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
             <button onClick={handleView} className={s.viewButton} title="Ver">
               <span className="material-symbols-outlined">visibility</span>
             </button>
-            
+
             {productStatus !== "deleted" && (
-              <button onClick={handleEdit} className={s.editButton} title="Editar">
+              <button
+                onClick={handleEdit}
+                className={s.editButton}
+                title="Editar"
+              >
                 <span className="material-symbols-outlined">edit</span>
               </button>
             )}
 
             {productStatus === "active" && (
-              <button onClick={handleDeactivate} className={s.deactivateButton} title="Desactivar">
+              <button
+                onClick={handleDeactivate}
+                className={s.deactivateButton}
+                title="Desactivar"
+              >
                 <span className="material-symbols-outlined">pause_circle</span>
               </button>
             )}
 
             {productStatus === "inactive" && (
-              <button onClick={handleActivate} className={s.activateButton} title="Activar">
+              <button
+                onClick={handleActivate}
+                className={s.activateButton}
+                title="Activar"
+              >
                 <span className="material-symbols-outlined">play_circle</span>
               </button>
             )}
 
             {productStatus !== "deleted" && (
-              <button onClick={handleSoftDelete} className={s.softDeleteButton} title="Eliminar">
-                <span className="material-symbols-outlined">delete_outline</span>
+              <button
+                onClick={handleSoftDelete}
+                className={s.softDeleteButton}
+                title="Eliminar"
+              >
+                <span className="material-symbols-outlined">
+                  delete_outline
+                </span>
               </button>
             )}
 
             {productStatus === "deleted" && (
-              <button onClick={handleRestore} className={s.activateButton} title="Restaurar">
+              <button
+                onClick={handleRestore}
+                className={s.activateButton}
+                title="Restaurar"
+              >
                 <span className="material-symbols-outlined">restore</span>
               </button>
             )}
 
-            <button onClick={handleDelete} className={s.deleteButton} title="Eliminar Permanente">
+            {/* <button onClick={handleDelete} className={s.deleteButton} title="Eliminar Permanente">
               <span className="material-symbols-outlined">delete_forever</span>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
