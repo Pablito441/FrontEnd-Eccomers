@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background: #f8f9fa;
+  background: transparent;
   width: 80%;
 }
 
@@ -19,7 +19,7 @@
   border-radius: 0;
   padding: 2rem;
   margin-bottom: 2rem;
-  width: 80
+  width: 80;
 }
 
 .sectionTitle {
@@ -105,7 +105,24 @@
   justify-content: center;
   margin-top: 2rem;
 }
-
+.addAddressButton {
+  background: #000;
+  color: white;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 0.75rem 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 120px;
+}
+.addAddressButton:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+  box-shadow: 2px 2px 0px #000;
+  transform: translate(-1px, -1px);
+}
 .saveButton {
   background: #000;
   color: white;
@@ -448,31 +465,31 @@
   .container {
     padding: 1rem;
   }
-  
+
   .orderHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .orderHeaderRight {
     align-self: flex-end;
   }
-  
+
   .orderItem {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .itemImage {
     width: 100%;
     height: 200px;
   }
-  
+
   .infoGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .formGrid {
     grid-template-columns: 1fr;
   }

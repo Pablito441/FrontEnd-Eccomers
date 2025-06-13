@@ -91,3 +91,68 @@
     gap: 1rem;
   }
 }
+
+.noProducts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  margin: 24px 0;
+}
+
+.noProducts .material-symbols-outlined {
+  font-size: 48px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.noProducts h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.noProducts p {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.noProducts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.noProducts li {
+  color: #666;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.clearFiltersButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.clearFiltersButton:hover {
+  background-color: #333;
+}
+
+.clearFiltersButton .material-symbols-outlined {
+  font-size: 1.25rem;
+}

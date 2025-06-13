@@ -7,14 +7,18 @@ interface DropdownProps {
   options?: string[];
   onSelect?: (option: string | null) => void;
   selectedOption?: string | null;
+  isOpen?: boolean;
+  onToggle?: (isOpen: boolean) => void;
 }
 
 export const Dropdown = ({
   title,
-  options,
   children,
+  options,
   onSelect,
   selectedOption,
+  isOpen: controlledIsOpen,
+  onToggle,
 }: DropdownProps) => {
   const [open, setOpen] = useState(false);
 
@@ -28,18 +32,24 @@ export const Dropdown = ({
     }
   };
 
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : open;
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle(!isOpen);
+    } else {
+      setOpen((prev) => !prev);
+    }
+  };
+
   return (
     <div className={styles.dropdown}>
-      <div
-        className={styles.dropdownHeader}
-        onClick={() => setOpen((prev) => !prev)}
-      >
+      <div className={styles.dropdownHeader} onClick={handleToggle}>
         <span>{title}</span>
         <span className="material-symbols-outlined">
-          {open ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+          {isOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"}
         </span>
       </div>
-      {open && (
+      {isOpen && (
         <div>
           {children ? (
             children

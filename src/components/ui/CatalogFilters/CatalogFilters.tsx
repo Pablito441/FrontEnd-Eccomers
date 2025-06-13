@@ -16,12 +16,14 @@ export const CatalogFilters = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [colorCounts, setColorCounts] = useState<Record<string, number>>({});
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   // Leer la categoría de la URL cuando se carga el componente
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
     if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
+      setIsCategoryOpen(true); // Abrir el dropdown cuando hay una categoría en la URL
       // Emitir evento con la categoría seleccionada
       const event = new CustomEvent("categoryChange", {
         detail: categoryFromUrl,
@@ -159,6 +161,32 @@ export const CatalogFilters = () => {
   // Obtener el tipo de la primera categoría (asumiendo que todas las categorías son del mismo tipo)
   const typeName = categories[0]?.type?.name || "Categorías";
 
+  // Escuchar el evento de limpiar filtros
+  useEffect(() => {
+    const handleClearFilters = () => {
+      setSelectedSize(null);
+      setPrice({ min: "", max: "" });
+      setSelectedColors([]);
+      setSelectedCategory(null);
+      setIsCategoryOpen(false);
+
+      // Emitir eventos para limpiar los filtros en otros componentes
+      window.dispatchEvent(new CustomEvent("sizeChange", { detail: null }));
+      window.dispatchEvent(new CustomEvent("colorChange", { detail: [] }));
+      window.dispatchEvent(
+        new CustomEvent("priceChange", {
+          detail: { min: null, max: null },
+        })
+      );
+      window.dispatchEvent(new CustomEvent("categoryChange", { detail: null }));
+    };
+
+    window.addEventListener("clearFilters", handleClearFilters);
+    return () => {
+      window.removeEventListener("clearFilters", handleClearFilters);
+    };
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.title}>CLASSICS</div>
@@ -167,6 +195,8 @@ export const CatalogFilters = () => {
         options={categories.map((cat) => cat.name)}
         onSelect={handleCategorySelect}
         selectedOption={selectedCategory}
+        isOpen={isCategoryOpen}
+        onToggle={setIsCategoryOpen}
       />
       <Dropdown title="Talle Calzado">
         <div className={styles.sizesGrid}>
