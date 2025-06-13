@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Landing } from "../components/screens/Landing/Landing";
 import { Catalog } from "../components/screens/Catalog/Catalog";
 import { ProductDetails } from "../components/screens/ProductDetails/ProductDetails";
-import { LoginRegister } from "../components/screens/LoginRegister/LoginRegister";
 import { Login } from "../components/screens/Login/Login";
 import { Register } from "../components/screens/Register/Register";
 import { ShoppingCart } from "../components/screens/ShoppingCart/ShoppingCart";
@@ -17,7 +16,7 @@ import { PaymentInstructions } from "../components/screens/PaymentInstructions/P
 import { AdminProducts } from "../pages/admin/AdminProducts";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import OrderStatus from "../components/screens/OrderStatus/OrderStatus";
-import TestPayment from '../components/screens/TestPayment/TestPayment';
+import TestPayment from "../components/screens/TestPayment/TestPayment";
 
 export const AppRouter = () => {
   return (
@@ -135,14 +134,7 @@ export const AppRouter = () => {
           </ScrollToTop>
         }
       />
-      <Route
-        path="/loginRegister"
-        element={
-          <ScrollToTop>
-            <LoginRegister />
-          </ScrollToTop>
-        }
-      />
+
       <Route path="/productDetail" element={<ProductDetails />} />
       <Route
         path="/catalog"
@@ -160,7 +152,14 @@ export const AppRouter = () => {
           </ScrollToTop>
         }
       />
-      <Route path="/testPayment" element={<ScrollToTop><TestPayment /></ScrollToTop>} />
+      <Route
+        path="/testPayment"
+        element={
+          <ScrollToTop>
+            <TestPayment />
+          </ScrollToTop>
+        }
+      />
       <Route path="*" element={<Navigate to="/landing" replace />} />
     </Routes>
   );

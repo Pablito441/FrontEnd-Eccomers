@@ -1,5 +1,5 @@
 .container {
-  background: #f8f9fa;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -297,12 +297,12 @@
   .mainContent {
     flex-direction: column;
   }
-  
+
   .leftColumn {
     border-right: none;
     border-bottom: 2px solid #000;
   }
-  
+
   .rightColumn {
     border-bottom: none;
   }
@@ -312,35 +312,35 @@
   .container {
     padding: 1rem;
   }
-  
+
   .card {
     margin: 0;
   }
-  
+
   .header {
     padding: 1rem;
   }
-  
+
   .title {
     font-size: 1.4rem;
   }
-  
+
   .orderInfo,
   .paymentSection,
   .contactSection {
     padding: 1rem;
   }
-  
+
   .actions {
     flex-direction: column;
     padding: 1rem;
   }
-  
+
   .contactOptions {
     gap: 0.75rem;
   }
-  
+
   .contactOption {
     padding: 0.75rem;
   }
-} 
+}

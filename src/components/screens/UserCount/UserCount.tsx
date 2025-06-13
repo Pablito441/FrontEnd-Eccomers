@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../hooks/useUserStore";
 import { useMyOrdersStore } from "../../../hooks/useMyOrdersStore";
@@ -11,7 +10,6 @@ import { Input } from "../../ui/Input/Input";
 import styles from "./UserCount.module.css";
 import type { IAdress } from "../../../types/IAdress";
 import Swal from "sweetalert2";
-import axios from "axios";
 
 // Interfaz para las direcciones del usuario
 interface IMyAddressResponse {
@@ -32,7 +30,7 @@ interface IMyAddressResponse {
 export const UserCount = () => {
   const navigate = useNavigate();
   const { currentUser, isAuthenticated } = useUserStore();
-  
+
   // Hook para órdenes del usuario (clientes)
   const {
     orders: myOrders,
@@ -50,18 +48,19 @@ export const UserCount = () => {
   } = usePurchaseOrderStore();
 
   const {
-    items: addresses,
     loading: loadingAddresses,
     error: errorAddresses,
     fetchAll: fetchAddresses,
     create: createAddress,
     update: updateAddress,
   } = useAddressStore();
-  
+
   // Estado local para las direcciones del usuario
   const [userAddresses, setUserAddresses] = useState<IMyAddressResponse[]>([]);
   const [loadingUserAddresses, setLoadingUserAddresses] = useState(false);
-  const [errorUserAddresses, setErrorUserAddresses] = useState<string | null>(null);
+  const [errorUserAddresses, setErrorUserAddresses] = useState<string | null>(
+    null
+  );
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentAddress, setCurrentAddress] = useState<Partial<IAdress>>({
@@ -78,12 +77,12 @@ export const UserCount = () => {
   const isAdmin = currentUser?.role === "ADMIN";
 
   // Función para cargar las direcciones del usuario
-  const loadUserAddresses = async () => {
+  const loadUserAddresses = useCallback(async () => {
     if (!currentUser?.id) return;
-    
+
     setLoadingUserAddresses(true);
     setErrorUserAddresses(null);
-    
+
     try {
       const addresses = await userAddressService.getMyAddresses();
       console.log("Direcciones cargadas:", addresses);
@@ -94,7 +93,7 @@ export const UserCount = () => {
     } finally {
       setLoadingUserAddresses(false);
     }
-  };
+  }, [currentUser?.id]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -106,7 +105,7 @@ export const UserCount = () => {
     if (currentUser?.id) {
       fetchAddresses();
       loadUserAddresses();
-      
+
       // Si es admin, cargar todas las órdenes, si es cliente, solo las suyas
       if (isAdmin) {
         fetchAllOrders();
@@ -114,62 +113,72 @@ export const UserCount = () => {
         fetchMyOrders();
       }
     }
-  }, [currentUser?.id, isAdmin, fetchAddresses, fetchAllOrders, fetchMyOrders]);
+  }, [
+    currentUser?.id,
+    isAdmin,
+    fetchAddresses,
+    fetchAllOrders,
+    fetchMyOrders,
+    loadUserAddresses,
+  ]);
 
   const handleApproveOrder = async (orderId: number) => {
     const { value: paymentId } = await Swal.fire({
-      title: 'Aprobar Orden',
-      text: 'Ingresa el ID de pago para confirmar la transacción:',
-      input: 'text',
-      inputPlaceholder: 'ID de pago (ej: PAY-123456789)',
+      title: "Aprobar Orden",
+      text: "Ingresa el ID de pago para confirmar la transacción:",
+      input: "text",
+      inputPlaceholder: "ID de pago (ej: PAY-123456789)",
       showCancelButton: true,
-      confirmButtonText: 'Aprobar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#6c757d',
+      confirmButtonText: "Aprobar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#6c757d",
       inputValidator: (value) => {
         if (!value) {
-          return 'Debes ingresar un ID de pago';
+          return "Debes ingresar un ID de pago";
         }
         if (value.length < 5) {
-          return 'El ID de pago debe tener al menos 5 caracteres';
+          return "El ID de pago debe tener al menos 5 caracteres";
         }
-      }
+      },
     });
 
     if (paymentId) {
       setApprovingOrder(orderId);
       try {
-        const updatedOrder = await purchaseOrderService.approveOrder(orderId, paymentId);
-        
+        const updatedOrder = await purchaseOrderService.approveOrder(
+          orderId,
+          paymentId
+        );
+
         if (updatedOrder) {
           await Swal.fire({
-            title: '¡Orden Aprobada!',
+            title: "¡Orden Aprobada!",
             text: `La orden #${orderId} ha sido aprobada exitosamente con el ID de pago: ${paymentId}`,
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#28a745'
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#28a745",
           });
-          
+
           // Recargar las órdenes para mostrar el estado actualizado
           await fetchAllOrders();
         } else {
           await Swal.fire({
-            title: 'Error',
-            text: 'No se pudo aprobar la orden. Por favor, intenta nuevamente.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#dc3545'
+            title: "Error",
+            text: "No se pudo aprobar la orden. Por favor, intenta nuevamente.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#dc3545",
           });
         }
       } catch (error) {
-        console.error('Error al aprobar orden:', error);
+        console.error("Error al aprobar orden:", error);
         await Swal.fire({
-          title: 'Error',
-          text: 'Ocurrió un error al aprobar la orden. Por favor, intenta nuevamente.',
-          icon: 'error',
-          confirmButtonText: 'Aceptar',
-          confirmButtonColor: '#dc3545'
+          title: "Error",
+          text: "Ocurrió un error al aprobar la orden. Por favor, intenta nuevamente.",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#dc3545",
         });
       } finally {
         setApprovingOrder(null);
@@ -202,7 +211,7 @@ export const UserCount = () => {
           title: "¡Éxito!",
           text: "Dirección actualizada exitosamente",
           icon: "success",
-          confirmButtonColor: "#000"
+          confirmButtonColor: "#000",
         });
       } else {
         // Crear nueva dirección
@@ -230,7 +239,7 @@ export const UserCount = () => {
           title: "¡Éxito!",
           text: "Dirección creada exitosamente",
           icon: "success",
-          confirmButtonColor: "#000"
+          confirmButtonColor: "#000",
         });
       }
 
@@ -253,7 +262,7 @@ export const UserCount = () => {
         title: "Error",
         text: "Error al guardar la dirección. Por favor, intente nuevamente.",
         icon: "error",
-        confirmButtonColor: "#000"
+        confirmButtonColor: "#000",
       });
     }
   };
@@ -275,22 +284,35 @@ export const UserCount = () => {
       confirmButtonColor: "#000",
       cancelButtonColor: "#d33",
       confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
+      cancelButtonText: "Cancelar",
     });
 
     if (result.isConfirmed) {
       try {
-        // Usar el endpoint específico para soft delete
-        await axios.put(`http://localhost:9000/api/v1/addresses/${addressId}/soft-delete`);
-        
+        // Encontrar la dirección actual para mantener sus datos
+        const currentAddress = userAddresses.find(
+          (ua) => ua.addressId === addressId
+        )?.adress;
+
+        if (!currentAddress) {
+          throw new Error("No se encontró la dirección");
+        }
+
+        // Actualizar la dirección manteniendo sus datos, cambiando isActive y agregando deletedAt
+        await updateAddress(addressId, {
+          ...currentAddress,
+          isActive: false,
+          deletedAt: new Date().toISOString(),
+        });
+
         // Recargar las direcciones del usuario
         await loadUserAddresses();
-        
+
         await Swal.fire({
           title: "¡Eliminado!",
           text: "La dirección ha sido eliminada exitosamente",
           icon: "success",
-          confirmButtonColor: "#000"
+          confirmButtonColor: "#000",
         });
       } catch (error) {
         console.error("Error al eliminar la dirección:", error);
@@ -298,7 +320,7 @@ export const UserCount = () => {
           title: "Error",
           text: "Error al eliminar la dirección. Por favor, intente nuevamente.",
           icon: "error",
-          confirmButtonColor: "#000"
+          confirmButtonColor: "#000",
         });
       }
     }
@@ -320,34 +342,34 @@ export const UserCount = () => {
     .filter((address): address is IAdress => address !== undefined);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
       minimumFractionDigits: 0,
     }).format(price);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return '#f39c12';
-      case 'PAID':
-        return '#27ae60';
-      case 'CANCELLED':
-        return '#e74c3c';
+      case "PENDING":
+        return "#f39c12";
+      case "PAID":
+        return "#27ae60";
+      case "CANCELLED":
+        return "#e74c3c";
       default:
-        return '#95a5a6';
+        return "#95a5a6";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return 'Pendiente';
-      case 'PAID':
-        return 'Pagado';
-      case 'CANCELLED':
-        return 'Cancelado';
+      case "PENDING":
+        return "Pendiente";
+      case "PAID":
+        return "Pagado";
+      case "CANCELLED":
+        return "Cancelado";
       default:
         return status;
     }
@@ -355,7 +377,6 @@ export const UserCount = () => {
 
   return (
     <div className={styles.container}>
-
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Información Personal</h2>
         <div className={styles.infoGrid}>
@@ -394,7 +415,9 @@ export const UserCount = () => {
           {loadingAddresses || loadingUserAddresses ? (
             <p>Cargando dirección...</p>
           ) : errorAddresses || errorUserAddresses ? (
-            <p className={styles.error}>{errorAddresses || errorUserAddresses}</p>
+            <p className={styles.error}>
+              {errorAddresses || errorUserAddresses}
+            </p>
           ) : (
             <>
               {!currentUserAddresses.length && !isEditing && (
@@ -451,7 +474,11 @@ export const UserCount = () => {
 
               {isEditing && (
                 <div className={styles.addressForm}>
-                  <h3>{currentAddress.id ? "Editar Dirección" : "Agregar Dirección"}</h3>
+                  <h3>
+                    {currentAddress.id
+                      ? "Editar Dirección"
+                      : "Agregar Dirección"}
+                  </h3>
                   <div className={styles.formGrid}>
                     <Input
                       name="street"
@@ -495,7 +522,7 @@ export const UserCount = () => {
                       onClick={handleSaveAddress}
                       className={styles.saveButton}
                     >
-                      ACTUALIZAR
+                      GUARDAR
                     </button>
                     <button
                       onClick={() => {
@@ -531,7 +558,9 @@ export const UserCount = () => {
                     <div key={address.id} className={styles.addressCard}>
                       <div className={styles.addressInfo}>
                         <p>{address.street}</p>
-                        <p>{address.town}, {address.state}</p>
+                        <p>
+                          {address.town}, {address.state}
+                        </p>
                         <p>{address.cpi}</p>
                         <p>{address.country}</p>
                       </div>
@@ -567,43 +596,53 @@ export const UserCount = () => {
         ) : errorOrders ? (
           <p className={styles.error}>{errorOrders}</p>
         ) : ordersToShow.length === 0 ? (
-          <p>{isAdmin ? "No hay órdenes en el sistema" : "No tienes pedidos realizados"}</p>
+          <p>
+            {isAdmin
+              ? "No hay órdenes en el sistema"
+              : "No tienes pedidos realizados"}
+          </p>
         ) : (
           <div className={styles.ordersList}>
             {ordersToShow.map((order) => (
               <div key={order.id} className={styles.orderCard}>
                 <div className={styles.orderHeader}>
                   <div className={styles.orderHeaderLeft}>
-                    <span className={styles.orderNumber}>Pedido #{order.id}</span>
+                    <span className={styles.orderNumber}>
+                      Pedido #{order.id}
+                    </span>
                     <span className={styles.orderDate}>
-                      {new Date(order.createdAt).toLocaleDateString('es-AR')}
+                      {new Date(order.createdAt).toLocaleDateString("es-AR")}
                     </span>
                   </div>
                   <div className={styles.orderHeaderRight}>
-                    <span 
+                    <span
                       className={styles.orderStatus}
-                      style={{ 
+                      style={{
                         backgroundColor: getStatusColor(order.status),
-                        color: 'white',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '12px'
+                        color: "white",
+                        padding: "4px 8px",
+                        borderRadius: "4px",
+                        fontSize: "12px",
                       }}
                     >
                       {getStatusText(order.status)}
                     </span>
-                    {isAdmin && order.status === 'PENDING' && (
+                    {isAdmin && order.status === "PENDING" && (
                       <button
                         onClick={() => handleApproveOrder(order.id)}
                         disabled={approvingOrder === order.id}
                         className={styles.approveButton}
                       >
-                        {approvingOrder === order.id ? 'APROBANDO...' : 'APROBAR'}
+                        {approvingOrder === order.id
+                          ? "APROBANDO..."
+                          : "APROBAR"}
                       </button>
                     )}
-                    {!isAdmin && order.status === 'PENDING' && (
+                    {!isAdmin && order.status === "PENDING" && (
                       <button
-                        onClick={() => navigate(`/payment-instructions/${order.id}`)}
+                        onClick={() =>
+                          navigate(`/payment-instructions/${order.id}`)
+                        }
                         className={styles.payButton}
                       >
                         PAGAR
@@ -615,7 +654,9 @@ export const UserCount = () => {
                 {isAdmin && order.user && (
                   <div className={styles.customerInfo}>
                     <h4>Cliente:</h4>
-                    <p>{order.user.name} {order.user.lastName}</p>
+                    <p>
+                      {order.user.name} {order.user.lastName}
+                    </p>
                     <p>{order.user.email}</p>
                   </div>
                 )}
@@ -628,17 +669,19 @@ export const UserCount = () => {
                     Método de pago: {order.paymentMethod}
                     {order.paymentId && (
                       <span className={styles.paymentId}>
-                        {" "}| ID de pago: {order.paymentId}
+                        {" "}
+                        | ID de pago: {order.paymentId}
                       </span>
                     )}
                   </div>
-                  
+
                   {order.usersAdress?.adress && (
                     <div className={styles.orderAddress}>
                       <h4>Dirección de entrega:</h4>
                       <p>{order.usersAdress.adress.street}</p>
                       <p>
-                        {order.usersAdress.adress.town}, {order.usersAdress.adress.state}
+                        {order.usersAdress.adress.town},{" "}
+                        {order.usersAdress.adress.state}
                       </p>
                       <p>CP: {order.usersAdress.adress.cpi}</p>
                       <p>{order.usersAdress.adress.country}</p>
@@ -651,11 +694,11 @@ export const UserCount = () => {
                       {order.details.map((detail) => (
                         <div key={detail.id} className={styles.orderItem}>
                           <div className={styles.itemImage}>
-                            <img 
-                              src={detail.product.image} 
+                            <img
+                              src={detail.product.image}
                               alt={detail.product.name}
                               onError={(e) => {
-                                e.currentTarget.src = '/placeholder-image.jpg';
+                                e.currentTarget.src = "/placeholder-image.jpg";
                               }}
                             />
                           </div>
@@ -663,8 +706,18 @@ export const UserCount = () => {
                             <h5>{detail.product.name}</h5>
                             <p>Talle: {detail.size.number}</p>
                             <p>Cantidad: {detail.quantity}</p>
-                            <p>Precio unitario: {formatPrice(detail.product.price)}</p>
-                            <p><strong>Subtotal: {formatPrice(detail.product.price * detail.quantity)}</strong></p>
+                            <p>
+                              Precio unitario:{" "}
+                              {formatPrice(detail.product.price)}
+                            </p>
+                            <p>
+                              <strong>
+                                Subtotal:{" "}
+                                {formatPrice(
+                                  detail.product.price * detail.quantity
+                                )}
+                              </strong>
+                            </p>
                           </div>
                         </div>
                       ))}

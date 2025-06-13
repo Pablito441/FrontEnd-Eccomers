@@ -86,15 +86,12 @@ class UserAddressService {
         throw new Error("No hay token válido");
       }
 
-      const response = await axios.get(
-        `${BASE_URL}/my-addresses`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      
+      const response = await axios.get(`${BASE_URL}/my-addresses`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       console.log("Respuesta del servidor:", response.data);
       return response.data;
     } catch (error) {
