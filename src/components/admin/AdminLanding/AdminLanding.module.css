@@ -2,95 +2,124 @@
   width: 100%;
   padding: 20px;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header {
   margin-bottom: 30px;
+  background-color: #fff;
+  padding: 20px;
+  border: 3px solid #000;
 }
 
 .header h1 {
   font-size: 24px;
-  color: #333;
+  color: #000;
   margin-bottom: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .uploadSection {
-  background-color: #f5f5f5;
+  background-color: transparent;
   padding: 20px;
-  border-radius: 8px;
+  border: 3px solid #000;
 }
 
 .uploadControls {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
 .productSelect {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .productSelect label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #666;
+  gap: 10px;
+  font-size: 16px;
+  color: #000;
+  font-weight: 600;
 }
 
 .productSelect select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 10px;
+  border: 3px solid #000;
+  font-size: 16px;
   width: 100%;
   max-width: 300px;
+  background-color: #fff;
+  color: #000;
+  transition: all 0.2s ease;
+}
+
+.productSelect select:focus {
+  outline: none;
+  border-color: #000;
 }
 
 .fileInput {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .fileInput input[type="file"] {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 10px;
+  border: 3px solid #000;
+  font-size: 16px;
+  background-color: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+.fileInput input[type="file"]::file-selector-button {
+  padding: 8px 16px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.fileInput input[type="file"]::file-selector-button:hover {
+  background-color: #333;
 }
 
 .fileInput span {
-  color: #666;
-  font-size: 14px;
+  color: #000;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .carouselGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  margin: 2rem 0rem;
 }
 
 .carouselItem {
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  background-color: #fff;
   overflow: hidden;
   transition: transform 0.2s ease;
+  border: 3px solid #000;
 }
 
 .carouselItem:hover {
-  transform: translateY(-2px);
+  transform: translateY(-5px);
 }
 
 .imageContainer {
   position: relative;
   aspect-ratio: 16/9;
   overflow: hidden;
+  background-color: #fff;
 }
 
 .imageContainer img {
@@ -107,38 +136,75 @@
 
 .removeButton {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  top: 15px;
+  right: 15px;
+  background-color: #fff;
+  border: 3px solid #000;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  color: #000;
 }
 
 .removeButton:hover {
-  background-color: #ff4444;
-  color: white;
+  background-color: #000;
+  color: #fff;
 }
 
 .imageInfo {
-  padding: 15px;
+  padding: 20px;
+  background-color: #fff;
+  border-top: 3px solid #000;
 }
 
 .imageInfo p {
   margin: 0;
-  font-size: 14px;
-  color: #666;
-  line-height: 1.4;
+  font-size: 16px;
+  color: #000;
+  line-height: 1.5;
 }
 
 .imageInfo p:first-child {
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+/* Estilos para el checkbox */
+.productSelect input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  accent-color: #000;
+}
+
+/* Estilos para el estado disabled */
+.fileInput input[type="file"]:disabled,
+.productSelect select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-color: #999;
+}
+
+/* Estilos para el mensaje de carga */
+.fileInput span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #000;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 5px;
+}
+
+/* Separador entre secciones */
+.header + .header {
+  margin-top: 50px;
+  padding-top: 35px;
+  border-top: 3px solid #000;
 }
