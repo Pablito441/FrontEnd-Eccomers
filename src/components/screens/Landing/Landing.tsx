@@ -14,20 +14,41 @@ export const Landing = () => {
     fetchAllProducts();
   }, [fetchAllProducts]);
 
-  const images = [
-    "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/20/10859330.png",
-    "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/6/2/10895911.png",
-    "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/6/9/10920110.png",
-    "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/28/10880983.png",
+  const carouselItems = [
+    {
+      image:
+        "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/20/10859330.png",
+      productName: "U SK8-HI",
+    },
+    {
+      image:
+        "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/6/11/10929494.png",
+      productName: "U MTE Sk8-Hi GORE-TEX",
+    },
+    {
+      image:
+        "https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/28/10880983.png",
+      productName: "M Skate Curren Caples",
+    },
   ];
 
+  const handleCarouselClick = (productName: string) => {
+    console.log("Buscando producto:", productName);
+    navigate(`/catalog?search=${encodeURIComponent(productName)}`);
+    window.scrollTo(0, 0);
+  };
+
   const prev = () => {
-    setCurrent((current) => (current === 0 ? images.length - 1 : current - 1));
+    setCurrent((current) =>
+      current === 0 ? carouselItems.length - 1 : current - 1
+    );
   };
 
   const next = useCallback(() => {
-    setCurrent((current) => (current === images.length - 1 ? 0 : current + 1));
-  }, [images.length]);
+    setCurrent((current) =>
+      current === carouselItems.length - 1 ? 0 : current + 1
+    );
+  }, [carouselItems.length]);
 
   const prevProduct = () => {
     setCurrentProduct((current) =>
@@ -61,15 +82,22 @@ export const Landing = () => {
           arrow_back_ios
         </span>
         <div className={s.carouselContainer}>
-          {images.map((src, index) => (
-            <img
-              key={src}
-              src={src}
-              alt={`Slide ${index + 1}`}
+          {carouselItems.map((item, index) => (
+            <div
+              key={item.image}
               className={`${s.carouselImage} ${
                 index === current ? s.active : ""
               }`}
-            />
+              onClick={() => {
+                if (index === current) {
+                  console.log("Click en imagen:", index);
+                  console.log("Producto a buscar:", item.productName);
+                  handleCarouselClick(item.productName);
+                }
+              }}
+            >
+              <img src={item.image} alt={`Slide ${index + 1}`} />
+            </div>
           ))}
         </div>
         <span
@@ -109,6 +137,7 @@ export const Landing = () => {
           <img
             src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2023/3/8/8157787.jpg"
             className={s.landingImgStyle}
+            onClick={() => navigate("/catalog")}
           />
           <div className={s.landingContainerButton}>
             <button
@@ -122,9 +151,39 @@ export const Landing = () => {
 
         <div className={s.landingBuyByCategories}>
           <div className={s.landingCateogiries}>
-            <img src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/7/10764449.png" />
-            <img src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/7/10764448.png" />
-            <img src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/7/10764450.png" />
+            <img
+              src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/7/10764449.png"
+              onClick={() => {
+                console.log("Buscando producto:", "U Super Lowpro");
+                navigate(
+                  `/catalog?search=${encodeURIComponent("U Super Lowpro")}`
+                );
+                window.scrollTo(0, 0);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+            <img
+              src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/7/10764448.png"
+              onClick={() => {
+                console.log("Buscando producto:", "U Super Lowpro");
+                navigate(
+                  `/catalog?search=${encodeURIComponent("U Super Lowpro")}`
+                );
+                window.scrollTo(0, 0);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+            <img
+              src="https://mmgrim2.azureedge.net/MediaFiles/Grimoldi/2025/5/7/10764450.png"
+              onClick={() => {
+                console.log("Buscando producto:", "U Super Lowpro");
+                navigate(
+                  `/catalog?search=${encodeURIComponent("U Super Lowpro")}`
+                );
+                window.scrollTo(0, 0);
+              }}
+              style={{ cursor: "pointer" }}
+            />
           </div>
         </div>
       </div>

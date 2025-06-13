@@ -134,9 +134,9 @@ export const CatalogProducts = () => {
       const categoryNameLower = product.category?.name.toLowerCase() || "";
 
       if (
-        !productNameLower.includes(searchLower) &&
-        !brandNameLower.includes(searchLower) &&
-        !categoryNameLower.includes(searchLower)
+        productNameLower !== searchLower &&
+        brandNameLower !== searchLower &&
+        categoryNameLower !== searchLower
       ) {
         return false;
       }
@@ -172,6 +172,21 @@ export const CatalogProducts = () => {
     return true;
   });
 
+  const getActiveFilters = () => {
+    const filters = [];
+    if (selectedCategory) filters.push(`categoría: ${selectedCategory}`);
+    if (selectedSize) filters.push(`talle: ${selectedSize}`);
+    if (selectedColors.length > 0)
+      filters.push(`colores: ${selectedColors.join(", ")}`);
+    if (priceRange.min !== null || priceRange.max !== null) {
+      const min = priceRange.min !== null ? `$${priceRange.min}` : "mínimo";
+      const max = priceRange.max !== null ? `$${priceRange.max}` : "máximo";
+      filters.push(`precio: ${min} - ${max}`);
+    }
+    if (searchTerm) filters.push(`búsqueda: "${searchTerm}"`);
+    return filters;
+  };
+
   return (
     <div className={s.container}>
       <div className={s.header}>
@@ -202,25 +217,45 @@ export const CatalogProducts = () => {
           </span>
         </div>
       </div>
-      <div
-        className={s.grid}
-        style={{
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        }}
-      >
-        {filteredProducts.map((product) => (
-          <CardCatalogProduct key={product.id} product={product} />
-        ))}
-      </div>
-      <div className={s.description}>
-        <span className={s.titlte}>Classics Vans</span>
-        <span>
-          Compra Zapatillas Classics Vans. Variedad de colores y talles.
-          Recibílo en tu casa o retirá gratis en el local más cercano. Descubrí
-          todo lo que tenemos para vos en la única tienda oficial de Vans en
-          Argentina.
-        </span>
-      </div>
+      {filteredProducts.length > 0 ? (
+        <>
+          <div
+            className={s.grid}
+            style={{
+              gridTemplateColumns: `repeat(${columns}, 1fr)`,
+            }}
+          >
+            {filteredProducts.map((product) => (
+              <CardCatalogProduct key={product.id} product={product} />
+            ))}
+          </div>
+
+          <div className={s.description}>
+            <span className={s.titlte}>Classics Vans</span>
+            <span>
+              Compra Zapatillas Classics Vans. Variedad de colores y talles.
+              Recibílo en tu casa o retirá gratis en el local más cercano.
+              Descubrí todo lo que tenemos para vos en la única tienda oficial
+              de Vans en Argentina.
+            </span>
+          </div>
+        </>
+      ) : (
+        <div className={s.noProducts}>
+          <span className="material-symbols-outlined">search_off</span>
+          <h3>No se encontraron productos</h3>
+          {getActiveFilters().length > 0 && (
+            <>
+              <p>con las siguientes características:</p>
+              <ul>
+                {getActiveFilters().map((filter, index) => (
+                  <li key={index}>{filter}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
