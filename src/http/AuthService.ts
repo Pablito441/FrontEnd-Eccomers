@@ -28,7 +28,23 @@ export interface RegisterRequest {
   isActive: boolean;
 }
 
-export const authService = {
+export interface ILoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface ILoginResponse {
+  token: string;
+  user: {
+    id: number;
+    email: string;
+    role: string;
+  };
+}
+
+class AuthService {
+  private apiUrl = "http://localhost:9000/api/v1/auth";
+
   async login(credentials: LoginRequest): Promise<{ token: string; user: IUser } | null> {
     try {
       console.log("Intentando login con:", credentials);
@@ -80,7 +96,7 @@ export const authService = {
       }
       return null;
     }
-  },
+  }
 
   async register(userData: RegisterRequest): Promise<{ token: string; user: IUser } | null> {
     try {
@@ -133,22 +149,22 @@ export const authService = {
       }
       return null;
     }
-  },
+  }
 
   async logout(): Promise<void> {
     // Limpiar token del localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("isAuthenticated");
-  },
+  }
 
   getToken(): string | null {
     return localStorage.getItem("token");
-  },
+  }
 
   setToken(token: string): void {
     localStorage.setItem("token", token);
-  },
+  }
 
   isTokenValid(): boolean {
     const token = this.getToken();
@@ -163,4 +179,62 @@ export const authService = {
       return false;
     }
   }
-}; 
+
+  // Login de administrador
+  async loginAdmin(email: string, password: string): Promise<string | null> {
+    try {
+      const response = await axios.post(`${this.apiUrl}/login`, {
+        email,
+        password
+      });
+
+      const data: ILoginResponse = response.data;
+      
+      // Guardar token en localStorage
+      localStorage.setItem('adminToken', data.token);
+      
+      return data.token;
+    } catch (error) {
+      console.error('Error en login de admin:', error);
+      return null;
+    }
+  }
+
+  // Obtener token actual
+  getAdminToken(): string | null {
+    return localStorage.getItem('adminToken');
+  }
+
+  // Verificar si hay token válido
+  isAdminAuthenticated(): boolean {
+    const token = this.getAdminToken();
+    return token !== null && token !== '';
+  }
+
+  // Logout
+  logoutAdmin(): void {
+    localStorage.removeItem('adminToken');
+  }
+
+  // Verificar si el token es válido (opcional)
+  async verifyToken(): Promise<boolean> {
+    try {
+      const token = this.getAdminToken();
+      if (!token) return false;
+
+      const response = await axios.get(`${this.apiUrl}/verify`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      return response.status === 200;
+    } catch (error) {
+      console.error('Error al verificar token:', error);
+      this.logoutAdmin(); // Limpiar token inválido
+      return false;
+    }
+  }
+}
+
+export const authService = new AuthService(); 

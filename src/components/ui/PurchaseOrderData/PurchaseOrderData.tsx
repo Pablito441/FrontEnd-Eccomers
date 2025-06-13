@@ -4,9 +4,12 @@ import { Input } from "../Input/Input";
 import { useUserStore } from "../../../hooks/useUserStore";
 import { useCartStore } from "../../../hooks/useCartStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
+import { useOrderManagement } from "../../../hooks/useOrderManagement";
 import { purchaseOrderService } from "../../../http/PurchaseOrderService";
 import { userAddressService } from "../../../http/UserAddressService";
+import type { ICartItem } from "../../../http/OrderDetailService";
 import s from "./PurchaseOrderData.module.css";
+import Swal from "sweetalert2";
 
 // Interfaz corregida para coincidir con la estructura real del backend
 interface IMyAddressResponse {
@@ -29,12 +32,19 @@ export const PurchaseOrderData = () => {
   const { currentUser } = useUserStore();
   const { items: cartItems, clearCart } = useCartStore();
   const { items: sizes } = useSizeStore();
+  
+  // Hook para gestión de órdenes
+  const {
+    confirmPurchase,
+    checkStock,
+    clearError
+  } = useOrderManagement();
 
   const [userAddresses, setUserAddresses] = useState<IMyAddressResponse[]>([]);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    null
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [stockWarnings, setStockWarnings] = useState<string[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [formData, setFormData] = useState({
     shippingMethod: "domicilio",
@@ -63,6 +73,32 @@ export const PurchaseOrderData = () => {
       loadUserAddresses();
     }
   }, [currentUser]);
+
+  // Verificar stock cuando cambie el carrito
+  useEffect(() => {
+    const verifyStock = async () => {
+      if (cartItems.length === 0) return;
+      
+      const warnings: string[] = [];
+      
+      for (const item of cartItems) {
+        // Buscar el sizeId correspondiente al talle del item
+        const sizeObj = sizes.find((s) => s.number === item.size);
+        if (!sizeObj) continue;
+        
+        const currentStock = await checkStock(sizeObj.id, item.product.id);
+        if (currentStock < item.quantity) {
+          warnings.push(
+            `${item.product.name} (Talla ${item.size}): Stock disponible ${currentStock}, en carrito ${item.quantity}`
+          );
+        }
+      }
+      
+      setStockWarnings(warnings);
+    };
+
+    verifyStock();
+  }, [cartItems, sizes, checkStock]);
 
   const loadUserAddresses = async () => {
     try {
@@ -103,19 +139,55 @@ export const PurchaseOrderData = () => {
     e.preventDefault();
 
     if (!currentUser?.id) {
-      alert("Debe iniciar sesión para continuar");
+      await Swal.fire({
+        title: 'Error',
+        text: 'Debe iniciar sesión para continuar',
+        icon: 'error'
+      });
       return;
     }
 
     if (cartItems.length === 0) {
-      alert("El carrito está vacío");
+      await Swal.fire({
+        title: 'Carrito Vacío',
+        text: 'El carrito está vacío',
+        icon: 'warning'
+      });
       return;
     }
 
     if (!selectedAddressId) {
-      alert("Debe seleccionar una dirección de entrega");
+      await Swal.fire({
+        title: 'Dirección Requerida',
+        text: 'Debe seleccionar una dirección de entrega',
+        icon: 'warning'
+      });
       return;
     }
+
+    if (stockWarnings.length > 0) {
+      const result = await Swal.fire({
+        title: 'Advertencias de Stock',
+        html: `
+          <div style="text-align: left;">
+            <p>Se detectaron problemas de stock:</p>
+            <ul style="margin: 10px 0;">
+              ${stockWarnings.map(warning => `<li>${warning}</li>`).join('')}
+            </ul>
+            <p>¿Desea continuar de todas formas?</p>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (!result.isConfirmed) return;
+    }
+
+    setIsProcessing(true);
+    clearError();
 
     try {
       // Calcular totales
@@ -126,50 +198,77 @@ export const PurchaseOrderData = () => {
       const shippingCost = 0; // Envío gratis
       const total = subtotal + shippingCost;
 
-      // Preparar los detalles de la orden
-      const orderDetails = cartItems.map((item) => {
-        // Buscar el sizeId correspondiente al talle del item
-        const sizeObj = sizes.find((s) => s.number === item.size);
+      // Crear la orden de compra
+      const orderData = {
+        userId: currentUser.id,
+        userAddressId: selectedAddressId,
+        total: total,
+        paymentMethod: formData.paymentMethod,
+        status: "PENDING" as const
+      };
 
+      console.log("Creando orden:", orderData);
+      const newPurchaseOrder = await purchaseOrderService.create(orderData);
+
+      if (!newPurchaseOrder) {
+        throw new Error("Error al crear la orden de compra");
+      }
+
+      // Preparar items del carrito para el servicio de detalles
+      const orderItems: ICartItem[] = cartItems.map((item) => {
+        const sizeObj = sizes.find((s) => s.number === item.size);
         if (!sizeObj) {
           throw new Error(`No se encontró el talle ${item.size}`);
         }
 
         return {
           productId: item.product.id,
-          quantity: item.quantity,
+          productName: item.product.name,
           sizeId: sizeObj.id,
+          sizeName: item.size.toString(),
+          quantity: item.quantity,
+          price: item.product.price
         };
       });
 
-      // Crear la orden de compra con detalles
-      const orderData = {
-        userId: currentUser.id,
-        userAddressId: selectedAddressId,
-        total: total,
-        paymentMethod: formData.paymentMethod,
-        status: "PENDING",
-        details: orderDetails,
-      };
+      // Crear detalles de orden y restar stock
+      console.log("Creando detalles de orden:", orderItems);
+      const result = await confirmPurchase(orderItems, newPurchaseOrder.id);
 
-      console.log("Creando orden con detalles:", orderData);
-      const newPurchaseOrder =
-        await purchaseOrderService.createOrderWithDetails(orderData);
-
-      if (newPurchaseOrder) {
-        console.log("Orden creada exitosamente:", newPurchaseOrder);
+      if (result.success) {
+        console.log("Orden procesada exitosamente:", result.createdDetails);
 
         // Limpiar el carrito
         clearCart();
 
-        // Redirigir a la página de instrucciones de pago
+        // Redirigir directamente a la página de instrucciones de pago
         navigate(`/payment-instructions/${newPurchaseOrder.id}`);
       } else {
-        throw new Error("Error al crear la orden de compra");
+        // Si hay errores, mostrarlos y eliminar la orden creada
+        await purchaseOrderService.softDelete(newPurchaseOrder.id);
+        
+        await Swal.fire({
+          title: 'Error al Procesar Orden',
+          html: `
+            <div style="text-align: left;">
+              <p>Errores encontrados:</p>
+              <ul style="margin: 10px 0;">
+                ${result.errors.map(error => `<li>${error}</li>`).join('')}
+              </ul>
+            </div>
+          `,
+          icon: 'error'
+        });
       }
     } catch (error) {
       console.error("Error al procesar el formulario:", error);
-      alert("Error al procesar el formulario. Por favor, intente nuevamente.");
+      await Swal.fire({
+        title: 'Error',
+        text: 'Error al procesar el formulario. Por favor, intente nuevamente.',
+        icon: 'error'
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -180,6 +279,24 @@ export const PurchaseOrderData = () => {
 
   return (
     <div className={s.container}>
+      {/* Advertencias de stock */}
+      {stockWarnings.length > 0 && (
+        <div style={{ 
+          marginBottom: '20px', 
+          padding: '15px', 
+          backgroundColor: '#fff3cd', 
+          border: '1px solid #ffeaa7', 
+          borderRadius: '5px' 
+        }}>
+          <h4 style={{ color: '#856404', margin: '0 0 10px 0' }}>⚠️ Advertencias de Stock:</h4>
+          <ul style={{ color: '#856404', margin: 0, paddingLeft: '20px' }}>
+            {stockWarnings.map((warning, index) => (
+              <li key={index}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className={s.form}>
         <div className={s.section}>
           <h2 className={s.title}>MÉTODO DE ENVÍO</h2>
@@ -196,6 +313,7 @@ export const PurchaseOrderData = () => {
                 value="domicilio"
                 checked={formData.shippingMethod === "domicilio"}
                 onChange={handleChange}
+                disabled={isProcessing}
               />
               Envío a domicilio
             </label>
@@ -402,12 +520,12 @@ export const PurchaseOrderData = () => {
             Usar datos de entrega para la facturación
           </label> */}
 
-          <button
-            type="submit"
+          <button 
+            type="submit" 
             className={s.submitButton}
-            disabled={!selectedAddressId || userAddresses.length === 0}
+            disabled={isProcessing || stockWarnings.length > 0}
           >
-            Continuar
+            {isProcessing ? 'Procesando...' : 'FINALIZAR COMPRA'}
           </button>
         </div>
       </form>

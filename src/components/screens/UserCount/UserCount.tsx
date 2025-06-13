@@ -4,13 +4,14 @@ import { useUserStore } from "../../../hooks/useUserStore";
 import { useMyOrdersStore } from "../../../hooks/useMyOrdersStore";
 import { usePurchaseOrderStore } from "../../../hooks/usePurchaseOrderStore";
 import { useAddressStore } from "../../../hooks/useAddressStore";
+import { useOrderManagement } from "../../../hooks/useOrderManagement";
 import { userAddressService } from "../../../http/UserAddressService";
+import { purchaseOrderService } from "../../../http/PurchaseOrderService";
 import { Input } from "../../ui/Input/Input";
 import styles from "./UserCount.module.css";
 import type { IAdress } from "../../../types/IAdress";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { purchaseOrderService } from "../../../http/PurchaseOrderService";
 
 // Interfaz para las direcciones del usuario
 interface IMyAddressResponse {
@@ -55,6 +56,9 @@ export const UserCount = () => {
     create: createAddress,
     update: updateAddress,
   } = useAddressStore();
+
+  // Hook para gestión de órdenes
+  const { cancelOrder } = useOrderManagement();
 
   // Estado local para las direcciones del usuario
   const [userAddresses, setUserAddresses] = useState<IMyAddressResponse[]>([]);
@@ -126,7 +130,7 @@ export const UserCount = () => {
   const handleCancelOrder = async (orderId: number) => {
     const result = await Swal.fire({
       title: "¿Cancelar Orden?",
-      text: "¿Estás seguro de que deseas cancelar esta orden? Esta acción no se puede deshacer.",
+      text: "¿Estás seguro de que deseas cancelar esta orden? El stock será restaurado automáticamente.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, cancelar",
@@ -138,29 +142,72 @@ export const UserCount = () => {
     if (result.isConfirmed) {
       setApprovingOrder(orderId);
       try {
-        const result = await purchaseOrderService.softDelete(orderId);
-        if (result) {
+        // Buscar la orden para obtener sus detalles
+        const orderToCancel = ordersToShow.find(order => order.id === orderId);
+        
+        if (!orderToCancel || !orderToCancel.details) {
+          throw new Error("No se encontraron los detalles de la orden");
+        }
+
+        // Convertir los detalles al formato esperado por el hook
+        const orderDetailsForCancellation = orderToCancel.details.map(detail => ({
+          id: detail.id,
+          orderId: orderId,
+          productId: detail.productId,
+          sizeId: detail.sizeId,
+          quantity: detail.quantity,
+          unitPrice: detail.product.price,
+          createdAt: detail.createdAt,
+          updatedAt: detail.updatedAt || null
+        }));
+
+        // Cancelar los detalles de la orden (esto restaura el stock)
+        const cancelResult = await cancelOrder(orderDetailsForCancellation);
+        
+        if (cancelResult.success) {
+          // Marcar la orden como cancelada
+          const softDeleteResult = await purchaseOrderService.softDelete(orderId);
+          
+          if (softDeleteResult) {
+            await Swal.fire({
+              title: "¡Orden Cancelada!",
+              text: "La orden ha sido cancelada exitosamente.",
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              confirmButtonColor: "#27ae60",
+            });
+
+            // Actualizar las órdenes según el rol del usuario
+            if (isAdmin) {
+              await fetchAllOrders();
+            } else {
+              await fetchMyOrders();
+            }
+          } else {
+            throw new Error("Error al marcar la orden como cancelada");
+          }
+        } else {
+          // Si hay errores al cancelar detalles, mostrarlos
           await Swal.fire({
-            title: "¡Orden Cancelada!",
-            text: `La orden #${orderId} ha sido cancelada exitosamente.`,
-            icon: "success",
+            title: "Error al Cancelar",
+            html: `
+              <div style="text-align: left;">
+                <p>Errores encontrados:</p>
+                <ul style="margin: 10px 0;">
+                  ${cancelResult.errors.map(error => `<li>${error}</li>`).join('')}
+                </ul>
+              </div>
+            `,
+            icon: "error",
             confirmButtonText: "Aceptar",
             confirmButtonColor: "#d32f2f",
           });
-          // Actualizar las órdenes según el rol del usuario
-          if (isAdmin) {
-            await fetchAllOrders();
-          } else {
-            await fetchMyOrders();
-          }
-        } else {
-          throw new Error("No se pudo cancelar la orden");
         }
       } catch (error) {
         console.error("Error al cancelar orden:", error);
         await Swal.fire({
           title: "Error",
-          text: "Ocurrió un error al cancelar la orden. Por favor, intenta nuevamente.",
+          text: error instanceof Error ? error.message : "Ocurrió un error al cancelar la orden. Por favor, intenta nuevamente.",
           icon: "error",
           confirmButtonText: "Aceptar",
           confirmButtonColor: "#d32f2f",

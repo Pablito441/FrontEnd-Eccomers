@@ -1,29 +1,35 @@
 import { useState, useEffect } from "react";
 import { useProductStore } from "../../../hooks/useProductStore";
-import {
-  useCarouselStore,
-  type CarouselImage,
-} from "../../../hooks/useCarouselStore";
-import {
-  useCategoryImageStore,
-  type CategoryImage,
-} from "../../../hooks/useCategoryImageStore";
+import { useCarouselImageStore } from "../../../hooks/useCarouselImageStore";
+import { useCategoryImageStoreBackend } from "../../../hooks/useCategoryImageStoreBackend";
+import type { ICreateCarouselImage } from "../../../http/CarouselImageService";
+import type { ICreateCategoryImage } from "../../../http/CategoryImageService";
 import s from "./AdminLanding.module.css";
 
 export const AdminLanding = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadingCategory, setUploadingCategory] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string>("");
-  const [selectedCategoryProduct, setSelectedCategoryProduct] =
-    useState<string>("");
+  const [selectedCategoryProduct, setSelectedCategoryProduct] = useState<string>("");
   const [isCatalogLink, setIsCatalogLink] = useState(false);
+  
   const { items: products, fetchAll: fetchAllProducts } = useProductStore();
-  const { images: carouselImages, addImage, removeImage } = useCarouselStore();
+  const { 
+    images: carouselImages, 
+    addImage, 
+    removeImage, 
+    fetchOrderedImages,
+    loading: carouselLoading,
+    error: carouselError 
+  } = useCarouselImageStore();
   const {
     images: categoryImages,
     addImage: addCategoryImage,
     removeImage: removeCategoryImage,
-  } = useCategoryImageStore();
+    fetchOrderedImages: fetchOrderedCategoryImages,
+    loading: categoryLoading,
+    error: categoryError
+  } = useCategoryImageStoreBackend();
 
   // Cloudinary config
   const CLOUD_NAME = "di4o0xrvh";
@@ -31,7 +37,9 @@ export const AdminLanding = () => {
 
   useEffect(() => {
     fetchAllProducts();
-  }, [fetchAllProducts]);
+    fetchOrderedImages();
+    fetchOrderedCategoryImages();
+  }, [fetchAllProducts, fetchOrderedImages, fetchOrderedCategoryImages]);
 
   const uploadImageToCloudinary = async (file: File) => {
     const data = new FormData();
@@ -54,17 +62,16 @@ export const AdminLanding = () => {
     setUploading(true);
     try {
       const imageUrl = await uploadImageToCloudinary(e.target.files[0]);
-      const newImage: CarouselImage = {
-        id: Date.now().toString(),
+      const newImageData: ICreateCarouselImage = {
         imageUrl,
         productName: isCatalogLink
           ? "Catálogo"
-          : products.find((p) => p.id.toString() === selectedProduct)?.name ||
-            "",
+          : products.find((p) => p.id.toString() === selectedProduct)?.name || "",
         productId: isCatalogLink ? undefined : Number(selectedProduct),
         isCatalogLink,
+        position: carouselImages.length,
       };
-      addImage(newImage);
+      await addImage(newImageData);
     } catch (error) {
       console.error("Error al subir la imagen:", error);
     } finally {
@@ -80,16 +87,13 @@ export const AdminLanding = () => {
     setUploadingCategory(true);
     try {
       const imageUrl = await uploadImageToCloudinary(e.target.files[0]);
-      const newImage: CategoryImage = {
-        id: Date.now().toString(),
+      const newImageData: ICreateCategoryImage = {
         imageUrl,
-        productName:
-          products.find((p) => p.id.toString() === selectedCategoryProduct)
-            ?.name || "",
+        productName: products.find((p) => p.id.toString() === selectedCategoryProduct)?.name || "",
         productId: Number(selectedCategoryProduct),
         position: categoryImages.length,
       };
-      addCategoryImage(newImage);
+      await addCategoryImage(newImageData);
     } catch (error) {
       console.error("Error al subir la imagen de categoría:", error);
     } finally {
@@ -97,15 +101,19 @@ export const AdminLanding = () => {
     }
   };
 
-  const handleRemoveImage = (id: string) => {
-    removeImage(id);
+  const handleRemoveImage = async (id: number) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar esta imagen?")) {
+      await removeImage(id);
+    }
   };
 
-  const handleRemoveCategoryImage = (id: string) => {
-    removeCategoryImage(id);
+  const handleRemoveCategoryImage = async (id: number) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar esta imagen?")) {
+      await removeCategoryImage(id);
+    }
   };
 
-  const handleImageClick = (image: CarouselImage) => {
+  const handleImageClick = (image: typeof carouselImages[0]) => {
     if (image.isCatalogLink) {
       window.location.href = "/catalog";
     } else if (image.productId) {
@@ -119,6 +127,11 @@ export const AdminLanding = () => {
     <div className={s.container}>
       <div className={s.header}>
         <h1>Administrador del Carrusel</h1>
+        {carouselError && (
+          <div style={{ color: 'red', marginBottom: '10px' }}>
+            Error: {carouselError}
+          </div>
+        )}
         <div className={s.uploadSection}>
           <div className={s.uploadControls}>
             <div className={s.productSelect}>
@@ -150,9 +163,9 @@ export const AdminLanding = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                disabled={uploading || (!isCatalogLink && !selectedProduct)}
+                disabled={uploading || carouselLoading || (!isCatalogLink && !selectedProduct)}
               />
-              {uploading && <span>Subiendo imagen...</span>}
+              {(uploading || carouselLoading) && <span>Subiendo imagen...</span>}
             </div>
           </div>
         </div>
@@ -170,6 +183,7 @@ export const AdminLanding = () => {
               <button
                 className={s.removeButton}
                 onClick={() => handleRemoveImage(image.id)}
+                disabled={carouselLoading}
               >
                 <span className="material-symbols-outlined">delete</span>
               </button>
@@ -182,6 +196,7 @@ export const AdminLanding = () => {
                   ? "Enlace al catálogo"
                   : "Enlace a producto"}
               </p>
+              <p>Posición: {image.position + 1}</p>
             </div>
           </div>
         ))}
@@ -190,6 +205,11 @@ export const AdminLanding = () => {
       {/* Sección de Imágenes de Categorías */}
       <div className={s.header}>
         <h1>Administrador de Imágenes de Categorías</h1>
+        {categoryError && (
+          <div style={{ color: 'red', marginBottom: '10px' }}>
+            Error: {categoryError}
+          </div>
+        )}
         <div className={s.uploadSection}>
           <div className={s.uploadControls}>
             <div className={s.productSelect}>
@@ -210,9 +230,9 @@ export const AdminLanding = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleCategoryFileChange}
-                disabled={uploadingCategory || !selectedCategoryProduct}
+                disabled={uploadingCategory || categoryLoading || !selectedCategoryProduct}
               />
-              {uploadingCategory && <span>Subiendo imagen...</span>}
+              {(uploadingCategory || categoryLoading) && <span>Subiendo imagen...</span>}
             </div>
           </div>
         </div>
@@ -234,6 +254,7 @@ export const AdminLanding = () => {
               <button
                 className={s.removeButton}
                 onClick={() => handleRemoveCategoryImage(image.id)}
+                disabled={categoryLoading}
               >
                 <span className="material-symbols-outlined">delete</span>
               </button>
