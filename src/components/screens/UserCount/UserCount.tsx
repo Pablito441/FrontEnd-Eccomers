@@ -11,6 +11,7 @@ import { Input } from "../../ui/Input/Input";
 import styles from "./UserCount.module.css";
 import type { IAdress } from "../../../types/IAdress";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 // Interfaz para las direcciones del usuario
 interface IMyAddressResponse {
@@ -197,7 +198,12 @@ export const UserCount = () => {
           isActive: true,
         };
         await updateAddress(currentAddress.id, addressData);
-        alert("Dirección actualizada exitosamente");
+        await Swal.fire({
+          title: "¡Éxito!",
+          text: "Dirección actualizada exitosamente",
+          icon: "success",
+          confirmButtonColor: "#000"
+        });
       } else {
         // Crear nueva dirección
         const addressData = {
@@ -220,11 +226,16 @@ export const UserCount = () => {
           addressId: newAddress.id,
         };
         await userAddressService.create(userAddressData);
-        alert("Dirección creada exitosamente");
+        await Swal.fire({
+          title: "¡Éxito!",
+          text: "Dirección creada exitosamente",
+          icon: "success",
+          confirmButtonColor: "#000"
+        });
       }
 
-      // Recargar datos
-      await Promise.all([fetchAddresses(), loadUserAddresses()]);
+      // Recargar solo las direcciones del usuario
+      await loadUserAddresses();
 
       // Limpiar formulario
       setIsEditing(false);
@@ -238,7 +249,12 @@ export const UserCount = () => {
       });
     } catch (error) {
       console.error("Error al guardar la dirección:", error);
-      alert("Error al guardar la dirección. Por favor, intente nuevamente.");
+      await Swal.fire({
+        title: "Error",
+        text: "Error al guardar la dirección. Por favor, intente nuevamente.",
+        icon: "error",
+        confirmButtonColor: "#000"
+      });
     }
   };
 
@@ -251,20 +267,40 @@ export const UserCount = () => {
   const handleDeleteAddress = async (addressId: number) => {
     if (!currentUser?.id) return;
 
-    try {
-      // Soft delete de la dirección
-      await updateAddress(addressId, { 
-        isActive: false,
-        deletedAt: new Date().toISOString()
-      });
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    });
 
-      // Recargar datos
-      await Promise.all([fetchAddresses(), loadUserAddresses()]);
-      
-      alert("Dirección eliminada exitosamente");
-    } catch (error) {
-      console.error("Error al eliminar la dirección:", error);
-      alert("Error al eliminar la dirección. Por favor, intente nuevamente.");
+    if (result.isConfirmed) {
+      try {
+        // Usar el endpoint específico para soft delete
+        await axios.put(`http://localhost:9000/api/v1/addresses/${addressId}/soft-delete`);
+        
+        // Recargar las direcciones del usuario
+        await loadUserAddresses();
+        
+        await Swal.fire({
+          title: "¡Eliminado!",
+          text: "La dirección ha sido eliminada exitosamente",
+          icon: "success",
+          confirmButtonColor: "#000"
+        });
+      } catch (error) {
+        console.error("Error al eliminar la dirección:", error);
+        await Swal.fire({
+          title: "Error",
+          text: "Error al eliminar la dirección. Por favor, intente nuevamente.",
+          icon: "error",
+          confirmButtonColor: "#000"
+        });
+      }
     }
   };
 
