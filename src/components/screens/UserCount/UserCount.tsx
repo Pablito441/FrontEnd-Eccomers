@@ -116,60 +116,43 @@ export const UserCount = () => {
     }
   }, [currentUser?.id, isAdmin, fetchAddresses, fetchAllOrders, fetchMyOrders]);
 
-  const handleApproveOrder = async (orderId: number) => {
-    const { value: paymentId } = await Swal.fire({
-      title: 'Aprobar Orden',
-      text: 'Ingresa el ID de pago para confirmar la transacción:',
-      input: 'text',
-      inputPlaceholder: 'ID de pago (ej: PAY-123456789)',
+  const handleCancelOrder = async (orderId: number) => {
+    const result = await Swal.fire({
+      title: '¿Cancelar Orden?',
+      text: '¿Estás seguro de que deseas cancelar esta orden? Esta acción no se puede deshacer.',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Aprobar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#28a745',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#d32f2f',
       cancelButtonColor: '#6c757d',
-      inputValidator: (value) => {
-        if (!value) {
-          return 'Debes ingresar un ID de pago';
-        }
-        if (value.length < 5) {
-          return 'El ID de pago debe tener al menos 5 caracteres';
-        }
-      }
     });
 
-    if (paymentId) {
+    if (result.isConfirmed) {
       setApprovingOrder(orderId);
       try {
-        const updatedOrder = await purchaseOrderService.approveOrder(orderId, paymentId);
-        
-        if (updatedOrder) {
-          await Swal.fire({
-            title: '¡Orden Aprobada!',
-            text: `La orden #${orderId} ha sido aprobada exitosamente con el ID de pago: ${paymentId}`,
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#28a745'
-          });
-          
-          // Recargar las órdenes para mostrar el estado actualizado
-          await fetchAllOrders();
-        } else {
-          await Swal.fire({
-            title: 'Error',
-            text: 'No se pudo aprobar la orden. Por favor, intenta nuevamente.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#dc3545'
-          });
-        }
+        const token = localStorage.getItem('token');
+        await axios.put(
+          `http://localhost:9000/api/v1/purchase-orders/${orderId}/cancel`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        await Swal.fire({
+          title: '¡Orden Cancelada!',
+          text: `La orden #${orderId} ha sido cancelada exitosamente.`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#d32f2f',
+        });
+        await fetchAllOrders();
       } catch (error) {
-        console.error('Error al aprobar orden:', error);
+        console.error('Error al cancelar orden:', error);
         await Swal.fire({
           title: 'Error',
-          text: 'Ocurrió un error al aprobar la orden. Por favor, intenta nuevamente.',
+          text: 'Ocurrió un error al cancelar la orden. Por favor, intenta nuevamente.',
           icon: 'error',
           confirmButtonText: 'Aceptar',
-          confirmButtonColor: '#dc3545'
+          confirmButtonColor: '#d32f2f',
         });
       } finally {
         setApprovingOrder(null);
@@ -443,7 +426,7 @@ export const UserCount = () => {
                       onClick={handleSaveAddress}
                       className={styles.saveButton}
                     >
-                      GUARDAR
+                      AGREGAR
                     </button>
                   </div>
                 </div>
@@ -495,7 +478,7 @@ export const UserCount = () => {
                       onClick={handleSaveAddress}
                       className={styles.saveButton}
                     >
-                      ACTUALIZAR
+                      {currentAddress.id ? "ACTUALIZAR" : "AGREGAR"}
                     </button>
                     <button
                       onClick={() => {
@@ -594,11 +577,11 @@ export const UserCount = () => {
                     </span>
                     {isAdmin && order.status === 'PENDING' && (
                       <button
-                        onClick={() => handleApproveOrder(order.id)}
+                        onClick={() => handleCancelOrder(order.id)}
                         disabled={approvingOrder === order.id}
-                        className={styles.approveButton}
+                        className={styles.cancelOrderButton}
                       >
-                        {approvingOrder === order.id ? 'APROBANDO...' : 'APROBAR'}
+                        {approvingOrder === order.id ? 'CANCELANDO...' : 'CANCELAR'}
                       </button>
                     )}
                     {!isAdmin && order.status === 'PENDING' && (

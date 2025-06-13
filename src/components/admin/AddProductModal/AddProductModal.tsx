@@ -49,7 +49,7 @@ export const AddProductModal = ({
     name: "",
     price: "",
     description: "",
-    images: ["", "", "", ""],
+    images: ["", "", "", "", ""],
     categoryId: "",
     colourId: "",
     brandId: "",
@@ -59,6 +59,7 @@ export const AddProductModal = ({
   const [formData, setFormData] = useState(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedData, setHasLoadedData] = useState(false);
+  const [uploading, setUploading] = useState([false, false, false, false, false]);
 
   const resetForm = () => {
     setFormData(initialFormState);
@@ -188,6 +189,39 @@ export const AddProductModal = ({
         return { ...prev, sizes: newSizes };
       }
       return { ...prev, sizes: [...prev.sizes, { sizeId, stock }] };
+    });
+  };
+
+  // Cloudinary config
+  const CLOUD_NAME = "di4o0xrvh";
+  const UPLOAD_PRESET = "unsigned_preset";
+
+  const uploadImageToCloudinary = async (file: File) => {
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", UPLOAD_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: data,
+    });
+    const json = await res.json();
+    console.log("Respuesta Cloudinary:", json);
+    return json.secure_url;
+  };
+
+  const handleFileChange = async (index: number, file: File) => {
+    if (!file) return;
+    setUploading((prev) => {
+      const arr = [...prev];
+      arr[index] = true;
+      return arr;
+    });
+    const imageUrl = await uploadImageToCloudinary(file);
+    handleImageChange(index, imageUrl);
+    setUploading((prev) => {
+      const arr = [...prev];
+      arr[index] = false;
+      return arr;
     });
   };
 
@@ -328,18 +362,28 @@ export const AddProductModal = ({
 
           <div className={s.formGroup}>
             <label>Imágenes del Producto</label>
-            {formData.images.map((image, index) => (
+            {[0, 1, 2, 3, 4].map((index) => (
               <div key={index} className={s.imageInput}>
                 <label>
-                  Imagen {index + 1} {index === 0 && "(Principal)"}
+                  {index === 0 ? "Imagen Principal (obligatoria)" : `Imagen Adicional ${index}`}
                 </label>
                 <input
-                  type="text"
-                  value={image}
-                  onChange={(e) => handleImageChange(index, e.target.value)}
-                  placeholder={`URL de la imagen ${index + 1}`}
+                  type="file"
+                  accept="image/*"
+                  disabled={uploading[index]}
+                  onChange={e => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileChange(index, e.target.files[0]);
+                    }
+                  }}
                   required={index === 0}
                 />
+                {uploading[index] && (
+                  <div style={{ color: '#d32f2f', fontWeight: 600, marginTop: 4 }}>Subiendo imagen...</div>
+                )}
+                {formData.images[index] && !uploading[index] && (
+                  <img src={formData.images[index]} alt={`preview-${index}`} style={{ maxWidth: 120, marginTop: 8, border: '1px solid #ccc' }} />
+                )}
               </div>
             ))}
           </div>
@@ -408,14 +452,8 @@ export const AddProductModal = ({
                     type="number"
                     min="0"
                     placeholder="Stock"
-                    value={
-                      formData.sizes.find(
-                        (s) => s.sizeId === size.id.toString()
-                      )?.stock || ""
-                    }
-                    onChange={(e) =>
-                      handleSizeChange(size.id.toString(), e.target.value)
-                    }
+                    value={formData.sizes.find((s) => s.sizeId === size.id.toString())?.stock || ""}
+                    onChange={(e) => handleSizeChange(size.id.toString(), e.target.value)}
                   />
                 </div>
               ))}

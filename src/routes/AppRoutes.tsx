@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Landing } from "../components/screens/Landing/Landing";
 import { Catalog } from "../components/screens/Catalog/Catalog";
 import { ProductDetails } from "../components/screens/ProductDetails/ProductDetails";
-import { LoginRegister } from "../components/screens/LoginRegister/LoginRegister";
 import { Login } from "../components/screens/Login/Login";
 import { Register } from "../components/screens/Register/Register";
 import { ShoppingCart } from "../components/screens/ShoppingCart/ShoppingCart";
@@ -132,14 +131,6 @@ export const AppRouter = () => {
         element={
           <ScrollToTop>
             <Register />
-          </ScrollToTop>
-        }
-      />
-      <Route
-        path="/loginRegister"
-        element={
-          <ScrollToTop>
-            <LoginRegister />
           </ScrollToTop>
         }
       />
