@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../hooks/useUserStore";
 import { useMyOrdersStore } from "../../../hooks/useMyOrdersStore";
 import { usePurchaseOrderStore } from "../../../hooks/usePurchaseOrderStore";
 import { useAddressStore } from "../../../hooks/useAddressStore";
 import { userAddressService } from "../../../http/UserAddressService";
-import { purchaseOrderService } from "../../../http/PurchaseOrderService";
 import { Input } from "../../ui/Input/Input";
 import styles from "./UserCount.module.css";
 import type { IAdress } from "../../../types/IAdress";
@@ -50,7 +48,6 @@ export const UserCount = () => {
   } = usePurchaseOrderStore();
 
   const {
-    items: addresses,
     loading: loadingAddresses,
     error: errorAddresses,
     fetchAll: fetchAddresses,
@@ -78,7 +75,7 @@ export const UserCount = () => {
   const isAdmin = currentUser?.role === "ADMIN";
 
   // Función para cargar las direcciones del usuario
-  const loadUserAddresses = async () => {
+  const loadUserAddresses = useCallback(async () => {
     if (!currentUser?.id) return;
     
     setLoadingUserAddresses(true);
@@ -94,7 +91,7 @@ export const UserCount = () => {
     } finally {
       setLoadingUserAddresses(false);
     }
-  };
+  }, [currentUser?.id]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -114,7 +111,7 @@ export const UserCount = () => {
         fetchMyOrders();
       }
     }
-  }, [currentUser?.id, isAdmin, fetchAddresses, fetchAllOrders, fetchMyOrders]);
+  }, [currentUser?.id, isAdmin, fetchAddresses, fetchAllOrders, fetchMyOrders, loadUserAddresses]);
 
   const handleCancelOrder = async (orderId: number) => {
     const result = await Swal.fire({
@@ -144,7 +141,12 @@ export const UserCount = () => {
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#d32f2f',
         });
-        await fetchAllOrders();
+        // Actualizar las órdenes según el rol del usuario
+        if (isAdmin) {
+          await fetchAllOrders();
+        } else {
+          await fetchMyOrders();
+        }
       } catch (error) {
         console.error('Error al cancelar orden:', error);
         await Swal.fire({
@@ -575,7 +577,7 @@ export const UserCount = () => {
                     >
                       {getStatusText(order.status)}
                     </span>
-                    {isAdmin && order.status === 'PENDING' && (
+                    {order.status === 'PENDING' && (
                       <button
                         onClick={() => handleCancelOrder(order.id)}
                         disabled={approvingOrder === order.id}
