@@ -132,7 +132,14 @@ export const AppRouter = () => {
           </ScrollToTop>
         }
       />
-
+      <Route
+        path="/loginRegister"
+        element={
+          <ScrollToTop>
+            <LoginRegister />
+          </ScrollToTop>
+        }
+      />
       <Route path="/productDetail" element={<ProductDetails />} />
       <Route
         path="/catalog"

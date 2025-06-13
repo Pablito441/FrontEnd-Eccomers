@@ -18,7 +18,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/loginRegister");
+      navigate("/");
       return;
     }
 
