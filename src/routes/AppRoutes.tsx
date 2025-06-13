@@ -15,6 +15,7 @@ import { UserCount } from "../components/screens/UserCount/UserCount";
 import { PaymentInstructions } from "../components/screens/PaymentInstructions/PaymentInstructions";
 import { AdminProducts } from "../pages/admin/AdminProducts";
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import OrderStatus from "../components/screens/OrderStatus/OrderStatus";
 
 export const AppRouter = () => {
   return (
@@ -129,14 +130,6 @@ export const AppRouter = () => {
         element={
           <ScrollToTop>
             <Register />
-          </ScrollToTop>
-        }
-      />
-      <Route
-        path="/loginRegister"
-        element={
-          <ScrollToTop>
-            <LoginRegister />
           </ScrollToTop>
         }
       />
