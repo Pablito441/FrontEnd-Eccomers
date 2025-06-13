@@ -28,7 +28,9 @@ class PurchaseOrderService extends ApiService<IPurchaseOrder> {
     super("http://localhost:9000/api/v1/purchase-orders");
   }
 
-  async createOrderWithDetails(orderData: ICreateOrderRequest): Promise<IPurchaseOrder | null> {
+  async createOrderWithDetails(
+    orderData: ICreateOrderRequest
+  ): Promise<IPurchaseOrder | null> {
     try {
       const token = authService.getToken();
       if (!token || !authService.isTokenValid()) {
@@ -41,7 +43,7 @@ class PurchaseOrderService extends ApiService<IPurchaseOrder> {
         userAddressId: orderData.userAddressId,
         total: orderData.total,
         paymentMethod: orderData.paymentMethod,
-        status: "PENDING"
+        status: "PENDING",
       };
 
       console.log("Creando orden:", orderPayload);
@@ -60,14 +62,14 @@ class PurchaseOrderService extends ApiService<IPurchaseOrder> {
       console.log("Orden creada:", createdOrder);
 
       // Paso 2: Crear los detalles de la orden
-      const detailPromises = orderData.details.map(detail => 
+      const detailPromises = orderData.details.map((detail) =>
         axios.post(
           "http://localhost:9000/api/v1/details",
           {
             quantity: detail.quantity,
             productId: detail.productId,
             sizeId: detail.sizeId,
-            orderId: createdOrder.id
+            orderId: createdOrder.id,
           },
           {
             headers: {
@@ -82,14 +84,15 @@ class PurchaseOrderService extends ApiService<IPurchaseOrder> {
       console.log("Detalles de la orden creados exitosamente");
 
       return createdOrder;
-
     } catch (error) {
       console.error("Error al crear la orden con detalles:", error);
       return null;
     }
   }
 
-  async getMercadoPagoPayment(orderId: number): Promise<IMercadoPagoResponse | null> {
+  async getMercadoPagoPayment(
+    orderId: number
+  ): Promise<IMercadoPagoResponse | null> {
     try {
       const response = await axios.post(
         `http://localhost:9000/pay/order/${orderId}`
@@ -123,7 +126,10 @@ class PurchaseOrderService extends ApiService<IPurchaseOrder> {
     }
   }
 
-  async approveOrder(orderId: number, paymentId: string): Promise<IPurchaseOrder | null> {
+  async approveOrder(
+    orderId: number,
+    paymentId: string
+  ): Promise<IPurchaseOrder | null> {
     try {
       const token = authService.getToken();
       if (!token || !authService.isTokenValid()) {
@@ -142,6 +148,33 @@ class PurchaseOrderService extends ApiService<IPurchaseOrder> {
       return response.data;
     } catch (error) {
       console.error("Error al aprobar la orden:", error);
+      return null;
+    }
+  }
+
+  async softDelete(orderId: number): Promise<IPurchaseOrder | null> {
+    try {
+      const token = authService.getToken();
+      if (!token || !authService.isTokenValid()) {
+        throw new Error("No hay token válido");
+      }
+
+      const response = await axios.put(
+        `http://localhost:9000/api/v1/purchase-orders/${orderId}/soft-delete`,
+        {
+          isActive: false,
+          deletedAt: new Date().toISOString(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error al eliminar la orden:", error);
       return null;
     }
   }

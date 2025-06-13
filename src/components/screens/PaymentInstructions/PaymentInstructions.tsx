@@ -13,7 +13,9 @@ interface IMercadoPagoResponse {
 export const PaymentInstructions = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
-  const [paymentData, setPaymentData] = useState<IMercadoPagoResponse | null>(null);
+  const [paymentData, setPaymentData] = useState<IMercadoPagoResponse | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +28,9 @@ export const PaymentInstructions = () => {
       }
 
       try {
-        const data = await purchaseOrderService.getMercadoPagoPayment(parseInt(orderId));
+        const data = await purchaseOrderService.getMercadoPagoPayment(
+          parseInt(orderId)
+        );
         if (data) {
           setPaymentData(data);
         } else {
@@ -45,14 +49,14 @@ export const PaymentInstructions = () => {
 
   const handlePayNow = () => {
     if (paymentData?.paymentUrl) {
-      window.open(paymentData.paymentUrl, '_blank');
+      window.open(paymentData.paymentUrl, "_blank");
     }
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
       minimumFractionDigits: 0,
     }).format(price);
   };
@@ -73,8 +77,8 @@ export const PaymentInstructions = () => {
         <div className={styles.error}>
           <h2>Error</h2>
           <p>{error || "No se pudo cargar la información de pago"}</p>
-          <button 
-            onClick={() => navigate("/userCount")} 
+          <button
+            onClick={() => navigate("/userCount")}
             className={styles.backButton}
           >
             VOLVER A MIS PEDIDOS
@@ -103,25 +107,26 @@ export const PaymentInstructions = () => {
               </div>
               <div className={styles.orderDetail}>
                 <span className={styles.label}>Total a Pagar:</span>
-                <span className={styles.value}>{formatPrice(paymentData.orderTotal)}</span>
+                <span className={styles.value}>
+                  {formatPrice(paymentData.orderTotal)}
+                </span>
               </div>
             </div>
 
             <div className={styles.paymentSection}>
               <h2 className={styles.sectionTitle}>Realizar Pago</h2>
               <p className={styles.paymentText}>
-                Para completar tu compra, debes realizar el pago a través del siguiente enlace:
+                Para completar tu compra, debes realizar el pago a través del
+                siguiente enlace:
               </p>
-              
-              <button 
-                onClick={handlePayNow}
-                className={styles.payButton}
-              >
+
+              <button onClick={handlePayNow} className={styles.payButton}>
                 PAGAR CON MERCADO PAGO
               </button>
-              
+
               <p className={styles.paymentNote}>
-                Se abrirá una nueva ventana con el formulario de pago seguro de Mercado Pago
+                Se abrirá una nueva ventana con el formulario de pago seguro de
+                Mercado Pago
               </p>
             </div>
           </div>
@@ -130,28 +135,29 @@ export const PaymentInstructions = () => {
             <div className={styles.contactSection}>
               <h2 className={styles.sectionTitle}>Informar Pago</h2>
               <p className={styles.contactText}>
-                Una vez realizado el pago, puedes informarlo contactándote con nosotros:
+                Una vez realizado el pago, puedes informarlo contactándote con
+                nosotros:
               </p>
-              
+
               <div className={styles.contactOptions}>
                 <div className={styles.contactOption}>
                   <div className={styles.contactInfo}>
                     <span className={styles.contactLabel}>Email:</span>
-                    <a 
-                      href="mailto:ventas@vans.com.ar" 
+                    <a
+                      href="mailto:ventas@vans.com.ar"
                       className={styles.contactLink}
                     >
                       ventas@vans.com.ar
                     </a>
                   </div>
                 </div>
-                
+
                 <div className={styles.contactOption}>
                   <div className={styles.contactInfo}>
                     <span className={styles.contactLabel}>WhatsApp:</span>
-                    <a 
-                      href="https://wa.me/5491123456789" 
-                      target="_blank" 
+                    <a
+                      href="https://wa.me/5491123456789"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className={styles.contactLink}
                     >
@@ -160,24 +166,25 @@ export const PaymentInstructions = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className={styles.importantNote}>
-                <strong>Importante:</strong> Al contactarte, menciona tu número de orden #{paymentData.orderId} 
-                para un procesamiento más rápido.
+                <strong>Importante:</strong> Al contactarte, menciona tu número
+                de orden #{paymentData.orderId} para un procesamiento más
+                rápido.
               </div>
             </div>
           </div>
         </div>
 
         <div className={styles.actions}>
-          <button 
-            onClick={() => navigate("/userCount")} 
+          <button
+            onClick={() => navigate("/userCount")}
             className={styles.viewOrdersButton}
           >
             VER MIS PEDIDOS
           </button>
-          <button 
-            onClick={() => navigate("/")} 
+          <button
+            onClick={() => navigate("/")}
             className={styles.continueShoppingButton}
           >
             SEGUIR COMPRANDO
@@ -186,4 +193,4 @@ export const PaymentInstructions = () => {
       </div>
     </div>
   );
-}; 
+};

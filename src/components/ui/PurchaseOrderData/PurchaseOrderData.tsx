@@ -32,7 +32,9 @@ export const PurchaseOrderData = () => {
 
   const [userAddresses, setUserAddresses] = useState<IMyAddressResponse[]>([]);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null
+  );
 
   const [formData, setFormData] = useState({
     shippingMethod: "domicilio",
@@ -68,7 +70,7 @@ export const PurchaseOrderData = () => {
       const addresses = await userAddressService.getMyAddresses();
       console.log("Direcciones cargadas:", addresses);
       setUserAddresses(addresses);
-      
+
       // Seleccionar la primera dirección por defecto si existe
       if (addresses.length > 0) {
         setSelectedAddressId(addresses[0].addressId);
@@ -127,8 +129,8 @@ export const PurchaseOrderData = () => {
       // Preparar los detalles de la orden
       const orderDetails = cartItems.map((item) => {
         // Buscar el sizeId correspondiente al talle del item
-        const sizeObj = sizes.find(s => s.number === item.size);
-        
+        const sizeObj = sizes.find((s) => s.number === item.size);
+
         if (!sizeObj) {
           throw new Error(`No se encontró el talle ${item.size}`);
         }
@@ -151,11 +153,12 @@ export const PurchaseOrderData = () => {
       };
 
       console.log("Creando orden con detalles:", orderData);
-      const newPurchaseOrder = await purchaseOrderService.createOrderWithDetails(orderData);
+      const newPurchaseOrder =
+        await purchaseOrderService.createOrderWithDetails(orderData);
 
       if (newPurchaseOrder) {
         console.log("Orden creada exitosamente:", newPurchaseOrder);
-        
+
         // Limpiar el carrito
         clearCart();
 
@@ -171,7 +174,8 @@ export const PurchaseOrderData = () => {
   };
 
   const getSelectedAddress = () => {
-    return userAddresses.find(ua => ua.addressId === selectedAddressId)?.adress;
+    return userAddresses.find((ua) => ua.addressId === selectedAddressId)
+      ?.adress;
   };
 
   return (
@@ -210,9 +214,12 @@ export const PurchaseOrderData = () => {
           ) : userAddresses.length === 0 ? (
             <div className={s.noAddresses}>
               <p>No tienes direcciones registradas.</p>
-              <p>Por favor, ve a tu perfil para agregar una dirección antes de continuar.</p>
-              <button 
-                type="button" 
+              <p>
+                Por favor, ve a tu perfil para agregar una dirección antes de
+                continuar.
+              </p>
+              <button
+                type="button"
                 onClick={() => navigate("/userCount")}
                 className={s.goToProfileButton}
               >
@@ -235,7 +242,9 @@ export const PurchaseOrderData = () => {
                   <option value="">Selecciona una dirección</option>
                   {userAddresses.map((userAddress) => (
                     <option key={userAddress.id} value={userAddress.addressId}>
-                      {userAddress.adress?.street}, {userAddress.adress?.town}, {userAddress.adress?.state} - CP: {userAddress.adress?.cpi}
+                      {userAddress.adress?.street}, {userAddress.adress?.town},{" "}
+                      {userAddress.adress?.state} - CP:{" "}
+                      {userAddress.adress?.cpi}
                     </option>
                   ))}
                 </select>
@@ -245,8 +254,13 @@ export const PurchaseOrderData = () => {
                 <div className={s.selectedAddressPreview}>
                   <h4>Dirección seleccionada:</h4>
                   <div className={s.addressPreview}>
-                    <p><strong>{getSelectedAddress()?.street}</strong></p>
-                    <p>{getSelectedAddress()?.town}, {getSelectedAddress()?.state}</p>
+                    <p>
+                      <strong>{getSelectedAddress()?.street}</strong>
+                    </p>
+                    <p>
+                      {getSelectedAddress()?.town},{" "}
+                      {getSelectedAddress()?.state}
+                    </p>
                     <p>CP: {getSelectedAddress()?.cpi}</p>
                     <p>{getSelectedAddress()?.country}</p>
                   </div>
@@ -269,7 +283,7 @@ export const PurchaseOrderData = () => {
               />
               Mercado Pago
             </label>
-            <label className={`${s.radioLabel} ${s.disabled}`}>
+            {/* <label className={`${s.radioLabel} ${s.disabled}`}>
               <input
                 type="radio"
                 name="paymentMethod"
@@ -279,8 +293,8 @@ export const PurchaseOrderData = () => {
                 onChange={handleChange}
               />
               Tarjeta de Crédito (No disponible)
-            </label>
-            <label className={`${s.radioLabel} ${s.disabled}`}>
+            </label> */}
+            {/* <label className={`${s.radioLabel} ${s.disabled}`}>
               <input
                 type="radio"
                 name="paymentMethod"
@@ -290,11 +304,11 @@ export const PurchaseOrderData = () => {
                 onChange={handleChange}
               />
               Tarjeta de Débito (No disponible)
-            </label>
+            </label> */}
           </div>
         </div>
 
-        <div className={s.section}>
+        {/* <div className={s.section}>
           <h2 className={s.title}>CUPÓN DE DESCUENTO</h2>
           <div className={s.inputGroup}>
             <Input
@@ -305,7 +319,7 @@ export const PurchaseOrderData = () => {
               handleChange={handleChange}
             />
           </div>
-        </div>
+        </div> */}
 
         <div className={s.section_mod}>
           <h2 className={s.title}>DATOS PERSONALES</h2>
@@ -378,7 +392,7 @@ export const PurchaseOrderData = () => {
             />
           </div>
 
-          <label className={s.checkboxLabel}>
+          {/* <label className={s.checkboxLabel}>
             <input
               type="checkbox"
               name="useDeliveryForBilling"
@@ -386,10 +400,10 @@ export const PurchaseOrderData = () => {
               onChange={handleChange}
             />
             Usar datos de entrega para la facturación
-          </label>
+          </label> */}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className={s.submitButton}
             disabled={!selectedAddressId || userAddresses.length === 0}
           >

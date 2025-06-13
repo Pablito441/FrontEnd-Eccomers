@@ -6,7 +6,7 @@ interface MyOrdersStore {
   orders: IPurchaseOrder[];
   loading: boolean;
   error: string | null;
-  
+
   fetchMyOrders: () => Promise<void>;
   clearOrders: () => void;
 }
@@ -20,11 +20,15 @@ export const useMyOrdersStore = create<MyOrdersStore>((set) => ({
     set({ loading: true, error: null });
     try {
       const orders = await purchaseOrderService.getMyOrders();
-      set({ orders, loading: false });
+      // Filtrar solo las órdenes activas (isActive = true y deletedAt = null)
+      const activeOrders = orders.filter(
+        (order) => order.isActive && !order.deletedAt
+      );
+      set({ orders: activeOrders, loading: false });
     } catch (error) {
-      set({ 
-        error: `Error al cargar las órdenes: ${error}`, 
-        loading: false 
+      set({
+        error: `Error al cargar las órdenes: ${error}`,
+        loading: false,
       });
     }
   },
@@ -32,4 +36,4 @@ export const useMyOrdersStore = create<MyOrdersStore>((set) => ({
   clearOrders: () => {
     set({ orders: [], error: null });
   },
-})); 
+}));

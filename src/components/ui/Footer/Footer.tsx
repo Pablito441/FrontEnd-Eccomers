@@ -85,6 +85,24 @@ export const Footer = () => {
             Politicas de privacidad
           </h3>
         </div>
+        <div className={s.footerContact}>
+          <h1>CONTACTO</h1>
+          <h3>
+            <a href="mailto:ventas@vans.com.ar" className={s.contactLink}>
+              ventas@vans.com.ar
+            </a>
+          </h3>
+          <h3>
+            <a
+              href="https://wa.me/5491123456789"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={s.contactLink}
+            >
+              +54 9 11 2345-6789
+            </a>
+          </h3>
+        </div>
       </div>
     </div>
   );
