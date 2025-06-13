@@ -144,7 +144,7 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
   };
 
   const productStatus = getProductStatus();
-
+  console.log(handleDelete);
   return (
     <>
       <div className={`${s.container} ${s[productStatus]} ${s[viewMode]}`}>
