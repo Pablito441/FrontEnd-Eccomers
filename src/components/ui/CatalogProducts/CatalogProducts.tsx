@@ -5,6 +5,7 @@ import { useProductStore } from "../../../hooks/useProductStore";
 import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface SizeChangeEvent extends CustomEvent {
   detail: string | null;
@@ -41,6 +42,8 @@ export const CatalogProducts = () => {
     useProductSizeStore();
   const { items: sizes, fetchAll: fetchAllSizes } = useSizeStore();
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchAllProducts();
     fetchAllProductSizes();
@@ -60,6 +63,12 @@ export const CatalogProducts = () => {
     }
     // Hacer scroll al inicio cuando cambian los parámetros de búsqueda
     window.scrollTo(0, 0);
+
+    // Limpiar el término de búsqueda cuando se desmonte el componente
+    return () => {
+      setSearchTerm(null);
+      setSelectedCategory(null);
+    };
   }, [searchParams]);
 
   // Escuchar cambios en el talle seleccionado
@@ -134,9 +143,9 @@ export const CatalogProducts = () => {
       const categoryNameLower = product.category?.name.toLowerCase() || "";
 
       if (
-        productNameLower !== searchLower &&
-        brandNameLower !== searchLower &&
-        categoryNameLower !== searchLower
+        !productNameLower.includes(searchLower) &&
+        !brandNameLower.includes(searchLower) &&
+        !categoryNameLower.includes(searchLower)
       ) {
         return false;
       }
@@ -185,6 +194,21 @@ export const CatalogProducts = () => {
     }
     if (searchTerm) filters.push(`búsqueda: "${searchTerm}"`);
     return filters;
+  };
+
+  const clearAllFilters = () => {
+    // Limpiar estados locales
+    setSearchTerm(null);
+    setSelectedCategory(null);
+    setSelectedSize(null);
+    setSelectedColors([]);
+    setPriceRange({ min: null, max: null });
+
+    // Emitir evento para limpiar filtros en otros componentes
+    window.dispatchEvent(new CustomEvent("clearFilters"));
+
+    // Navegar al catálogo sin parámetros
+    navigate("/catalog", { replace: true });
   };
 
   return (
@@ -254,6 +278,10 @@ export const CatalogProducts = () => {
               </ul>
             </>
           )}
+          <button className={s.clearFiltersButton} onClick={clearAllFilters}>
+            <span className="material-symbols-outlined">refresh</span>
+            Ver todos los productos
+          </button>
         </div>
       )}
     </div>

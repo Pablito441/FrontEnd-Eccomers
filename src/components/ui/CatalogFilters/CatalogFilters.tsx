@@ -161,6 +161,32 @@ export const CatalogFilters = () => {
   // Obtener el tipo de la primera categoría (asumiendo que todas las categorías son del mismo tipo)
   const typeName = categories[0]?.type?.name || "Categorías";
 
+  // Escuchar el evento de limpiar filtros
+  useEffect(() => {
+    const handleClearFilters = () => {
+      setSelectedSize(null);
+      setPrice({ min: "", max: "" });
+      setSelectedColors([]);
+      setSelectedCategory(null);
+      setIsCategoryOpen(false);
+
+      // Emitir eventos para limpiar los filtros en otros componentes
+      window.dispatchEvent(new CustomEvent("sizeChange", { detail: null }));
+      window.dispatchEvent(new CustomEvent("colorChange", { detail: [] }));
+      window.dispatchEvent(
+        new CustomEvent("priceChange", {
+          detail: { min: null, max: null },
+        })
+      );
+      window.dispatchEvent(new CustomEvent("categoryChange", { detail: null }));
+    };
+
+    window.addEventListener("clearFilters", handleClearFilters);
+    return () => {
+      window.removeEventListener("clearFilters", handleClearFilters);
+    };
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.title}>CLASSICS</div>

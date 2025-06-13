@@ -22,6 +22,7 @@ export const Navbar = () => {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/catalog?search=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm("");
       window.scrollTo(0, 0);
     }
   };
