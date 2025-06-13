@@ -379,6 +379,28 @@ export const createStore = <T extends { id: number }>(
       }
     },
 
+    // Restore soft deleted element
+    restore: async (id: number) => {
+      set({ loading: true, error: null });
+      try {
+        const restoredItem = await service.restore(id);
+        if (restoredItem) {
+          set((state) => ({
+            items: state.items.filter((item) => item.id !== id),
+            loading: false,
+          }));
+          return restoredItem;
+        }
+        return null;
+      } catch (error) {
+        set({
+          error: `Error al restaurar el elemento: ${error}`,
+          loading: false,
+        });
+        return null;
+      }
+    },
+
     delete: async (id: number) => {
       set({ loading: true, error: null });
       try {

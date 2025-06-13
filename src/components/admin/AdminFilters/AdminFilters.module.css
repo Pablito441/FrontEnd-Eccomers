@@ -9,6 +9,73 @@
   height: 100%;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #000;
+  background-color: white;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input[type="checkbox"] {
+  display: none;
+}
+
+.toggleSlider {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border: 2px solid #000;
+  transition: background-color 0.2s ease;
+}
+
+.toggleSlider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: #000;
+  transition: transform 0.2s ease;
+}
+
+.toggle input[type="checkbox"]:checked + .toggleSlider {
+  background-color: #ff6b6b;
+}
+
+.toggle input[type="checkbox"]:checked + .toggleSlider::before {
+  transform: translateX(24px);
+}
+
+.toggleLabel {
+  font-weight: 600;
+  color: #000;
+  font-size: 14px;
+}
+
 .section {
   background-color: white;
   padding: 20px;
@@ -110,6 +177,20 @@
   border-color: #f44336;
 }
 
+.restoreButton {
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.emptyMessage {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-style: italic;
+  border: 2px dashed #ccc;
+  background-color: #f9f9f9;
+}
+
 .colorInfo {
   display: flex;
   align-items: center;
@@ -122,4 +203,33 @@
   width: 24px;
   height: 24px;
   border: 2px solid #000;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingContainer p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
 }

@@ -214,6 +214,19 @@ export class ApiService<T> {
     }
   }
 
+  // Restore soft deleted element
+  async restore(id: number): Promise<T | null> {
+    try {
+      const response: AxiosResponse<T> = await axios.put(
+        `${this.baseUrl}/${id}/restore`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Restore failed:", error);
+      return null;
+    }
+  }
+
   async delete(id: number): Promise<boolean> {
     try {
       await axios.delete(`${this.baseUrl}/${id}`);
