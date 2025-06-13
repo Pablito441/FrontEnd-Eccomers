@@ -64,7 +64,7 @@
 }
 .error {
   position: absolute;
-  bottom: 1.2rem;
+  bottom: 0.2rem;
   left: 1rem;
   color: #d32f2f;
   font-size: 0.7rem;
