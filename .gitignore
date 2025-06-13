@@ -22,4 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.pem
+
+# Certificados y claves
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+*.p7b
+*.p7s
+localhost*.pem
