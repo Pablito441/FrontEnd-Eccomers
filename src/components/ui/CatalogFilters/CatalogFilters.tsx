@@ -16,12 +16,14 @@ export const CatalogFilters = () => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
   const [colorCounts, setColorCounts] = useState<Record<string, number>>({});
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   // Leer la categoría de la URL cuando se carga el componente
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
     if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
+      setIsCategoryOpen(true); // Abrir el dropdown cuando hay una categoría en la URL
       // Emitir evento con la categoría seleccionada
       const event = new CustomEvent("categoryChange", {
         detail: categoryFromUrl,
@@ -167,6 +169,8 @@ export const CatalogFilters = () => {
         options={categories.map((cat) => cat.name)}
         onSelect={handleCategorySelect}
         selectedOption={selectedCategory}
+        isOpen={isCategoryOpen}
+        onToggle={setIsCategoryOpen}
       />
       <Dropdown title="Talle Calzado">
         <div className={styles.sizesGrid}>
