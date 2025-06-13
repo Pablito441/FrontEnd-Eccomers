@@ -24,5 +24,6 @@ export interface IStore<T> {
   activate: (id: number) => Promise<T | null>;
   deactivate: (id: number) => Promise<T | null>;
   softDelete: (id: number) => Promise<T | null>;
+  restore: (id: number) => Promise<T | null>;
   delete: (id: number) => Promise<void>;
 }
