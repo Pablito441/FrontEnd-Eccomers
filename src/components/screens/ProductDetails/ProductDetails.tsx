@@ -7,12 +7,15 @@ import { useSizeStore } from "../../../hooks/useSizeStore";
 import { useProductStore } from "../../../hooks/useProductStore";
 import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 import { useCartStore } from "../../../hooks/useCartStore";
+import { Alert } from "../../ui/Alert/Alert";
 
 export const ProductDetails = () => {
   const [open, setOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState<IProduct[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const { product } = location.state as { product: IProduct };
@@ -22,7 +25,7 @@ export const ProductDetails = () => {
   const { items: allProducts, fetchAll: fetchAllProducts } = useProductStore();
   const { items: productSizes, fetchAll: fetchAllProductSizes } =
     useProductSizeStore();
-  const { addItem } = useCartStore();
+  const { items: cartItems, addItem } = useCartStore();
 
   useEffect(() => {
     fetchAllSizes();
@@ -70,39 +73,86 @@ export const ProductDetails = () => {
 
   const handleBuyClick = () => {
     if (!selectedSize) {
-      alert("Por favor selecciona un talle");
+      setAlertMessage("Por favor selecciona un talle");
+      setShowAlert(true);
       return;
     }
+
+    const sizeId = sizes.find((s) => s.number === selectedSize)?.id;
+    if (!sizeId) {
+      setAlertMessage("Talle no válido");
+      setShowAlert(true);
+      return;
+    }
+
     // Verificar que el talle seleccionado tenga stock
     const productSize = productSizes.find(
-      (ps) =>
-        ps.idProduct === product.id &&
-        ps.idSize === sizes.find((s) => s.number === selectedSize)?.id
+      (ps) => ps.idProduct === product.id && ps.idSize === sizeId
     );
+
     if (!productSize || productSize.stock <= 0) {
-      alert("El talle seleccionado no tiene stock disponible");
+      setAlertMessage("El talle seleccionado no tiene stock disponible");
+      setShowAlert(true);
       return;
     }
+
+    // Verificar si ya existe el producto en el carrito
+    const existingItem = cartItems.find(
+      (item) => item.product.id === product.id && item.size === selectedSize
+    );
+
+    // Si existe y alcanzó el límite de stock, solo redirigir al carrito
+    if (existingItem && existingItem.quantity >= productSize.stock) {
+      setAlertMessage("No hay suficiente stock disponible para este talle");
+      setShowAlert(true);
+      navigate("/shoppingCart");
+      return;
+    }
+
     addItem(product, selectedSize);
     navigate("/shoppingCart");
   };
 
   const handleAddToCartClick = () => {
     if (!selectedSize) {
-      alert("Por favor selecciona un talle");
+      setAlertMessage("Por favor selecciona un talle");
+      setShowAlert(true);
       return;
     }
+
+    const sizeId = sizes.find((s) => s.number === selectedSize)?.id;
+    if (!sizeId) {
+      setAlertMessage("Talle no válido");
+      setShowAlert(true);
+      return;
+    }
+
     // Verificar que el talle seleccionado tenga stock
     const productSize = productSizes.find(
-      (ps) =>
-        ps.idProduct === product.id &&
-        ps.idSize === sizes.find((s) => s.number === selectedSize)?.id
+      (ps) => ps.idProduct === product.id && ps.idSize === sizeId
     );
+
     if (!productSize || productSize.stock <= 0) {
-      alert("El talle seleccionado no tiene stock disponible");
+      setAlertMessage("El talle seleccionado no tiene stock disponible");
+      setShowAlert(true);
       return;
     }
+
+    // Verificar si ya existe el producto en el carrito
+    const existingItem = cartItems.find(
+      (item) => item.product.id === product.id && item.size === selectedSize
+    );
+
+    // Si existe, verificar que no exceda el stock al agregar uno más
+    if (existingItem && existingItem.quantity >= productSize.stock) {
+      setAlertMessage("No hay suficiente stock disponible para este talle");
+      setShowAlert(true);
+      return;
+    }
+
     addItem(product, selectedSize);
+    setAlertMessage("Producto agregado al carrito");
+    setShowAlert(true);
   };
 
   const handleSizeClick = (sizeNumber: string) => {
@@ -115,6 +165,12 @@ export const ProductDetails = () => {
 
   return (
     <div className={s.containerMain}>
+      <Alert
+        message={alertMessage}
+        isVisible={showAlert}
+        onClose={() => setShowAlert(false)}
+        type={alertMessage.includes("agregado") ? "success" : "error"}
+      />
       <div className={s.container}>
         <div className={s.mainContent}>
           <div className={s.contentDescription}>
