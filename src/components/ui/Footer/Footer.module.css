@@ -1,51 +1,73 @@
 .footerContainerMain {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #000000;
-  color: #ffffff;
   width: 100%;
+  background-color: #000;
+  color: #fff;
+  padding: 2rem 0;
 }
+
 .footerContainerSocialMedia {
   display: flex;
-  justify-content: center;
-  flex-direction: row;
-  padding: 3rem;
-  gap: 10rem;
+  justify-content: space-around;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
-.footerContainerSocialMedia h1 {
-  font-size: 1.4rem;
-  padding-bottom: 0.8rem;
-}
-.footerContainerSocialMedia h3 {
-  font-size: 0.7rem;
-  transition: color 0.2s ease;
-}
-.footerShop h3,
-.footerCompany h3 {
-  cursor: pointer;
-}
-.footerShop h3:hover,
-.footerCompany h3:hover {
-  color: #ff0000;
-}
-.footerLogos {
+
+.footerShop,
+.footerSocialMedia,
+.footerCompany,
+.footerContact {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1rem;
 }
-.footerLogos img {
-  display: flex;
-  height: 45px;
-  justify-content: center;
-  align-items: center;
-  padding: 1px;
-  border-radius: 50%;
-  background-color: #fff;
-  transition: opacity 0.2s ease;
+
+.footerShop h1,
+.footerSocialMedia h1,
+.footerCompany h1,
+.footerContact h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
+
+.footerShop h3,
+.footerCompany h3,
+.footerContact h3 {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #999;
+  transition: color 0.3s;
+}
+
+.footerShop h3:hover,
+.footerCompany h3:hover,
+.footerContact h3:hover {
+  color: #fff;
+}
+
+.footerLogos {
+  display: flex;
+  gap: 1rem;
+}
+
+.footerLogos img {
+  width: 24px;
+  height: 24px;
+  filter: invert(1);
+  transition: opacity 0.3s;
+}
+
 .footerLogos img:hover {
-  opacity: 0.8;
+  opacity: 0.7;
+}
+
+.contactLink {
+  color: #999;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.contactLink:hover {
+  color: #fff;
 }
