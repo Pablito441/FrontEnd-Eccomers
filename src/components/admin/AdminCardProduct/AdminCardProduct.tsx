@@ -7,17 +7,20 @@ import { useProductSizeStore } from "../../../hooks/useProductSizeStore";
 import { useProductImageStore } from "../../../hooks/useProductImage";
 import { AddProductModal } from "../AddProductModal/AddProductModal";
 import { useState } from "react";
+import axios from "axios";
 
 type ViewMode = "list" | "grid4";
 
 type AdminCardProductProps = {
   product: IProduct;
   viewMode?: ViewMode;
+  fetchList: () => Promise<void>;
 };
 
 export const AdminCardProduct: FC<AdminCardProductProps> = ({ 
   product, 
-  viewMode = "grid4" 
+  viewMode = "grid4",
+  fetchList
 }) => {
   const navigate = useNavigate();
   const { 
@@ -44,6 +47,7 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
   const handleActivate = async () => {
     try {
       await activate(product.id);
+      await fetchList();
     } catch (error) {
       console.error("Error al activar el producto:", error);
     }
@@ -52,6 +56,7 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
   const handleDeactivate = async () => {
     try {
       await deactivate(product.id);
+      await fetchList();
     } catch (error) {
       console.error("Error al desactivar el producto:", error);
     }
@@ -61,8 +66,20 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
     if (window.confirm("¿Estás seguro de que quieres eliminar este producto? Esta acción se puede revertir.")) {
       try {
         await softDelete(product.id);
+        await fetchList();
       } catch (error) {
         console.error("Error al eliminar el producto:", error);
+      }
+    }
+  };
+
+  const handleRestore = async () => {
+    if (window.confirm("¿Estás seguro de que quieres restaurar este producto?")) {
+      try {
+        await axios.put(`http://localhost:9000/api/v1/products/${product.id}/restore`);
+        await fetchList();
+      } catch (error) {
+        console.error("Error al restaurar el producto:", error);
       }
     }
   };
@@ -100,6 +117,7 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
 
         // Paso 4: Eliminar el producto
         await deleteProduct(product.id);
+        await fetchList();
       } catch (error) {
         console.error("Error al eliminar el producto:", error);
       }
@@ -171,6 +189,12 @@ export const AdminCardProduct: FC<AdminCardProductProps> = ({
             {productStatus !== "deleted" && (
               <button onClick={handleSoftDelete} className={s.softDeleteButton} title="Eliminar">
                 <span className="material-symbols-outlined">delete_outline</span>
+              </button>
+            )}
+
+            {productStatus === "deleted" && (
+              <button onClick={handleRestore} className={s.activateButton} title="Restaurar">
+                <span className="material-symbols-outlined">restore</span>
               </button>
             )}
 

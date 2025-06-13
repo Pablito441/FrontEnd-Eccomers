@@ -12,6 +12,7 @@ import type { IColour } from "../../../types/IColour";
 import type { ISize } from "../../../types/ISize";
 import type { IType } from "../../../types/IType";
 import s from "./AdminFilters.module.css";
+import axios from "axios";
 
 type FilterType = "brand" | "type" | "category" | "size" | "colour";
 type Filter = IBrand | IType | ICategory | ISize | IColour;
@@ -42,7 +43,6 @@ export const AdminFilters = () => {
   const {
     items: sizes,
     fetchAll: fetchAllSizes,
-    delete: deleteSize,
   } = useSizeStore();
   const {
     items: colours,
@@ -143,7 +143,7 @@ export const AdminFilters = () => {
           break;
         case "size":
           if (isSize(filter)) {
-            await deleteSize(filter.id);
+            await axios.put(`http://localhost:9000/api/v1/sizes/${filter.id}/soft-delete`);
           }
           break;
         case "colour":

@@ -376,7 +376,7 @@ export const AddProductModal = ({
                       handleFileChange(index, e.target.files[0]);
                     }
                   }}
-                  required={index === 0}
+                  required={index === 0 && !formData.images[0]}
                 />
                 {uploading[index] && (
                   <div style={{ color: '#d32f2f', fontWeight: 600, marginTop: 4 }}>Subiendo imagen...</div>

@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { AdminCardProduct } from "../AdminCardProduct/AdminCardProduct";
 import { useProductStore } from "../../../hooks/useProductStore";
 import s from "./AdminCatalogProducts.module.css";
+import { AddProductModal } from "../AddProductModal/AddProductModal";
 
 type StatusFilter = "all" | "active" | "inactive" | "deleted";
 type ViewMode = "list" | "grid4";
 
 export const AdminCatalogProducts = () => {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { 
     items: products, 
@@ -49,6 +51,24 @@ export const AdminCatalogProducts = () => {
     setDisplayProducts(products);
   }, [products]);
 
+  const handleCloseModal = async () => {
+    setIsModalOpen(false);
+    switch (statusFilter) {
+      case "active":
+        await fetchActive();
+        break;
+      case "inactive":
+        await fetchInactive();
+        break;
+      case "deleted":
+        await fetchSoftDeleted();
+        break;
+      default:
+        await fetchActive();
+        break;
+    }
+  };
+
   if (loading) {
     return (
       <div className={s.container}>
@@ -79,7 +99,21 @@ export const AdminCatalogProducts = () => {
       case "deleted":
         return "Eliminados";
       default:
-        return "Todos";
+        return "Activos";
+    }
+  };
+
+  // Determinar el fetch correspondiente al filtro actual
+  const getFetchForFilter = () => {
+    switch (statusFilter) {
+      case "active":
+        return fetchActive;
+      case "inactive":
+        return fetchInactive;
+      case "deleted":
+        return fetchSoftDeleted;
+      default:
+        return fetchActive;
     }
   };
 
@@ -100,7 +134,6 @@ export const AdminCatalogProducts = () => {
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
               className={s.statusSelect}
             >
-              <option value="all">Todos</option>
               <option value="active">Activos</option>
               <option value="inactive">Inactivos</option>
               <option value="deleted">Eliminados</option>
@@ -122,6 +155,13 @@ export const AdminCatalogProducts = () => {
             >
               <span className="material-symbols-outlined">grid_view</span>
             </button>
+            <button
+              className={s.addButton}
+              onClick={() => setIsModalOpen(true)}
+              title="Agregar Nuevo Producto"
+            >
+              <span className="material-symbols-outlined">add</span>
+            </button>
           </div>
         </div>
       </div>
@@ -133,10 +173,15 @@ export const AdminCatalogProducts = () => {
           </div>
         ) : (
           displayProducts.map((product) => (
-            <AdminCardProduct key={product.id} product={product} viewMode={viewMode} />
+            <AdminCardProduct key={product.id} product={product} viewMode={viewMode} fetchList={getFetchForFilter()} />
           ))
         )}
       </div>
+
+      <AddProductModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
